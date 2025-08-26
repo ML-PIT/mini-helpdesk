@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:mlgruppe.de)",
+      "Bash(find:*)",
+      "Bash(\".venv/Scripts/python.exe\" -c \"from app import create_app; app = create_app(); print(''App created successfully!'')\")",
+      "Bash(\".venv/Scripts/python.exe\" -c \"from app import create_app; app = create_app(); print(''App created successfully''); print(f''App name: {app.name}'')\")",
+      "Bash(\".venv/Scripts/python.exe\" -c \"from app import create_app; app = create_app(); print(''App created successfully!'')\")",
+      "Bash(\".venv/Scripts/python.exe\" -c \"\nfrom app import create_app, db\napp = create_app()\nwith app.app_context():\n    db.create_all()\n    print(''Database tables created successfully!'')\n\")",
+      "Bash(\".venv/Scripts/python.exe\":*)",
+      "Bash(curl:*)"
+    ],
+    "deny": [],
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\Users\\aborowczyk\\PycharmProjects\\FlaskProject\\mini-helpdesk"
+    ]
+  }
+}
