@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Claude Hilfe - {{ ticket.ticket_number }} - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">
+            <i class="bi bi-robot"></i> Claude Hilfe
+        </h1>
+        <p class="text-muted mb-0">Intelligente Unterstützung für Ihr Ticket {{ ticket.ticket_number }}</p>
+    </div>
+    <a href="{{ url_for('tickets.view_ticket', ticket_id=ticket.id) }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Zurück zum Ticket
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-ticket"></i> Ihr Ticket
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>{{ ticket.title }}</h6>
+                <p class="text-muted">{{ ticket.description | nl2br | safe }}</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <strong>Status:</strong> <span class="badge badge-status-{{ ticket.status }}">{{ ticket.status.replace('_', ' ').title() }}</span>
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <strong>Priorität:</strong> <span class="badge badge-priority-{{ ticket.priority }}">{{ ticket.priority.title() }}</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightbulb"></i> Claude's Vorschläge
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="claude-suggestions">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Lade Vorschläge...</span>
+                        </div>
+                    </div>
+                    <p class="text-center text-muted mt-2">Claude analysiert Ihr Ticket und erstellt Vorschläge...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i> Über Claude Hilfe
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="small">Claude analysiert Ihr Ticket und bietet:</p>
+                <ul class="small">
+                    <li>Mögliche Lösungsvorschläge</li>
+                    <li>Troubleshooting-Schritte</li>
+                    <li>Ähnliche bekannte Probleme</li>
+                    <li>Hilfreiche Ressourcen</li>
+                </ul>
+                <div class="alert alert-info small" role="alert">
+                    <i class="bi bi-info-circle"></i> Diese Vorschläge ersetzen nicht den Support durch unsere Agents, können aber bei der schnellen Problemlösung helfen.
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-question-circle"></i> Weitere Hilfe
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('knowledge.public_knowledge') }}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-book"></i> Knowledge Base
+                    </a>
+                    <a href="{{ url_for('knowledge.faq') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-question-circle"></i> FAQ
+                    </a>
+                    <a href="{{ url_for('tickets.view_ticket', ticket_id=ticket.id) }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-chat"></i> Kommentar hinzufügen
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Simulate Claude API call (replace with actual API integration)
+setTimeout(function() {
+    const suggestions = `
+        <h6>Mögliche Lösungsansätze:</h6>
+        <ol>
+            <li><strong>Erste Überprüfung:</strong> Stellen Sie sicher, dass alle Kabel richtig angeschlossen sind und das System mit Strom versorgt wird.</li>
+            <li><strong>Neustart durchführen:</strong> Starten Sie das System neu und beobachten Sie, ob das Problem weiterhin besteht.</li>
+            <li><strong>Updates prüfen:</strong> Überprüfen Sie, ob alle System-Updates installiert sind.</li>
+        </ol>
+        
+        <h6>Häufige Ursachen:</h6>
+        <ul>
+            <li>Temporäre Systemprobleme</li>
+            <li>Veraltete Software-Komponenten</li>
+            <li>Netzwerkverbindungsprobleme</li>
+        </ul>
+        
+        <div class="alert alert-success mt-3" role="alert">
+            <i class="bi bi-lightbulb"></i> <strong>Tipp:</strong> Wenn diese Schritte das Problem nicht lösen, fügen Sie einen Kommentar zu Ihrem Ticket hinzu mit den Details zu den Schritten, die Sie bereits versucht haben.
+        </div>
+        
+        <div class="mt-3">
+            <h6>Relevante Knowledge Base Artikel:</h6>
+            <ul class="list-unstyled">
+                <li><a href="#" class="text-decoration-none"><i class="bi bi-file-text"></i> Grundlegende Fehlerbehebung</a></li>
+                <li><a href="#" class="text-decoration-none"><i class="bi bi-file-text"></i> System-Updates installieren</a></li>
+            </ul>
+        </div>
+    `;
+    
+    document.getElementById('claude-suggestions').innerHTML = suggestions;
+}, 2000);
+</script>
+{% endblock %}

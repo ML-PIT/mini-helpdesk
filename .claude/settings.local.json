@@ -8,7 +8,8 @@
       "Bash(\".venv/Scripts/python.exe\" -c \"from app import create_app; app = create_app(); print(''App created successfully!'')\")",
       "Bash(\".venv/Scripts/python.exe\" -c \"\nfrom app import create_app, db\napp = create_app()\nwith app.app_context():\n    db.create_all()\n    print(''Database tables created successfully!'')\n\")",
       "Bash(\".venv/Scripts/python.exe\":*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": [],

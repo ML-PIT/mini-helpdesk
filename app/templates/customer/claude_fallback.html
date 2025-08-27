@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Claude Hilfe - {{ ticket.ticket_number }} - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">
+            <i class="bi bi-robot"></i> Claude Hilfe
+        </h1>
+        <p class="text-muted mb-0">Externe Claude Unterstützung für Ihr Ticket {{ ticket.ticket_number }}</p>
+    </div>
+    <a href="{{ url_for('tickets.view_ticket', ticket_id=ticket.id) }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Zurück zum Ticket
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-ticket"></i> Ihr Ticket
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>{{ ticket.title }}</h6>
+                <p class="text-muted">{{ ticket.description | nl2br | safe }}</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <strong>Status:</strong> <span class="badge badge-status-{{ ticket.status }}">{{ ticket.status.replace('_', ' ').title() }}</span>
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <strong>Priorität:</strong> <span class="badge badge-priority-{{ ticket.priority }}">{{ ticket.priority.title() }}</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-chat-dots"></i> Claude Chat öffnen
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Da die interne Claude API momentan nicht verfügbar ist, können Sie Claude direkt über den folgenden Link um Hilfe bitten:</p>
+                
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Hinweis:</strong> Der folgende Link öffnet Claude.ai in einem neuen Tab mit Ihrem Ticket-Kontext bereits vorbefüllt.
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ claude_url }}" target="_blank" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-up-right"></i> Claude.ai öffnen (Neuer Tab)
+                    </a>
+                </div>
+                
+                <hr>
+                
+                <h6>Was Sie Claude fragen können:</h6>
+                <ul class="small">
+                    <li>Mögliche Ursachen für Ihr Problem</li>
+                    <li>Schritt-für-Schritt Troubleshooting-Anleitungen</li>
+                    <li>Ähnliche Probleme und deren Lösungen</li>
+                    <li>Best Practices für die Fehlerbehebung</li>
+                </ul>
+                
+                <div class="alert alert-warning small" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Wichtig:</strong> Teilen Sie keine vertraulichen oder sensiblen Informationen in der externen Claude-Sitzung.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clipboard-check"></i> Nach dem Claude Chat
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="small">Nachdem Sie mit Claude gesprochen haben:</p>
+                <ol class="small">
+                    <li>Probieren Sie die vorgeschlagenen Lösungen aus</li>
+                    <li>Dokumentieren Sie, was funktioniert hat</li>
+                    <li>Fügen Sie einen Kommentar zu Ihrem Ticket hinzu</li>
+                    <li>Teilen Sie Ihre Erfahrungen mit unserem Support-Team</li>
+                </ol>
+                
+                <div class="d-grid">
+                    <a href="{{ url_for('tickets.view_ticket', ticket_id=ticket.id) }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-chat"></i> Kommentar zum Ticket hinzufügen
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-question-circle"></i> Weitere Hilfe
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('knowledge.public_knowledge') }}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-book"></i> Knowledge Base
+                    </a>
+                    <a href="{{ url_for('knowledge.faq') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-question-circle"></i> FAQ
+                    </a>
+                </div>
+                
+                <hr>
+                
+                <p class="small text-muted">
+                    <i class="bi bi-clock"></i> Unser Support-Team bearbeitet Ihr Ticket weiterhin und wird sich bei Ihnen melden.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

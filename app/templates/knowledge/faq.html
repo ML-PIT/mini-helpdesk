@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="bi bi-question-circle"></i> Häufig gestellte Fragen (FAQ)
+    </h1>
+    <a href="{{ url_for('knowledge.public_knowledge') }}" class="btn btn-secondary">
+        <i class="bi bi-book"></i> Zur Knowledge Base
+    </a>
+</div>
+
+<!-- Category Filter -->
+{% if categories %}
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET">
+            <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label class="form-label">Kategorie filtern:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="category_id" class="form-select" onchange="this.form.submit()">
+                        <option value="">Alle Kategorien</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if request.args.category_id == category.id|string %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if request.args.category_id %}
+                <div class="col-auto">
+                    <a href="{{ url_for('knowledge.faq') }}" class="btn btn-outline-secondary">Filter zurücksetzen</a>
+                </div>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-9">
+        {% if faqs %}
+            <!-- FAQ Accordion -->
+            <div class="accordion" id="faqAccordion">
+                {% for faq in faqs %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ loop.index }}">
+                        <button class="accordion-button{% if not loop.first %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="{% if loop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ loop.index }}">
+                            <div class="d-flex align-items-center w-100">
+                                <div class="flex-grow-1">
+                                    {{ faq.question }}
+                                    {% if faq.is_featured %}
+                                        <span class="badge bg-warning text-dark ms-2">Featured</span>
+                                    {% endif %}
+                                    {% if faq.category %}
+                                        <span class="badge bg-info ms-1">{{ faq.category.name }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse{% if loop.first %} show{% endif %}" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <div class="mb-3">
+                                {{ faq.answer | nl2br | safe }}
+                            </div>
+                            
+                            {% if faq.tags %}
+                            <div class="mb-2">
+                                <strong>Tags:</strong>
+                                {% for tag in faq.tags.split(',') %}
+                                    {% if tag.strip() %}
+                                        <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    Aktualisiert: {{ faq.updated_at.strftime('%d.%m.%Y') }}
+                                </small>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-success me-1" onclick="rateFAQ({{ faq.id }}, true)">
+                                        <i class="bi bi-hand-thumbs-up"></i> Hilfreich
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-warning" onclick="rateFAQ({{ faq.id }}, false)">
+                                        <i class="bi bi-hand-thumbs-down"></i> Nicht hilfreich
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-question-circle fs-1 text-muted"></i>
+                <h4 class="text-muted mt-3">Keine FAQs gefunden</h4>
+                {% if request.args.category_id %}
+                    <p class="text-muted">Keine FAQs in der gewählten Kategorie verfügbar.</p>
+                    <a href="{{ url_for('knowledge.faq') }}" class="btn btn-outline-primary">Alle FAQs anzeigen</a>
+                {% else %}
+                    <p class="text-muted">Momentan sind keine FAQs verfügbar.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-3">
+        <!-- Search Help -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-search"></i> Können Sie nicht finden, wonach Sie suchen?
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="small">Versuchen Sie diese Optionen:</p>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('knowledge.public_knowledge') }}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-book"></i> Knowledge Base durchsuchen
+                    </a>
+                    <a href="{{ url_for('tickets.create_ticket') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Support Ticket erstellen
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Categories -->
+        {% if categories %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-tags"></i> FAQ Kategorien
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('knowledge.faq') }}" class="btn {% if not request.args.category_id %}btn-primary{% else %}btn-outline-secondary{% endif %} btn-sm">
+                        Alle FAQs
+                    </a>
+                    {% for category in categories %}
+                    <a href="{{ url_for('knowledge.faq', category_id=category.id) }}" class="btn {% if request.args.category_id == category.id|string %}btn-primary{% else %}btn-outline-info{% endif %} btn-sm">
+                        {{ category.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning"></i> Schnellzugriff
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('tickets.dashboard') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                    {% if current_user.role == 'customer' %}
+                    <a href="{{ url_for('customer.my_tickets') }}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-ticket"></i> Meine Tickets
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-box-arrow-in-right"></i> Anmelden
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function rateFAQ(faqId, helpful) {
+    // Here you would typically send an AJAX request to rate the FAQ
+    const message = helpful ? 'Vielen Dank für Ihr Feedback!' : 'Danke für Ihr Feedback. Wir werden diese FAQ überarbeiten.';
+    
+    // Simple alert for now - replace with a proper toast notification
+    alert(message);
+    
+    // You could also track this with analytics or send to backend
+    console.log('FAQ', faqId, 'rated:', helpful ? 'helpful' : 'not helpful');
+}
+</script>
+{% endblock %}

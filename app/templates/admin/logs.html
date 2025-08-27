@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}System Logs - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="bi bi-file-text"></i> System Logs
+    </h1>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Zurück zum Admin Dashboard
+    </a>
+</div>
+
+<!-- Logs Table -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="bi bi-clock-history"></i> System Aktivitäten
+            </h5>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                    Filter
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ url_for('admin.system_logs') }}">Alle Logs</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('admin.system_logs', level='error') }}">Nur Fehler</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('admin.system_logs', level='warning') }}">Nur Warnungen</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('admin.system_logs', level='info') }}">Nur Info</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if logs.items %}
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Zeit</th>
+                            <th>Level</th>
+                            <th>Kategorie</th>
+                            <th>Nachricht</th>
+                            <th>Benutzer</th>
+                            <th>IP-Adresse</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs.items %}
+                        <tr class="{% if log.level == 'error' %}table-danger{% elif log.level == 'warning' %}table-warning{% endif %}">
+                            <td>
+                                <small>{{ log.created_at.strftime('%d.%m.%Y %H:%M:%S') }}</small>
+                            </td>
+                            <td>
+                                {% if log.level == 'error' %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-exclamation-triangle"></i> Error
+                                    </span>
+                                {% elif log.level == 'warning' %}
+                                    <span class="badge bg-warning">
+                                        <i class="bi bi-exclamation-circle"></i> Warning
+                                    </span>
+                                {% elif log.level == 'info' %}
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-info-circle"></i> Info
+                                    </span>
+                                {% elif log.level == 'debug' %}
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-bug"></i> Debug
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark">{{ log.level.upper() }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.category == 'auth' %}
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-shield-check"></i> Auth
+                                    </span>
+                                {% elif log.category == 'tickets' %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-ticket"></i> Tickets
+                                    </span>
+                                {% elif log.category == 'system' %}
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-gear"></i> System
+                                    </span>
+                                {% elif log.category == 'email' %}
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-envelope"></i> E-Mail
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark">{{ log.category.title() }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span title="{{ log.message }}">
+                                    {{ log.message[:80] }}{% if log.message|length > 80 %}...{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if log.user %}
+                                    <span title="{{ log.user.email }}">{{ log.user.full_name }}</span>
+                                {% else %}
+                                    <span class="text-muted">System</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.ip_address %}
+                                    <small class="font-monospace">{{ log.ip_address }}</small>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if log.details %}
+                                    <button type="button" class="btn btn-sm btn-outline-info" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#logDetailsModal"
+                                            onclick="showLogDetails({{ log.id }}, '{{ log.created_at.strftime('%d.%m.%Y %H:%M:%S') }}', '{{ log.level }}', '{{ log.category }}', '{{ log.message|e }}', {{ log.details|tojson }})">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if logs.pages > 1 %}
+            <nav aria-label="Log pagination">
+                <ul class="pagination justify-content-center">
+                    {% if logs.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.system_logs', page=logs.prev_num, **request.args) }}">Zurück</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in logs.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != logs.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin.system_logs', page=page_num, **request.args) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if logs.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin.system_logs', page=logs.next_num, **request.args) }}">Weiter</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-file-text fs-1 text-muted"></i>
+                <h4 class="text-muted mt-3">Keine Logs gefunden</h4>
+                <p class="text-muted">Es sind keine System-Logs für die aktuellen Filter verfügbar.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Log Details Modal -->
+<div class="modal fade" id="logDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Log Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <strong>Zeit:</strong> <span id="log-time"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Level:</strong> <span id="log-level"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Kategorie:</strong> <span id="log-category"></span>
+                </div>
+                <div class="mb-3">
+                    <strong>Nachricht:</strong>
+                    <div class="mt-1 p-2 bg-light rounded">
+                        <code id="log-message"></code>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <strong>Details:</strong>
+                    <div class="mt-1 p-2 bg-light rounded">
+                        <pre id="log-details-content" class="mb-0"></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showLogDetails(logId, time, level, category, message, details) {
+    document.getElementById('log-time').textContent = time;
+    document.getElementById('log-level').textContent = level.toUpperCase();
+    document.getElementById('log-category').textContent = category.toUpperCase();
+    document.getElementById('log-message').textContent = message;
+    document.getElementById('log-details-content').textContent = JSON.stringify(details, null, 2);
+}
+</script>
+{% endblock %}

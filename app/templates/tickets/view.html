@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ticket.ticket_number }} - {{ ticket.title }} - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">
+            <i class="bi bi-ticket"></i> {{ ticket.ticket_number }}
+            {% if ticket.sla_breached %}
+                <i class="bi bi-exclamation-triangle text-danger" title="SLA verletzt"></i>
+            {% endif %}
+        </h1>
+        <p class="text-muted mb-0">{{ ticket.title }}</p>
+    </div>
+    <div>
+        <a href="{{ url_for('tickets.list_tickets') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Zurück zur Liste
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Ticket Details -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Ticket Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-3"><strong>Status:</strong></div>
+                    <div class="col-md-9">
+                        <span class="badge badge-status-{{ ticket.status }}">{{ ticket.status.replace('_', ' ').title() }}</span>
+                        {% if current_user.role in ['support_agent', 'team_leader', 'admin'] %}
+                            <div class="btn-group ms-2" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    Status ändern
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('tickets.change_status', ticket_id=ticket.id, status='open') }}">Offen</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('tickets.change_status', ticket_id=ticket.id, status='in_progress') }}">In Bearbeitung</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('tickets.change_status', ticket_id=ticket.id, status='pending') }}">Wartend</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('tickets.change_status', ticket_id=ticket.id, status='resolved') }}">Gelöst</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('tickets.change_status', ticket_id=ticket.id, status='closed') }}">Geschlossen</a></li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-3"><strong>Priorität:</strong></div>
+                    <div class="col-md-9">
+                        <span class="badge badge-priority-{{ ticket.priority }}">{{ ticket.priority.title() }}</span>
+                        {% if current_user.role in ['support_agent', 'team_leader', 'admin'] %}
+                            <div class="btn-group ms-2" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                    Priorität ändern
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ url_for('tickets.change_priority', ticket_id=ticket.id, priority='low') }}">Niedrig</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('tickets.change_priority', ticket_id=ticket.id, priority='medium') }}">Mittel</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('tickets.change_priority', ticket_id=ticket.id, priority='high') }}">Hoch</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('tickets.change_priority', ticket_id=ticket.id, priority='critical') }}">Kritisch</a></li>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-3"><strong>Kategorie:</strong></div>
+                    <div class="col-md-9">
+                        {% if ticket.category %}
+                            <span class="badge bg-info">{{ ticket.category.name }}</span>
+                        {% else %}
+                            <span class="text-muted">Keine Kategorie zugewiesen</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-3"><strong>Zugewiesen an:</strong></div>
+                    <div class="col-md-9">
+                        {% if ticket.assignee %}
+                            {{ ticket.assignee.full_name }}
+                        {% else %}
+                            <span class="text-muted">Nicht zugewiesen</span>
+                            {% if current_user.role in ['support_agent', 'team_leader'] %}
+                                <form method="POST" action="{{ url_for('tickets.self_assign_ticket', ticket_id=ticket.id) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary ms-2">
+                                        <i class="bi bi-person-check"></i> Mir zuweisen
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-3"><strong>Erstellt von:</strong></div>
+                    <div class="col-md-9">{{ ticket.creator.full_name }}</div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-3"><strong>Erstellt am:</strong></div>
+                    <div class="col-md-9">{{ ticket.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-3"><strong>Zuletzt aktualisiert:</strong></div>
+                    <div class="col-md-9">{{ ticket.updated_at.strftime('%d.%m.%Y %H:%M') }}</div>
+                </div>
+                
+                {% if ticket.sla_due_date %}
+                <div class="row mb-3">
+                    <div class="col-md-3"><strong>SLA Fälligkeitsdatum:</strong></div>
+                    <div class="col-md-9">
+                        <span class="{% if ticket.sla_breached %}text-danger{% endif %}">
+                            {{ ticket.sla_due_date.strftime('%d.%m.%Y %H:%M') }}
+                            {% if ticket.sla_breached %}
+                                <i class="bi bi-exclamation-triangle"></i> <strong>Überfällig</strong>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Beschreibung:</strong>
+                        <div class="mt-2">{{ ticket.description | nl2br | safe }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comments -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-chat"></i> Kommentare ({{ comments|length }})
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <strong>{{ comment.author.full_name }}</strong>
+                                {% if comment.is_internal %}
+                                    <span class="badge bg-warning text-dark">Intern</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">{{ comment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                        </div>
+                        <div>{{ comment.content | nl2br | safe }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">Noch keine Kommentare vorhanden.</p>
+                {% endif %}
+                
+                <!-- Add Comment Form -->
+                <form method="POST" action="{{ url_for('tickets.add_comment', ticket_id=ticket.id) }}">
+                    {{ comment_form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ comment_form.content.label(class="form-label") }}
+                        {{ comment_form.content(class="form-control", rows="4") }}
+                        {% for error in comment_form.content.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if current_user.role in ['support_agent', 'team_leader', 'admin'] %}
+                    <div class="form-check mb-3">
+                        {{ comment_form.is_internal(class="form-check-input") }}
+                        {{ comment_form.is_internal.label(class="form-check-label") }}
+                        <div class="form-text">Interne Kommentare sind nur für Agents und Admins sichtbar.</div>
+                    </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Kommentar hinzufügen
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-gear"></i> Aktionen
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if current_user.role in ['admin', 'team_leader'] %}
+                <!-- Assignment Form -->
+                <form method="POST" action="{{ url_for('tickets.assign_ticket', ticket_id=ticket.id) }}" class="mb-3">
+                    {{ assign_form.hidden_tag() }}
+                    <div class="mb-2">
+                        {{ assign_form.assigned_to.label(class="form-label") }}
+                        {{ assign_form.assigned_to(class="form-select form-select-sm") }}
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-person-check"></i> Zuweisen
+                    </button>
+                </form>
+                <hr>
+                {% endif %}
+                
+                {% if current_user.role == 'customer' and ticket.created_by == current_user.id %}
+                    <a href="{{ url_for('customer.claude_help', ticket_id=ticket.id) }}" class="btn btn-outline-info btn-sm mb-2 w-100">
+                        <i class="bi bi-robot"></i> Claude Hilfe
+                    </a>
+                {% endif %}
+                
+                {% if ticket.status in ['resolved', 'closed'] and ticket.created_by == current_user.id and not ticket.rating %}
+                <!-- Rating Form -->
+                <form method="POST" action="{{ url_for('tickets.rate_ticket', ticket_id=ticket.id) }}">
+                    <div class="mb-2">
+                        <label class="form-label">Bewertung:</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="rating" id="rating1" value="1">
+                            <label class="btn btn-outline-warning btn-sm" for="rating1">1⭐</label>
+                            
+                            <input type="radio" class="btn-check" name="rating" id="rating2" value="2">
+                            <label class="btn btn-outline-warning btn-sm" for="rating2">2⭐</label>
+                            
+                            <input type="radio" class="btn-check" name="rating" id="rating3" value="3">
+                            <label class="btn btn-outline-warning btn-sm" for="rating3">3⭐</label>
+                            
+                            <input type="radio" class="btn-check" name="rating" id="rating4" value="4">
+                            <label class="btn btn-outline-warning btn-sm" for="rating4">4⭐</label>
+                            
+                            <input type="radio" class="btn-check" name="rating" id="rating5" value="5">
+                            <label class="btn btn-outline-warning btn-sm" for="rating5">5⭐</label>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <textarea name="feedback" class="form-control form-control-sm" rows="3" placeholder="Feedback (optional)"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-warning w-100">
+                        <i class="bi bi-star"></i> Bewerten
+                    </button>
+                </form>
+                {% elif ticket.rating %}
+                <div class="text-center">
+                    <p><strong>Bewertung:</strong></p>
+                    <div class="mb-2">
+                        {% for i in range(1, 6) %}
+                            {% if i <= ticket.rating %}⭐{% else %}☆{% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if ticket.feedback %}
+                        <small class="text-muted">{{ ticket.feedback }}</small>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if claude_suggestions %}
+        <!-- Claude Suggestions -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-robot"></i> Claude Vorschläge
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="small">{{ claude_suggestions | nl2br | safe }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

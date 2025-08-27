@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block title %}Knowledge Base Kategorien verwalten - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="bi bi-tags"></i> Kategorien verwalten
+    </h1>
+    <div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+            <i class="bi bi-plus-circle"></i> Neue Kategorie
+        </button>
+        <a href="{{ url_for('knowledge.manage_articles') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Zurück zu Artikeln
+        </a>
+    </div>
+</div>
+
+<!-- Categories Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">
+            <i class="bi bi-list"></i> Alle Kategorien
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if categories %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Beschreibung</th>
+                            <th>Farbe</th>
+                            <th>Artikel</th>
+                            <th>Status</th>
+                            <th>Sortierung</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTable">
+                        {% for category in categories %}
+                        <tr data-category-id="{{ category.id }}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge me-2" style="background-color: {{ category.color or '#6c757d' }}; width: 20px; height: 20px;"></span>
+                                    <strong>{{ category.name }}</strong>
+                                </div>
+                            </td>
+                            <td>
+                                {% if category.description %}
+                                    {{ category.description[:80] }}{% if category.description|length > 80 %}...{% endif %}
+                                {% else %}
+                                    <span class="text-muted">Keine Beschreibung</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge" style="background-color: {{ category.color or '#6c757d' }}">
+                                    {{ category.color or '#6c757d' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ category.articles.count() }} Artikel
+                                </span>
+                            </td>
+                            <td>
+                                {% if category.is_active %}
+                                    <span class="badge bg-success">Aktiv</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inaktiv</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="input-group input-group-sm" style="width: 80px;">
+                                    <input type="number" class="form-control form-control-sm" value="{{ category.sort_order or 0 }}" 
+                                           onchange="updateSortOrder({{ category.id }}, this.value)">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" 
+                                            onclick="editCategory({{ category.id }}, '{{ category.name|e }}', '{{ category.description|e }}', '{{ category.color or '' }}', {{ category.is_active|lower }})">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                            onclick="toggleCategoryStatus({{ category.id }}, {{ category.is_active|lower }})">
+                                        {% if category.is_active %}
+                                            <i class="bi bi-pause"></i>
+                                        {% else %}
+                                            <i class="bi bi-play"></i>
+                                        {% endif %}
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            onclick="deleteCategory({{ category.id }}, '{{ category.name|e }}', {{ category.articles.count() }})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-tags fs-1 text-muted"></i>
+                <h4 class="text-muted mt-3">Keine Kategorien vorhanden</h4>
+                <p class="text-muted">Erstellen Sie Ihre erste Kategorie zur Organisation der Knowledge Base.</p>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+                    <i class="bi bi-plus-circle"></i> Erste Kategorie erstellen
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Create Category Modal -->
+<div class="modal fade" id="createCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Neue Kategorie erstellen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createCategoryForm">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Name *</label>
+                        <input type="text" class="form-control" id="categoryName" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="categoryDescription" class="form-label">Beschreibung</label>
+                        <textarea class="form-control" id="categoryDescription" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="categoryColor" class="form-label">Farbe</label>
+                        <div class="input-group">
+                            <input type="color" class="form-control form-control-color" id="categoryColor" value="#6c757d">
+                            <input type="text" class="form-control" id="categoryColorHex" value="#6c757d">
+                        </div>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="categoryActive" checked>
+                        <label class="form-check-label" for="categoryActive">
+                            Kategorie ist aktiv
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" onclick="createCategory()">Erstellen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kategorie bearbeiten</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCategoryForm">
+                    <input type="hidden" id="editCategoryId">
+                    
+                    <div class="mb-3">
+                        <label for="editCategoryName" class="form-label">Name *</label>
+                        <input type="text" class="form-control" id="editCategoryName" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editCategoryDescription" class="form-label">Beschreibung</label>
+                        <textarea class="form-control" id="editCategoryDescription" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editCategoryColor" class="form-label">Farbe</label>
+                        <div class="input-group">
+                            <input type="color" class="form-control form-control-color" id="editCategoryColor">
+                            <input type="text" class="form-control" id="editCategoryColorHex">
+                        </div>
+                    </div>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="editCategoryActive">
+                        <label class="form-check-label" for="editCategoryActive">
+                            Kategorie ist aktiv
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" onclick="saveCategory()">Speichern</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Color picker sync
+document.getElementById('categoryColor').addEventListener('change', function() {
+    document.getElementById('categoryColorHex').value = this.value;
+});
+
+document.getElementById('categoryColorHex').addEventListener('change', function() {
+    document.getElementById('categoryColor').value = this.value;
+});
+
+document.getElementById('editCategoryColor').addEventListener('change', function() {
+    document.getElementById('editCategoryColorHex').value = this.value;
+});
+
+document.getElementById('editCategoryColorHex').addEventListener('change', function() {
+    document.getElementById('editCategoryColor').value = this.value;
+});
+
+function createCategory() {
+    const name = document.getElementById('categoryName').value;
+    const description = document.getElementById('categoryDescription').value;
+    const color = document.getElementById('categoryColor').value;
+    const isActive = document.getElementById('categoryActive').checked;
+    
+    if (!name.trim()) {
+        alert('Bitte geben Sie einen Namen für die Kategorie ein.');
+        return;
+    }
+    
+    // Placeholder for category creation
+    alert('Kategorie erstellen:\n' + 
+          'Name: ' + name + '\n' + 
+          'Beschreibung: ' + description + '\n' + 
+          'Farbe: ' + color + '\n' + 
+          'Aktiv: ' + (isActive ? 'Ja' : 'Nein') + '\n\n' +
+          'Diese Funktion ist noch nicht implementiert.');
+    
+    // Here you would make an AJAX request to create the category
+    // fetch('/kb/categories/create', {
+    //     method: 'POST',
+    //     headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf_token},
+    //     body: JSON.stringify({name, description, color, is_active: isActive})
+    // }).then(() => location.reload());
+    
+    // Close modal and reset form
+    bootstrap.Modal.getInstance(document.getElementById('createCategoryModal')).hide();
+    document.getElementById('createCategoryForm').reset();
+}
+
+function editCategory(id, name, description, color, isActive) {
+    document.getElementById('editCategoryId').value = id;
+    document.getElementById('editCategoryName').value = name;
+    document.getElementById('editCategoryDescription').value = description || '';
+    document.getElementById('editCategoryColor').value = color || '#6c757d';
+    document.getElementById('editCategoryColorHex').value = color || '#6c757d';
+    document.getElementById('editCategoryActive').checked = isActive;
+    
+    new bootstrap.Modal(document.getElementById('editCategoryModal')).show();
+}
+
+function saveCategory() {
+    const id = document.getElementById('editCategoryId').value;
+    const name = document.getElementById('editCategoryName').value;
+    const description = document.getElementById('editCategoryDescription').value;
+    const color = document.getElementById('editCategoryColor').value;
+    const isActive = document.getElementById('editCategoryActive').checked;
+    
+    if (!name.trim()) {
+        alert('Bitte geben Sie einen Namen für die Kategorie ein.');
+        return;
+    }
+    
+    // Placeholder for category update
+    alert('Kategorie aktualisieren (ID: ' + id + '):\n' + 
+          'Name: ' + name + '\n' + 
+          'Beschreibung: ' + description + '\n' + 
+          'Farbe: ' + color + '\n' + 
+          'Aktiv: ' + (isActive ? 'Ja' : 'Nein') + '\n\n' +
+          'Diese Funktion ist noch nicht implementiert.');
+    
+    // Close modal
+    bootstrap.Modal.getInstance(document.getElementById('editCategoryModal')).hide();
+}
+
+function toggleCategoryStatus(id, currentStatus) {
+    const newStatus = !currentStatus;
+    const action = newStatus ? 'aktivieren' : 'deaktivieren';
+    
+    if (confirm('Möchten Sie diese Kategorie ' + action + '?')) {
+        // Placeholder for status toggle
+        alert('Kategorie ' + action + ' (ID: ' + id + ')\n\nDiese Funktion ist noch nicht implementiert.');
+        
+        // Here you would make an AJAX request to toggle status
+        // fetch('/kb/categories/' + id + '/toggle', {
+        //     method: 'POST',
+        //     headers: {'X-CSRFToken': csrf_token}
+        // }).then(() => location.reload());
+    }
+}
+
+function deleteCategory(id, name, articleCount) {
+    if (articleCount > 0) {
+        alert('Diese Kategorie kann nicht gelöscht werden, da sie noch ' + articleCount + ' Artikel enthält.\n\nBitte verschieben Sie zuerst alle Artikel in andere Kategorien.');
+        return;
+    }
+    
+    if (confirm('Sind Sie sicher, dass Sie die Kategorie "' + name + '" löschen möchten?\n\nDiese Aktion kann nicht rückgängig gemacht werden!')) {
+        // Placeholder for category deletion
+        alert('Kategorie löschen: ' + name + ' (ID: ' + id + ')\n\nDiese Funktion ist noch nicht implementiert.');
+        
+        // Here you would make an AJAX request to delete the category
+        // fetch('/kb/categories/' + id + '/delete', {
+        //     method: 'DELETE',
+        //     headers: {'X-CSRFToken': csrf_token}
+        // }).then(() => location.reload());
+    }
+}
+
+function updateSortOrder(categoryId, newOrder) {
+    // Placeholder for sort order update
+    console.log('Update sort order for category ' + categoryId + ' to ' + newOrder);
+    
+    // Here you would make an AJAX request to update sort order
+    // fetch('/kb/categories/' + categoryId + '/sort', {
+    //     method: 'POST',
+    //     headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrf_token},
+    //     body: JSON.stringify({sort_order: newOrder})
+    // });
+}
+</script>
+{% endblock %}

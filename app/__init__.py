@@ -96,6 +96,17 @@ def create_app(config_name=None):
     except Exception as e:
         app.logger.warning(f"Failed to initialize Claude integration: {e}")
     
+    # Add custom template filters
+    @app.template_filter('nl2br')
+    def nl2br_filter(text):
+        """Convert newlines to HTML line breaks"""
+        if text is None:
+            return ''
+        import re
+        text = str(text).replace('\n', '<br>')
+        text = re.sub(r'\r\n?', '<br>', text)
+        return text
+    
     return app
 
 @login_manager.user_loader

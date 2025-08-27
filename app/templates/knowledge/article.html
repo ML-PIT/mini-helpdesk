@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} - Knowledge Base - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">{{ article.title }}</h1>
+        {% if article.is_featured %}
+            <span class="badge bg-warning text-dark">Featured Artikel</span>
+        {% endif %}
+        {% if article.category %}
+            <span class="badge bg-info">{{ article.category.name }}</span>
+        {% endif %}
+    </div>
+    <a href="{{ url_for('knowledge.public_knowledge') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Zurück zur Knowledge Base
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-9">
+        <!-- Article Content -->
+        <div class="card mb-4">
+            <div class="card-body">
+                {% if article.summary %}
+                <div class="alert alert-info" role="alert">
+                    <i class="bi bi-info-circle"></i> <strong>Zusammenfassung:</strong> {{ article.summary }}
+                </div>
+                {% endif %}
+                
+                <div class="article-content">
+                    {{ article.content | nl2br | safe }}
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="bi bi-person"></i> Autor: {{ article.author.full_name }}
+                        </small>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar"></i> Aktualisiert: {{ article.updated_at.strftime('%d.%m.%Y %H:%M') }}
+                        </small>
+                    </div>
+                </div>
+                
+                {% if article.tags %}
+                <div class="mt-3">
+                    <strong>Tags:</strong>
+                    {% for tag in article.tags.split(',') %}
+                        {% if tag.strip() %}
+                            <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Related Articles -->
+        {% if related_articles %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-link-45deg"></i> Ähnliche Artikel
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for related in related_articles %}
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-file-text text-primary"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-1">
+                                    <a href="{{ url_for('knowledge.view_article', slug=related.slug) }}" class="text-decoration-none">
+                                        {{ related.title }}
+                                    </a>
+                                </h6>
+                                {% if related.summary %}
+                                    <p class="small text-muted mb-1">{{ related.summary[:80] }}{% if related.summary|length > 80 %}...{% endif %}</p>
+                                {% endif %}
+                                <small class="text-muted">
+                                    <i class="bi bi-eye"></i> {{ related.view_count }} Aufrufe
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-3">
+        <!-- Article Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i> Artikel Info
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>Aufrufe:</strong> {{ article.view_count }}
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Erstellt:</strong><br>
+                    <small>{{ article.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                </div>
+                
+                <div class="mb-2">
+                    <strong>Letzte Aktualisierung:</strong><br>
+                    <small>{{ article.updated_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                </div>
+                
+                <div>
+                    <strong>Autor:</strong><br>
+                    <small>{{ article.author.full_name }}</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Helpful Actions -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-hand-thumbs-up"></i> War das hilfreich?
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">Hat dieser Artikel Ihr Problem gelöst?</p>
+                
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success btn-sm" onclick="rateArticle(true)">
+                        <i class="bi bi-hand-thumbs-up"></i> Ja, sehr hilfreich
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm" onclick="rateArticle(false)">
+                        <i class="bi bi-hand-thumbs-down"></i> Nein, nicht hilfreich
+                    </button>
+                </div>
+                
+                <div class="mt-3 text-center">
+                    <a href="{{ url_for('tickets.create_ticket') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle"></i> Ticket erstellen
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Navigation -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-compass"></i> Schnellnavigation
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('knowledge.public_knowledge') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-book"></i> Alle Artikel
+                    </a>
+                    
+                    {% if article.category %}
+                    <a href="{{ url_for('knowledge.public_knowledge', category_id=article.category.id) }}" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-tag"></i> {{ article.category.name }}
+                    </a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('knowledge.faq') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-question-circle"></i> FAQ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function rateArticle(helpful) {
+    // Here you would typically send an AJAX request to rate the article
+    const message = helpful ? 'Vielen Dank für Ihr Feedback!' : 'Danke für Ihr Feedback. Wir werden den Artikel überarbeiten.';
+    
+    // Simple alert for now - replace with a proper toast notification
+    alert(message);
+    
+    // You could also track this with analytics
+    console.log('Article rated:', helpful ? 'helpful' : 'not helpful');
+}
+</script>
+{% endblock %}

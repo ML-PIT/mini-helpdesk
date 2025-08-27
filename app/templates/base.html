@@ -96,10 +96,33 @@
                             </a>
                         </li>
                         
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('knowledge.public_knowledge') }}">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="knowledgeDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-book"></i> Knowledge Base
                             </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('knowledge.public_knowledge') }}">
+                                    <i class="bi bi-book"></i> Artikel durchsuchen
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('knowledge.faq') }}">
+                                    <i class="bi bi-question-circle"></i> FAQ
+                                </a></li>
+                                {% if current_user.role in ['admin', 'team_leader', 'support_agent'] %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('knowledge.manage_articles') }}">
+                                    <i class="bi bi-gear"></i> Artikel verwalten
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('knowledge.manage_categories') }}">
+                                    <i class="bi bi-tags"></i> Kategorien
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('knowledge.manage_faqs') }}">
+                                    <i class="bi bi-question-diamond"></i> FAQs verwalten
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('knowledge.create_article') }}">
+                                    <i class="bi bi-plus-circle"></i> Neuer Artikel
+                                </a></li>
+                                {% endif %}
+                            </ul>
                         </li>
                         
                         {% if current_user.role == 'admin' %}

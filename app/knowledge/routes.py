@@ -127,3 +127,56 @@ def create_article():
         return redirect(url_for('knowledge.view_article', slug=article.slug))
     
     return render_template('knowledge/create_article.html', form=form)
+
+@bp.route('/article/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+@agent_or_admin_required
+def edit_article(id):
+    """Edit knowledge article"""
+    article = KnowledgeArticle.query.get_or_404(id)
+    form = ArticleForm(obj=article)
+    
+    if form.validate_on_submit():
+        article.title = form.title.data
+        article.content = form.content.data
+        article.summary = form.summary.data
+        article.category_id = form.category_id.data if form.category_id.data != 0 else None
+        article.is_public = form.is_public.data
+        article.is_featured = form.is_featured.data
+        
+        if form.tags.data:
+            article.set_tags([tag.strip() for tag in form.tags.data.split(',')])
+        
+        db.session.commit()
+        
+        AuditLog.log_action(
+            user_id=current_user.id,
+            entity_type='knowledge_article',
+            entity_id=article.id,
+            action='update',
+            description=f'Knowledge article "{article.title}" updated',
+            ip_address=request.remote_addr
+        )
+        
+        flash('Article updated successfully!', 'success')
+        return redirect(url_for('knowledge.view_article', slug=article.slug))
+    
+    return render_template('knowledge/edit_article.html', form=form, article=article)
+
+@bp.route('/categories')
+@login_required
+@agent_or_admin_required
+def manage_categories():
+    """Manage knowledge categories"""
+    from app.models.knowledge import KnowledgeCategory
+    categories = KnowledgeCategory.query.order_by(KnowledgeCategory.sort_order, KnowledgeCategory.name).all()
+    return render_template('knowledge/manage_categories.html', categories=categories)
+
+@bp.route('/faqs')
+@login_required
+@agent_or_admin_required
+def manage_faqs():
+    """Manage FAQs"""
+    faqs = FAQ.query.order_by(FAQ.sort_order, FAQ.created_at.desc()).all()
+    categories = KnowledgeCategory.query.filter_by(is_active=True).all()
+    return render_template('knowledge/manage_faqs.html', faqs=faqs, categories=categories)
