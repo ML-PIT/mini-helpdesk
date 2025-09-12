@@ -166,7 +166,9 @@ if __name__ == "__main__":
     application.run()
 ```
 
-### 7. Apache Virtual Host Konfiguration
+### 7. Webserver-Konfiguration
+
+#### Option A: Apache mit WSGI (Standard ISPConfig3)
 
 In ISPConfig3 unter **Sites** → **Website** → **Options**:
 
@@ -202,6 +204,164 @@ Header always set X-Content-Type-Options nosniff
 Header always set X-XSS-Protection "1; mode=block"
 Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 ```
+
+#### Option B: Nginx als Reverse Proxy (Empfohlen für bessere Performance)
+
+Wenn Sie Nginx anstatt Apache verwenden möchten:
+
+**1. Gunicorn Service erstellen:**
+
+```bash
+sudo nano /etc/systemd/system/helpdesk-gunicorn.service
+```
+
+```ini
+[Unit]
+Description=Gunicorn instance to serve ML Gruppe Helpdesk
+After=network.target
+
+[Service]
+User=web1
+Group=client1
+WorkingDirectory=/var/www/helpdesk.ihredomain.de/app
+Environment="PATH=/var/www/helpdesk.ihredomain.de/app/venv/bin"
+ExecStart=/var/www/helpdesk.ihredomain.de/app/venv/bin/gunicorn --workers 4 --bind unix:/var/www/helpdesk.ihredomain.de/helpdesk.sock -m 007 "app:create_app()"
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**2. Service aktivieren:**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable helpdesk-gunicorn
+sudo systemctl start helpdesk-gunicorn
+sudo systemctl status helpdesk-gunicorn
+```
+
+**3. Nginx Konfiguration in ISPConfig3:**
+
+In ISPConfig3 unter **Sites** → **Website** → **Options** → **Nginx Directives**:
+
+```nginx
+# Hauptkonfiguration für Flask App
+location / {
+    include proxy_params;
+    proxy_pass http://unix:/var/www/helpdesk.ihredomain.de/helpdesk.sock;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_connect_timeout 300s;
+    proxy_send_timeout 300s;
+    proxy_read_timeout 300s;
+}
+
+# Statische Dateien direkt ausliefern
+location /static/ {
+    alias /var/www/helpdesk.ihredomain.de/app/app/static/;
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    access_log off;
+}
+
+# Upload-Dateien
+location /uploads/ {
+    alias /var/www/helpdesk.ihredomain.de/app/instance/uploads/;
+    expires 30d;
+    add_header Cache-Control "public";
+}
+
+# Favicon
+location = /favicon.ico {
+    alias /var/www/helpdesk.ihredomain.de/app/app/static/favicon.ico;
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    access_log off;
+}
+
+# Robots.txt
+location = /robots.txt {
+    alias /var/www/helpdesk.ihredomain.de/app/app/static/robots.txt;
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    access_log off;
+}
+
+# Sicherheits-Header
+add_header X-Frame-Options "DENY" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+# Rate Limiting
+limit_req_zone $binary_remote_addr zone=login:10m rate=5r/m;
+limit_req_zone $binary_remote_addr zone=api:10m rate=30r/m;
+
+location /auth/login {
+    limit_req zone=login burst=3 nodelay;
+    include proxy_params;
+    proxy_pass http://unix:/var/www/helpdesk.ihredomain.de/helpdesk.sock;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+
+location /api/ {
+    limit_req zone=api burst=10 nodelay;
+    include proxy_params;
+    proxy_pass http://unix:/var/www/helpdesk.ihredomain.de/helpdesk.sock;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_Set_header X-Forwarded-Proto $scheme;
+}
+
+# Maximale Upload-Größe
+client_max_body_size 16M;
+```
+
+**4. Socket-Berechtigungen setzen:**
+
+```bash
+# Socket-Verzeichnis vorbereiten
+sudo mkdir -p /var/www/helpdesk.ihredomain.de
+sudo chown web1:client1 /var/www/helpdesk.ihredomain.de
+
+# Nginx Benutzer zur Gruppe hinzufügen
+sudo usermod -a -G client1 www-data
+```
+
+**5. Nginx testen:**
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+#### Option C: Nginx mit ISPConfig3 Auto-SSL
+
+Für automatisches SSL-Management mit ISPConfig3 und Nginx:
+
+**1. Website auf Nginx umstellen:**
+- In ISPConfig3: **Sites** → **Website** → **Options**
+- **Auto-Subdomain**: Aktiviert
+- **SSL**: Let's Encrypt aktiviert  
+- **Nginx Directives** wie in Option B konfigurieren
+
+**2. ISPConfig3 Nginx Template anpassen:**
+```bash
+sudo cp /usr/local/ispconfig/server/conf/nginx_vhost.conf.master /usr/local/ispconfig/server/conf-custom/
+sudo nano /usr/local/ispconfig/server/conf-custom/nginx_vhost.conf.master
+```
+
+**Empfehlung:** Option B (Nginx mit Gunicorn) bietet die beste Performance und Stabilität für Flask-Anwendungen.
 
 ### 8. Systemd Service erstellen (Optional für Background Tasks)
 
