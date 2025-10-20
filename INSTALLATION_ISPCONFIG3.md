@@ -116,6 +116,24 @@ CELERY_RESULT_BACKEND=redis://localhost:6379/0
 
 ### 5. Datenbank initialisieren
 
+**WICHTIG: UTF-8 Encoding-Problem vermeiden**
+
+Bevor Sie mit der Datenbank-Initialisierung beginnen, stellen Sie sicher, dass die `.env` Datei korrekt in UTF-8 kodiert ist. Deutsche Umlaute (ü, ö, ä, ß) in der `.env` Datei können zu folgendem Fehler führen:
+```
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xfc in position 609: invalid start byte
+```
+
+**Lösungen:**
+1. **Umlaute vermeiden**: Verwenden Sie keine Umlaute in Passwörtern, Kommentaren oder Werten in der `.env` Datei
+2. **Umlaute ersetzen**: `ü→ue`, `ö→oe`, `ä→ae`, `ß→ss`
+3. **Datei in UTF-8 konvertieren**:
+   ```bash
+   # Falls die Datei bereits existiert und Umlaute enthält
+   iconv -f ISO-8859-1 -t UTF-8 .env > .env.tmp && mv .env.tmp .env
+   ```
+
+**Datenbank-Migration durchführen:**
+
 ```bash
 # Virtual Environment aktivieren
 source venv/bin/activate
