@@ -58,6 +58,12 @@ class Ticket(models.Model):
         ('critical', _('Critical')),
     ]
 
+    SUPPORT_LEVEL_CHOICES = [
+        ('level_1', _('Level 1 - First Line Support')),
+        ('level_2', _('Level 2 - Technical Support')),
+        ('level_3', _('Level 3 - Expert Support')),
+    ]
+
     # Basic information
     ticket_number = models.CharField(_('ticket number'), max_length=20, unique=True,
                                     db_index=True, editable=False)
@@ -88,6 +94,11 @@ class Ticket(models.Model):
                             default='open', db_index=True)
     priority = models.CharField(_('priority'), max_length=20, choices=PRIORITY_CHOICES,
                               default='medium', db_index=True)
+
+    # Support Level (for escalation)
+    support_level = models.CharField(_('support level'), max_length=10,
+                                    choices=SUPPORT_LEVEL_CHOICES,
+                                    default='level_1', db_index=True)
 
     # Time tracking for SLA
     created_at = models.DateTimeField(_('created at'), default=timezone.now, db_index=True)
