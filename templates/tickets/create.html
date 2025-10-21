@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Neues Ticket erstellen - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        Neues Ticket erstellen
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.title.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.description.errors }}
+                </div>
+            {% endif %}
+            <small style="color: #868e96;">Beschreiben Sie Ihr Problem so detailliert wie möglich.</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.category.label_tag }}
+            {{ form.category }}
+            {% if form.category.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.category.errors }}
+                </div>
+            {% endif %}
+            <small style="color: #868e96;">Wählen Sie die passende Kategorie für Ihr Anliegen.</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.priority.label_tag }}
+            {{ form.priority }}
+            {% if form.priority.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.priority.errors }}
+                </div>
+            {% endif %}
+            <small style="color: #868e96;">
+                <strong>Low:</strong> Nicht dringend |
+                <strong>Medium:</strong> Normale Priorität |
+                <strong>High:</strong> Dringend |
+                <strong>Critical:</strong> Sehr dringend
+            </small>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button type="submit" class="btn btn-primary">Ticket erstellen</button>
+            <a href="{% url 'main:dashboard' %}" class="btn btn-secondary">Abbrechen</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 15px; font-size: 16px;">Tipps für ein gutes Ticket:</h3>
+    <ul style="line-height: 1.8; color: #495057; padding-left: 20px;">
+        <li>Beschreiben Sie das Problem so genau wie möglich</li>
+        <li>Geben Sie an, wann das Problem aufgetreten ist</li>
+        <li>Fügen Sie relevante Informationen hinzu (z.B. Fehlermeldungen, Screenshots)</li>
+        <li>Wählen Sie die richtige Priorität</li>
+    </ul>
+</div>
+{% endblock %}

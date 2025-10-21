@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }} - FAQ{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+        <div>
+            <h1 style="font-size: 28px; font-weight: 600; margin-bottom: 10px;">{{ article.title }}</h1>
+            <div style="color: #868e96; font-size: 14px;">
+                Von {{ article.author.full_name }} | {{ article.published_at|date:"d.m.Y" }} | 👁️ {{ article.views }} Aufrufe
+            </div>
+        </div>
+        {% if user.role == 'admin' or article.author == user or user.support_level >= 2 %}
+        <a href="{% url 'knowledge:edit' article.slug %}" class="btn btn-sm btn-secondary">Bearbeiten</a>
+        {% endif %}
+    </div>
+
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; line-height: 1.8;">
+        {{ article.content|linebreaks }}
+    </div>
+
+    <!-- Helpfulness Voting -->
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #f0f0f0; text-align: center;">
+        <h3 style="font-size: 16px; margin-bottom: 15px;">War dieser Artikel hilfreich?</h3>
+        <form method="post" style="display: inline-flex; gap: 10px;">
+            {% csrf_token %}
+            <button type="submit" name="vote" value="helpful" class="btn btn-success">👍 Hilfreich ({{ article.helpful_count }})</button>
+            <button type="submit" name="vote" value="not_helpful" class="btn btn-secondary">👎 Nicht hilfreich ({{ article.not_helpful_count }})</button>
+        </form>
+    </div>
+</div>
+
+{% if related %}
+<div class="card">
+    <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 15px;">Verwandte Artikel</h3>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        {% for rel in related %}
+        <a href="{% url 'knowledge:detail' rel.slug %}" style="padding: 12px; background: #f8f9fa; border-radius: 6px; text-decoration: none; color: #495057; transition: background 0.2s;">
+            <strong>{{ rel.title }}</strong>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'knowledge:list' %}" class="btn btn-secondary">← Zurück zur FAQ</a>
+</div>
+{% endblock %}

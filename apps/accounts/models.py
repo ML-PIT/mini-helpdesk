@@ -40,9 +40,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     ROLE_CHOICES = [
         ('admin', _('Administrator')),
-        ('team_leader', _('Team Leader')),
         ('support_agent', _('Support Agent')),
         ('customer', _('Customer')),
+    ]
+
+    SUPPORT_LEVEL_CHOICES = [
+        (1, _('Level 1 - Basic Support')),
+        (2, _('Level 2 - Technical Support')),
+        (3, _('Level 3 - Expert Support')),
+        (4, _('Level 4 - Senior Expert / Team Lead')),
     ]
 
     # Basic information
@@ -54,6 +60,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Role and permissions
     role = models.CharField(_('role'), max_length=20, choices=ROLE_CHOICES,
                           default='customer', db_index=True)
+    support_level = models.IntegerField(_('support level'), choices=SUPPORT_LEVEL_CHOICES,
+                                       null=True, blank=True,
+                                       help_text=_('Support level for agents (1-3). Only applicable for support_agent role.'))
 
     # Microsoft OAuth2 integration
     microsoft_id = models.CharField(_('Microsoft ID'), max_length=100,
@@ -95,8 +104,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Check if user has specific permission based on role"""
         permissions = {
             'admin': ['all'],
-            'team_leader': ['manage_agents', 'assign_tickets', 'view_all_tickets', 'manage_categories'],
-            'support_agent': ['view_assigned_tickets', 'update_tickets', 'create_tickets', 'self_assign'],
+            'support_agent': ['view_assigned_tickets', 'view_unassigned_tickets', 'update_tickets',
+                            'create_tickets', 'self_assign', 'escalate_tickets', 'close_tickets'],
             'customer': ['view_own_tickets', 'create_tickets', 'comment_own_tickets']
         }
 
@@ -107,11 +116,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Check if user can access a specific ticket"""
         if self.role == 'admin':
             return True
-        elif self.role in ['team_leader', 'support_agent']:
-            return True  # Can access all tickets
+        elif self.role == 'support_agent':
+            return True  # Agents can access all tickets
         elif self.role == 'customer':
             return ticket.created_by == self
         return False
+
+    def can_escalate_to_level(self, target_level):
+        """Check if agent can escalate to target support level"""
+        if self.role != 'support_agent' or not self.support_level:
+            return False
+        return target_level > self.support_level and target_level <= 4
 
     def get_dashboard_stats(self):
         """Get dashboard statistics for the user"""
@@ -120,14 +135,24 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.role == 'customer':
             return {
                 'my_tickets': Ticket.objects.filter(created_by=self).count(),
-                'open_tickets': Ticket.objects.filter(created_by=self, status='open').count(),
-                'resolved_tickets': Ticket.objects.filter(created_by=self, status='resolved').count()
+                'open_tickets': Ticket.objects.filter(created_by=self, status__in=['open', 'in_progress']).count(),
+                'resolved_tickets': Ticket.objects.filter(created_by=self, status='resolved').count(),
+                'closed_tickets': Ticket.objects.filter(created_by=self, status='closed').count()
             }
-        else:
+        elif self.role == 'support_agent':
+            return {
+                'my_assigned': Ticket.objects.filter(assigned_to=self).exclude(status='closed').count(),
+                'unassigned': Ticket.objects.filter(assigned_to__isnull=True, status='open').count(),
+                'in_progress': Ticket.objects.filter(assigned_to=self, status='in_progress').count(),
+                'resolved': Ticket.objects.filter(assigned_to=self, status='resolved').count()
+            }
+        else:  # admin
             return {
                 'total_tickets': Ticket.objects.count(),
                 'open_tickets': Ticket.objects.filter(status='open').count(),
-                'my_assigned': Ticket.objects.filter(assigned_to=self).count() if self.role == 'support_agent' else 0
+                'in_progress': Ticket.objects.filter(status='in_progress').count(),
+                'resolved': Ticket.objects.filter(status='resolved').count(),
+                'closed_today': Ticket.objects.filter(status='closed', closed_at__date=timezone.now().date()).count()
             }
 
     def to_dict(self, include_sensitive=False):
@@ -140,6 +165,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             'last_name': self.last_name,
             'full_name': self.full_name,
             'role': self.role,
+            'support_level': self.support_level,
             'phone': self.phone,
             'department': self.department,
             'location': self.location,
@@ -149,7 +175,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             'created_at': self.created_at.isoformat()
         }
 
-        if include_sensitive and self.role in ['admin', 'team_leader']:
+        if include_sensitive and self.role == 'admin':
             data['microsoft_id'] = self.microsoft_id
 
         return data

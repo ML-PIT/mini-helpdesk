@@ -1,10 +1,11 @@
 from django.urls import path
-# from . import views
+from . import views
 
 app_name = 'knowledge'
 
 urlpatterns = [
-    # path('', views.KnowledgeArticleListView.as_view(), name='list'),
-    # path('<slug:slug>/', views.KnowledgeArticleDetailView.as_view(), name='detail'),
-    # path('category/<int:pk>/', views.KnowledgeCategoryView.as_view(), name='category'),
+    path('', views.kb_list, name='list'),
+    path('create/', views.kb_create, name='create'),
+    path('<slug:slug>/', views.kb_detail, name='detail'),
+    path('<slug:slug>/edit/', views.kb_edit, name='edit'),
 ]

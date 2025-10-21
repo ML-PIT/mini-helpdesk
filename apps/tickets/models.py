@@ -62,6 +62,7 @@ class Ticket(models.Model):
         ('level_1', _('Level 1 - First Line Support')),
         ('level_2', _('Level 2 - Technical Support')),
         ('level_3', _('Level 3 - Expert Support')),
+        ('level_4', _('Level 4 - Senior Expert')),
     ]
 
     # Basic information
@@ -179,6 +180,54 @@ class Ticket(models.Model):
             return delta.total_seconds() / 3600
         return None
 
+    def get_history_as_text(self):
+        """Generate complete ticket history as formatted text for email export"""
+        lines = []
+        lines.append("=" * 70)
+        lines.append(f"TICKET {self.ticket_number}")
+        lines.append("=" * 70)
+        lines.append(f"Titel: {self.title}")
+        lines.append(f"Status: {self.get_status_display()}")
+        lines.append(f"Priorität: {self.get_priority_display()}")
+        lines.append(f"Support Level: {self.get_support_level_display()}")
+        lines.append(f"Kategorie: {self.category.name if self.category else 'Keine'}")
+        lines.append(f"Erstellt am: {self.created_at.strftime('%d.%m.%Y %H:%M')}")
+        lines.append(f"Erstellt von: {self.created_by.full_name} ({self.created_by.email})")
+        if self.assigned_to:
+            lines.append(f"Zugewiesen an: {self.assigned_to.full_name}")
+        if self.closed_at:
+            lines.append(f"Geschlossen am: {self.closed_at.strftime('%d.%m.%Y %H:%M')}")
+        lines.append("")
+        lines.append("-" * 70)
+        lines.append("BESCHREIBUNG")
+        lines.append("-" * 70)
+        lines.append(self.description)
+        lines.append("")
+
+        # Get all non-internal comments
+        comments = self.comments.filter(is_internal=False).order_by('created_at')
+        if comments.exists():
+            lines.append("-" * 70)
+            lines.append("VERLAUF")
+            lines.append("-" * 70)
+            for comment in comments:
+                lines.append("")
+                lines.append(f"[{comment.created_at.strftime('%d.%m.%Y %H:%M')}] {comment.author.full_name}:")
+                lines.append(comment.content)
+
+        lines.append("")
+        lines.append("=" * 70)
+        if self.rating:
+            lines.append(f"Bewertung: {'⭐' * self.rating}")
+            if self.feedback:
+                lines.append(f"Feedback: {self.feedback}")
+        lines.append("")
+        lines.append("Vielen Dank für Ihre Anfrage!")
+        lines.append("Mit freundlichen Grüßen")
+        lines.append("Ihr Support-Team")
+
+        return "\n".join(lines)
+
     def to_dict(self, include_details=False):
         """Convert ticket to dictionary for API responses"""
         data = {
@@ -242,7 +291,7 @@ class TicketComment(models.Model):
     def save(self, *args, **kwargs):
         # Set first response time if this is the first agent response
         if not self.ticket.first_response_at and not self.is_internal:
-            if self.author.role in ['support_agent', 'team_leader', 'admin']:
+            if self.author.role in ['support_agent', 'admin']:
                 self.ticket.first_response_at = timezone.now()
                 self.ticket.save(update_fields=['first_response_at'])
         super().save(*args, **kwargs)

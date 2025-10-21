@@ -38,3 +38,9 @@ class KnowledgeArticleAdmin(admin.ModelAdmin):
 
     readonly_fields = ['views', 'helpful_count', 'not_helpful_count',
                       'created_at', 'updated_at']
+
+    def has_module_permission(self, request):
+        """Only admins can access knowledge management in admin"""
+        if not request.user.is_authenticated:
+            return False
+        return request.user.is_superuser or (hasattr(request.user, 'role') and request.user.role == 'admin')

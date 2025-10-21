@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ ticket.ticket_number }} - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<!-- Ticket Header -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+            <h1 style="font-size: 24px; font-weight: 600; margin-bottom: 10px;">
+                {{ ticket.ticket_number }}: {{ ticket.title }}
+            </h1>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <span class="status-badge status-{{ ticket.status }}">
+                    {% if ticket.status == 'open' %}Offen{% endif %}
+                    {% if ticket.status == 'in_progress' %}In Bearbeitung{% endif %}
+                    {% if ticket.status == 'pending' %}Wartet auf Kunde{% endif %}
+                    {% if ticket.status == 'resolved' %}Gelöst{% endif %}
+                    {% if ticket.status == 'closed' %}Geschlossen{% endif %}
+                </span>
+                <span class="priority-badge priority-{{ ticket.priority }}">
+                    {% if ticket.priority == 'low' %}Niedrig{% endif %}
+                    {% if ticket.priority == 'medium' %}Mittel{% endif %}
+                    {% if ticket.priority == 'high' %}Hoch{% endif %}
+                    {% if ticket.priority == 'critical' %}Kritisch{% endif %}
+                </span>
+                <span class="level-badge level-{{ ticket.support_level }}">
+                    {% if ticket.support_level == 'level_1' %}Support Level 1{% endif %}
+                    {% if ticket.support_level == 'level_2' %}Support Level 2{% endif %}
+                    {% if ticket.support_level == 'level_3' %}Support Level 3{% endif %}
+                </span>
+            </div>
+        </div>
+
+        {% if user.role != 'customer' and ticket.status != 'closed' %}
+        <div style="display: flex; gap: 10px;">
+            {% if not ticket.assigned_to and user.role == 'support_agent' %}
+            <form method="post" action="{% url 'tickets:assign' ticket.pk %}" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm">Mir zuweisen</button>
+            </form>
+            {% endif %}
+
+            {% if ticket.assigned_to == user or user.role == 'admin' %}
+            <a href="{% url 'tickets:escalate' ticket.pk %}" class="btn btn-warning btn-sm">Eskalieren</a>
+
+            <form method="post" action="{% url 'tickets:close' ticket.pk %}" style="margin: 0;" onsubmit="return confirm('Ticket wirklich schließen? Der Verlauf wird an den Kunden gesendet.');">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Schließen</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Ticket Info -->
+<div class="card">
+    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px;">Ticket-Informationen</h3>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+        <div>
+            <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Erstellt von</p>
+            <p style="font-weight: 500;">{{ ticket.created_by.full_name }}</p>
+        </div>
+        <div>
+            <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Erstellt am</p>
+            <p style="font-weight: 500;">{{ ticket.created_at|date:"d.m.Y H:i" }} Uhr</p>
+        </div>
+        <div>
+            <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Zugewiesen an</p>
+            <p style="font-weight: 500;">
+                {% if ticket.assigned_to %}
+                    {{ ticket.assigned_to.full_name }}
+                    {% if ticket.assigned_to.support_level %}
+                        <span class="level-badge level-level_{{ ticket.assigned_to.support_level }}">L{{ ticket.assigned_to.support_level }}</span>
+                    {% endif %}
+                {% else %}
+                    <span style="color: #868e96;">Noch nicht zugewiesen</span>
+                {% endif %}
+            </p>
+        </div>
+        <div>
+            <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Kategorie</p>
+            <p style="font-weight: 500;">{{ ticket.category.name|default:"Keine" }}</p>
+        </div>
+        {% if ticket.closed_at %}
+        <div>
+            <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Geschlossen am</p>
+            <p style="font-weight: 500;">{{ ticket.closed_at|date:"d.m.Y H:i" }} Uhr</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Ticket Description -->
+<div class="card">
+    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px;">Beschreibung</h3>
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; line-height: 1.6;">
+        {{ ticket.description|linebreaks }}
+    </div>
+</div>
+
+<!-- Comments / Chat -->
+<div class="card">
+    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px;">Kommunikation</h3>
+
+    {% if comments %}
+    <div style="margin-bottom: 30px;">
+        {% for comment in comments %}
+        <div style="margin-bottom: 20px; {% if comment.is_internal %}background: #fff3cd; {% else %}background: #f8f9fa; {% endif %}padding: 15px; border-radius: 8px; border-left: 4px solid {% if comment.author.role == 'customer' %}#667eea{% else %}#51cf66{% endif %};">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div>
+                    <strong style="color: #495057;">{{ comment.author.full_name }}</strong>
+                    <span class="role-badge {{ comment.author.role }}" style="margin-left: 8px; font-size: 11px;">
+                        {% if comment.author.role == 'admin' %}Admin{% endif %}
+                        {% if comment.author.role == 'support_agent' %}Support{% endif %}
+                        {% if comment.author.role == 'customer' %}Kunde{% endif %}
+                    </span>
+                    {% if comment.is_internal %}
+                    <span style="background: #ffc107; color: #333; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: 8px; font-weight: 600;">Intern</span>
+                    {% endif %}
+                </div>
+                <span style="color: #868e96; font-size: 13px;">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+            <div style="color: #495057; line-height: 1.6;">
+                {{ comment.content|linebreaks }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color: #868e96; text-align: center; padding: 30px 0;">Noch keine Kommentare vorhanden.</p>
+    {% endif %}
+
+    <!-- Add Comment Form -->
+    {% if ticket.status != 'closed' %}
+    <div style="border-top: 2px solid #f0f0f0; padding-top: 20px;">
+        <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 15px;">Neue Nachricht hinzufügen</h4>
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                {{ form.content }}
+            </div>
+
+            {% if user.role != 'customer' %}
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                {{ form.is_internal }}
+                <label for="{{ form.is_internal.id_for_label }}" style="margin: 0; cursor: pointer;">
+                    {{ form.is_internal.label }}
+                </label>
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn btn-primary">Nachricht senden</button>
+        </form>
+    </div>
+    {% else %}
+    <div style="background: #e9ecef; padding: 15px; border-radius: 6px; text-align: center; color: #495057;">
+        Dieses Ticket ist geschlossen. Sie können keine weiteren Kommentare hinzufügen.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Back Button -->
+<div style="margin-top: 20px;">
+    <a href="{% url 'tickets:list' %}" class="btn btn-secondary">← Zurück zur Übersicht</a>
+</div>
+{% endblock %}

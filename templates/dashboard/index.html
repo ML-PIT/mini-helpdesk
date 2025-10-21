@@ -1,176 +1,133 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - ML Gruppe Helpdesk</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: #f5f5f5;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-        .welcome {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            color: #666;
-            font-size: 16px;
-        }
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .stat-label {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        .stat-value {
-            color: #333;
-            font-size: 32px;
-            font-weight: 700;
-        }
-        .quick-links {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .quick-links h2 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-        .link-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        .link-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: transform 0.2s;
-            text-align: center;
-        }
-        .link-card:hover {
-            transform: translateY(-5px);
-        }
-        .badge {
-            display: inline-block;
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">ML Gruppe Helpdesk</div>
-            <div class="user-info">
-                <span>{{ user.full_name }} <span class="badge">{{ user.role }}</span></span>
-                <a href="/auth/logout/" class="logout-btn">Abmelden</a>
-            </div>
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<!-- Welcome Card -->
+<div class="card">
+    <h1 style="font-size: 28px; font-weight: 600; margin-bottom: 10px;">
+        Willkommen, {{ user.first_name }}! 👋
+    </h1>
+    <p style="color: #868e96; font-size: 16px;">
+        {% if user.role == 'customer' %}
+            Hier können Sie Ihre Support-Tickets verwalten und neue Anfragen erstellen.
+        {% elif user.role == 'support_agent' %}
+            Hier finden Sie eine Übersicht Ihrer zugewiesenen Tickets und offenen Anfragen.
+        {% else %}
+            Hier haben Sie einen Überblick über alle Tickets und Systemaktivitäten.
+        {% endif %}
+    </p>
+</div>
+
+<!-- Statistics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+    {% if user.role == 'customer' %}
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Meine Tickets</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.my_tickets }}</div>
         </div>
+        <div class="card" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Offen / In Bearbeitung</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.open_tickets }}</div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Gelöst</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.resolved_tickets }}</div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #868e96 0%, #495057 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Geschlossen</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.closed_tickets }}</div>
+        </div>
+    {% elif user.role == 'support_agent' %}
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Mir zugewiesen</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.my_assigned }}</div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Nicht zugewiesen</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.unassigned }}</div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">In Bearbeitung</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.in_progress }}</div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Gelöst</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.resolved }}</div>
+        </div>
+    {% else %}
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Gesamt Tickets</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.total_tickets }}</div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Offen</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.open_tickets }}</div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">In Bearbeitung</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.in_progress }}</div>
+        </div>
+        <div class="card" style="background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%); color: white;">
+            <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">Heute geschlossen</div>
+            <div style="font-size: 36px; font-weight: 700;">{{ stats.closed_today }}</div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">Schnellzugriff</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        {% if user.role == 'customer' %}
+            <a href="{% url 'tickets:create' %}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">📝</div>
+                Neues Ticket erstellen
+            </a>
+            <a href="{% url 'tickets:list' %}" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">📋</div>
+                Meine Tickets
+            </a>
+        {% elif user.role == 'support_agent' %}
+            <a href="{% url 'tickets:list' %}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">📋</div>
+                Alle Tickets
+            </a>
+        {% else %}
+            <a href="{% url 'tickets:list' %}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">📋</div>
+                Alle Tickets
+            </a>
+            <a href="/admin/" style="background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">⚙️</div>
+                Admin-Bereich
+            </a>
+            <a href="/admin/accounts/user/" style="background: linear-gradient(135deg, #4ecdc4 0%, #2d9cdb 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">👥</div>
+                Benutzerverwaltung
+            </a>
+        {% endif %}
     </div>
+</div>
 
-    <div class="container">
-        <div class="welcome">
-            <h1>Willkommen, {{ user.first_name }}! 👋</h1>
-            <p class="subtitle">Dies ist Ihr Helpdesk-Dashboard (Django Version)</p>
-        </div>
-
-        <div class="stats">
-            {% for key, value in stats.items %}
-            <div class="stat-card">
-                <div class="stat-label">{{ key|title }}</div>
-                <div class="stat-value">{{ value }}</div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <div class="quick-links">
-            <h2>Schnellzugriff</h2>
-            <div class="link-grid">
-                <a href="/admin/" class="link-card">
-                    📊 Admin-Interface
-                </a>
-                <a href="/admin/tickets/ticket/" class="link-card">
-                    🎫 Tickets
-                </a>
-                <a href="/admin/knowledge/knowledgearticle/" class="link-card">
-                    📚 Wissensdatenbank
-                </a>
-                <a href="/admin/accounts/user/" class="link-card">
-                    👥 Benutzer
-                </a>
-            </div>
-        </div>
+{% if user.role == 'support_agent' %}
+<!-- Agent Info -->
+<div class="card">
+    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 15px;">Ihre Agent-Informationen</h3>
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 6px;">
+        <p style="color: #495057; margin-bottom: 10px;">
+            <strong>Support Level:</strong>
+            <span class="level-badge level-level_{{ user.support_level }}">
+                Level {{ user.support_level }}
+                {% if user.support_level == 1 %}- Basic Support{% endif %}
+                {% if user.support_level == 2 %}- Technical Support{% endif %}
+                {% if user.support_level == 3 %}- Expert Support{% endif %}
+            </span>
+        </p>
+        {% if user.department %}
+        <p style="color: #495057;"><strong>Abteilung:</strong> {{ user.department }}</p>
+        {% endif %}
     </div>
-</body>
-</html>
+</div>
+{% endif %}
+{% endblock %}

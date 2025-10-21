@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }} bearbeiten{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">FAQ-Artikel bearbeiten</div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="title">Titel *</label>
+            <input type="text" name="title" id="title" class="form-control" value="{{ article.title }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="excerpt">Kurzbeschreibung</label>
+            <textarea name="excerpt" id="excerpt" class="form-control" rows="2">{{ article.excerpt }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="content">Inhalt *</label>
+            <textarea name="content" id="content" class="form-control" rows="12" required>{{ article.content }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Kategorie</label>
+            <select name="category" id="category" class="form-control">
+                <option value="">Keine Kategorie</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if article.category == cat %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="keywords">Suchbegriffe</label>
+            <input type="text" name="keywords" id="keywords" class="form-control" value="{{ article.keywords }}">
+        </div>
+
+        <div class="form-group">
+            <label><input type="checkbox" name="is_public" {% if article.is_public %}checked{% endif %}> Öffentlich</label>
+        </div>
+
+        <div class="form-group">
+            <label><input type="checkbox" name="is_featured" {% if article.is_featured %}checked{% endif %}> Als häufige Frage</label>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select name="status" id="status" class="form-control">
+                <option value="draft" {% if article.status == 'draft' %}selected{% endif %}>Entwurf</option>
+                <option value="published" {% if article.status == 'published' %}selected{% endif %}>Veröffentlicht</option>
+                <option value="archived" {% if article.status == 'archived' %}selected{% endif %}>Archiviert</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+            <a href="{% url 'knowledge:detail' article.slug %}" class="btn btn-secondary">Abbrechen</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

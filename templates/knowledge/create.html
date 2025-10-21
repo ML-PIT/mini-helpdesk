@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Neuen FAQ-Artikel erstellen{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">Neuen FAQ-Artikel erstellen</div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="title">Titel *</label>
+            <input type="text" name="title" id="title" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="excerpt">Kurzbeschreibung</label>
+            <textarea name="excerpt" id="excerpt" class="form-control" rows="2" placeholder="Kurze Zusammenfassung des Artikels..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="content">Inhalt *</label>
+            <textarea name="content" id="content" class="form-control" rows="12" required placeholder="Detaillierte Antwort oder Anleitung..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Kategorie</label>
+            <select name="category" id="category" class="form-control">
+                <option value="">Keine Kategorie</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="keywords">Suchbegriffe (komma-getrennt)</label>
+            <input type="text" name="keywords" id="keywords" class="form-control" placeholder="z.B. passwort, zurücksetzen, login">
+        </div>
+
+        <div class="form-group">
+            <label><input type="checkbox" name="is_public" checked> Öffentlich (für Kunden sichtbar)</label>
+        </div>
+
+        <div class="form-group">
+            <label><input type="checkbox" name="is_featured"> Als häufige Frage hervorheben</label>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select name="status" id="status" class="form-control">
+                <option value="draft">Entwurf</option>
+                <option value="published" selected>Veröffentlicht</option>
+            </select>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button type="submit" class="btn btn-primary">Artikel erstellen</button>
+            <a href="{% url 'knowledge:list' %}" class="btn btn-secondary">Abbrechen</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

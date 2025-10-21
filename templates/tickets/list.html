@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Tickets - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="flex justify-between" style="align-items: center; margin-bottom: 20px;">
+    <h1 style="font-size: 28px; font-weight: 600;">
+        {% if user.role == 'customer' %}
+            Meine Tickets
+        {% elif user.role == 'support_agent' %}
+            Ticket-Übersicht
+        {% else %}
+            Alle Tickets
+        {% endif %}
+    </h1>
+    {% if user.role == 'customer' %}
+    <a href="{% url 'tickets:create' %}" class="btn btn-primary">+ Neues Ticket</a>
+    {% endif %}
+</div>
+
+{% if tickets %}
+<div class="card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ticket-Nr.</th>
+                <th>Titel</th>
+                <th>Status</th>
+                <th>Priorität</th>
+                <th>Support Level</th>
+                {% if user.role != 'customer' %}
+                <th>Erstellt von</th>
+                <th>Zugewiesen an</th>
+                {% endif %}
+                <th>Erstellt am</th>
+                <th>Aktion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td>
+                    <strong>{{ ticket.ticket_number }}</strong>
+                </td>
+                <td>
+                    <a href="{% url 'tickets:detail' ticket.pk %}" style="color: #667eea; text-decoration: none; font-weight: 500;">
+                        {{ ticket.title }}
+                    </a>
+                </td>
+                <td>
+                    <span class="status-badge status-{{ ticket.status }}">
+                        {% if ticket.status == 'open' %}Offen{% endif %}
+                        {% if ticket.status == 'in_progress' %}In Bearbeitung{% endif %}
+                        {% if ticket.status == 'pending' %}Wartet auf Kunde{% endif %}
+                        {% if ticket.status == 'resolved' %}Gelöst{% endif %}
+                        {% if ticket.status == 'closed' %}Geschlossen{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <span class="priority-badge priority-{{ ticket.priority }}">
+                        {% if ticket.priority == 'low' %}Niedrig{% endif %}
+                        {% if ticket.priority == 'medium' %}Mittel{% endif %}
+                        {% if ticket.priority == 'high' %}Hoch{% endif %}
+                        {% if ticket.priority == 'critical' %}Kritisch{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <span class="level-badge level-{{ ticket.support_level }}">
+                        {% if ticket.support_level == 'level_1' %}Level 1{% endif %}
+                        {% if ticket.support_level == 'level_2' %}Level 2{% endif %}
+                        {% if ticket.support_level == 'level_3' %}Level 3{% endif %}
+                    </span>
+                </td>
+                {% if user.role != 'customer' %}
+                <td>{{ ticket.created_by.full_name }}</td>
+                <td>
+                    {% if ticket.assigned_to %}
+                        {{ ticket.assigned_to.full_name }}
+                    {% else %}
+                        <span style="color: #868e96;">Nicht zugewiesen</span>
+                    {% endif %}
+                </td>
+                {% endif %}
+                <td>{{ ticket.created_at|date:"d.m.Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'tickets:detail' ticket.pk %}" class="btn btn-sm btn-primary">Ansehen</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card">
+    <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <h2 style="margin-bottom: 10px; color: #495057;">Keine Tickets gefunden</h2>
+        <p style="color: #868e96; margin-bottom: 20px;">
+            {% if user.role == 'customer' %}
+                Sie haben noch keine Tickets erstellt.
+            {% elif user.role == 'support_agent' %}
+                Aktuell sind keine Tickets verfügbar.
+            {% else %}
+                Es gibt derzeit keine Tickets im System.
+            {% endif %}
+        </p>
+        {% if user.role == 'customer' %}
+        <a href="{% url 'tickets:create' %}" class="btn btn-primary">Erstes Ticket erstellen</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+{% if user.role == 'support_agent' %}
+<div class="card" style="margin-top: 20px;">
+    <h3 style="margin-bottom: 10px; font-size: 16px;">Legende:</h3>
+    <p style="color: #495057; line-height: 1.6;">
+        <strong>Unzugewiesene Tickets:</strong> Tickets mit Status "Offen" ohne zugewiesenen Agent können Sie sich selbst zuweisen.<br>
+        <strong>Ihre Tickets:</strong> Tickets, die Ihnen zugewiesen sind.<br>
+        <strong>Eskalation:</strong> Sie können Tickets an Agents mit höherem Support Level eskalieren.
+    </p>
+</div>
+{% endif %}
+{% endblock %}

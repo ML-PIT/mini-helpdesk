@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Ticket für Kunde erstellen - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        Ticket für Kunde erstellen (z.B. telefonische Anfrage)
+    </div>
+
+    <div style="background: #e3f2fd; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
+        <strong>ℹ️ Information:</strong><br>
+        Sie erstellen ein Ticket im Namen eines Kunden. Der Kunde muss bereits im System registriert sein.
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            {{ form.customer_email.label_tag }}
+            {{ form.customer_email }}
+            {% if form.customer_email.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.customer_email.errors }}
+                </div>
+            {% endif %}
+            <small style="color: #868e96;">{{ form.customer_email.help_text }}</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.title.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.description.errors }}
+                </div>
+            {% endif %}
+            <small style="color: #868e96;">Beschreiben Sie das Problem des Kunden so detailliert wie möglich.</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.category.label_tag }}
+            {{ form.category }}
+            {% if form.category.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.category.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.priority.label_tag }}
+            {{ form.priority }}
+            {% if form.priority.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.priority.errors }}
+                </div>
+            {% endif %}
+            <small style="color: #868e96;">
+                <strong>Low:</strong> Nicht dringend |
+                <strong>Medium:</strong> Normale Priorität |
+                <strong>High:</strong> Dringend |
+                <strong>Critical:</strong> Sehr dringend
+            </small>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button type="submit" class="btn btn-primary">Ticket für Kunde erstellen</button>
+            <a href="{% url 'tickets:list' %}" class="btn btn-secondary">Abbrechen</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h3 style="margin-bottom: 15px; font-size: 16px;">Wichtige Hinweise:</h3>
+    <ul style="line-height: 1.8; color: #495057; padding-left: 20px;">
+        <li>Der Kunde erhält automatisch eine Benachrichtigung über das erstellte Ticket</li>
+        <li>Das System vermerkt intern, dass Sie dieses Ticket für den Kunden erstellt haben</li>
+        <li>Der Kunde kann das Ticket in seinem Dashboard sehen und Kommentare hinzufügen</li>
+        <li>Sie können sich das Ticket selbst zuweisen oder es im Pool lassen</li>
+    </ul>
+</div>
+{% endblock %}
