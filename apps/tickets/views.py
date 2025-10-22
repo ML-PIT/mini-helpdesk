@@ -24,10 +24,9 @@ def notify_agents_new_ticket(ticket):
     if not agents.exists():
         return
 
-    # Build ticket URL (assuming we're on localhost for dev)
-    ticket_url = f"{settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS else 'localhost:8000'}/tickets/{ticket.pk}/"
-    if not ticket_url.startswith('http'):
-        ticket_url = f"http://{ticket_url}"
+    # Build ticket URL using SITE_URL setting
+    site_url = settings.SITE_URL.rstrip('/')
+    ticket_url = f"{site_url}/tickets/{ticket.pk}/"
 
     subject = f'Neues Ticket: {ticket.ticket_number} - {ticket.title}'
 

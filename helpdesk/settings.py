@@ -24,6 +24,8 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# Site URL for email links
+SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8000')
 
 # Application definition
 

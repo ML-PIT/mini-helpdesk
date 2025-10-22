@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(python manage.py makemigrations tickets)",
-      "Bash(python manage.py migrate tickets)"
+      "Bash(python manage.py migrate tickets)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": [],
