@@ -72,58 +72,67 @@
         🎓 Top Trainer (die meisten Probleme)
     </h2>
 
-    {% if top_trainers %}
-    <div style="overflow-x: auto;">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Trainer</th>
-                    <th>E-Mail</th>
-                    <th style="text-align: center;">Ticket-Anzahl</th>
-                    <th style="text-align: center;">Hohe Priorität</th>
-                    <th style="text-align: center;">Ø Bearbeitungszeit</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for trainer in top_trainers %}
-                <tr style="{% if trainer.tickets >= 5 %}background: #fff3cd;{% endif %}">
-                    <td><strong>{{ trainer.name }}</strong></td>
-                    <td>{{ trainer.email }}</td>
-                    <td style="text-align: center;">
-                        <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 20px; font-weight: 600;">
-                            {{ trainer.tickets }}
-                        </span>
-                    </td>
-                    <td style="text-align: center;">
-                        {% if trainer.high_priority > 0 %}
-                            <span style="background: #ff6b6b; color: white; padding: 4px 10px; border-radius: 20px;">
-                                {{ trainer.high_priority }}
+    {% if total_tickets > 0 %}
+        {% if top_trainers %}
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Trainer</th>
+                        <th>E-Mail</th>
+                        <th style="text-align: center;">Ticket-Anzahl</th>
+                        <th style="text-align: center;">Hohe Priorität</th>
+                        <th style="text-align: center;">Ø Bearbeitungszeit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trainer in top_trainers %}
+                    <tr style="{% if trainer.tickets >= 5 %}background: #fff3cd;{% endif %}">
+                        <td><strong>{{ trainer.name }}</strong></td>
+                        <td>{{ trainer.email }}</td>
+                        <td style="text-align: center;">
+                            <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 20px; font-weight: 600;">
+                                {{ trainer.tickets }}
                             </span>
-                        {% else %}
-                            <span style="color: #868e96;">0</span>
-                        {% endif %}
-                    </td>
-                    <td style="text-align: center;">
-                        {% if trainer.avg_days != 'N/A' %}
-                            {{ trainer.avg_days }} Tage
-                        {% else %}
-                            <span style="color: #868e96;">N/A</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                        </td>
+                        <td style="text-align: center;">
+                            {% if trainer.high_priority > 0 %}
+                                <span style="background: #ff6b6b; color: white; padding: 4px 10px; border-radius: 20px;">
+                                    {{ trainer.high_priority }}
+                                </span>
+                            {% else %}
+                                <span style="color: #868e96;">0</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            {% if trainer.avg_days != 'N/A' %}
+                                {{ trainer.avg_days }} Tage
+                            {% else %}
+                                <span style="color: #868e96;">N/A</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-    <div style="background: #e7f5ff; border-left: 4px solid #667eea; padding: 15px; border-radius: 4px; margin-top: 15px;">
-        <p style="margin: 0; color: #495057; font-size: 14px;">
-            <strong>💡 Hinweis:</strong> Trainer mit vielen Tickets könnten von zusätzlicher Schulung profitieren.
-            Hohe Priorität und lange Bearbeitungszeiten deuten auf Probleme mit spezifischem Klassenzimmer-Equipment hin.
+        <div style="background: #e7f5ff; border-left: 4px solid #667eea; padding: 15px; border-radius: 4px; margin-top: 15px;">
+            <p style="margin: 0; color: #495057; font-size: 14px;">
+                <strong>💡 Hinweis:</strong> Trainer mit vielen Tickets könnten von zusätzlicher Schulung profitieren.
+                Hohe Priorität und lange Bearbeitungszeiten deuten auf Probleme mit spezifischem Klassenzimmer-Equipment hin.
+            </p>
+        </div>
+        {% else %}
+        <p style="color: #868e96; text-align: center; padding: 30px;">Keine Trainer-Daten verfügbar.</p>
+        {% endif %}
+    {% else %}
+    <div style="background: #e8f5e9; border-left: 4px solid #51cf66; padding: 20px; border-radius: 6px; text-align: center;">
+        <p style="color: #495057; margin: 0; font-size: 16px;">
+            <strong>📋 Noch keine Daten verfügbar</strong><br>
+            <span style="color: #868e96; font-size: 14px;">Erstellen und schließen Sie einige Tickets, um Statistiken zu sehen.</span>
         </p>
     </div>
-    {% else %}
-    <p style="color: #868e96; text-align: center; padding: 30px;">Keine Trainer-Daten verfügbar.</p>
     {% endif %}
 </div>
 

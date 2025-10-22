@@ -356,7 +356,8 @@ def statistics_dashboard(request):
     if request.user.role not in ['admin', 'support_agent']:
         return HttpResponseForbidden('Sie haben keine Berechtigung, diese Seite zu sehen.')
 
-    from django.db.models import Count, Q
+    from django.db.models import Count, Q, F, Value
+    from django.db.models.functions import Concat
     from apps.accounts.models import User
     from .models import MobileClassroom, MobileClassroomLocation
 
@@ -365,10 +366,10 @@ def statistics_dashboard(request):
         models.Q(status='closed') | models.Q(status='resolved')
     ).select_related('created_by', 'category', 'mobile_classroom')
 
-    # Statistics per trainer/customer
+    # Statistics per trainer/customer - use Concat for full_name
     trainer_stats = (
         all_tickets
-        .values('created_by__id', 'created_by__full_name', 'created_by__email')
+        .values('created_by__id', 'created_by__email', 'created_by__first_name', 'created_by__last_name')
         .annotate(
             total_tickets=Count('id'),
             high_priority=Count('id', filter=models.Q(priority__in=['high', 'critical'])),
@@ -380,12 +381,14 @@ def statistics_dashboard(request):
         .order_by('-total_tickets')
     )
 
-    # Convert duration to days
+    # Convert duration to days and create full_name display
     for stat in trainer_stats:
         if stat.get('avg_resolution_days'):
             stat['avg_resolution_days_display'] = stat['avg_resolution_days'].days
         else:
             stat['avg_resolution_days_display'] = 'N/A'
+        # Create full_name from first_name and last_name
+        stat['full_name'] = f"{stat['created_by__first_name']} {stat['created_by__last_name']}"
 
     # Most common issues/categories
     category_stats = (
@@ -417,7 +420,7 @@ def statistics_dashboard(request):
     top_problematic_trainers = [
         {
             'id': stat['created_by__id'],
-            'name': stat['created_by__full_name'],
+            'name': stat['full_name'],
             'email': stat['created_by__email'],
             'tickets': stat['total_tickets'],
             'high_priority': stat['high_priority'],
