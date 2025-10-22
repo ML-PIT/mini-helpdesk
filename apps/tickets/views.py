@@ -9,12 +9,11 @@ from django.db import models
 from .models import Ticket, TicketComment, Category
 from .forms import TicketCreateForm, TicketCommentForm, AgentTicketCreateForm
 from .ai_service import ai_service
+from apps.accounts.models import User
 
 
 def notify_agents_new_ticket(ticket):
     """Send email notification to all agents about new ticket"""
-    from apps.accounts.models import User
-
     # Get all agents (not admins, not the ticket creator)
     agents = User.objects.filter(
         role='support_agent',
@@ -97,7 +96,6 @@ def ticket_create(request):
         if request.method == 'POST':
             form = AgentTicketCreateForm(request.POST, request.FILES)
             if form.is_valid():
-                from apps.accounts.models import User
                 customer_email = form.cleaned_data.get('customer_email')
 
                 try:
@@ -283,8 +281,6 @@ def ticket_escalate(request, pk):
         new_level = request.POST.get('support_level')
         reason = request.POST.get('reason', '')
 
-        from apps.accounts.models import User
-
         # Change assigned agent and/or support level
         if new_agent_id:
             new_agent = get_object_or_404(User, pk=new_agent_id)
@@ -317,7 +313,6 @@ def ticket_escalate(request, pk):
         return redirect('tickets:detail', pk=ticket.pk)
 
     # Get available agents for escalation (higher support level than current user)
-    from apps.accounts.models import User
     if request.user.role == 'admin':
         # Admins can escalate to anyone
         agents = User.objects.filter(
@@ -390,7 +385,6 @@ def statistics_dashboard(request):
 
     from django.db.models import Count, Q, F, Value
     from django.db.models.functions import Concat
-    from apps.accounts.models import User
     from .models import MobileClassroom, MobileClassroomLocation
 
     # Get filter from request
