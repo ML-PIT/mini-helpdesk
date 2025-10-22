@@ -69,13 +69,11 @@ Diese Email wurde automatisch vom ML Gruppe Helpdesk System gesendet.
 def ticket_list(request):
     """List tickets based on user role"""
     if request.user.role == 'customer':
-        # Customers only see their own tickets
+        # Customers only see their own tickets (including closed)
         tickets = Ticket.objects.filter(created_by=request.user).order_by('-created_at')
     elif request.user.role == 'support_agent':
-        # Agents see assigned tickets or all open unassigned tickets
-        tickets = Ticket.objects.filter(
-            models.Q(assigned_to=request.user) | models.Q(assigned_to__isnull=True, status='open')
-        ).order_by('-created_at')
+        # Agents see all tickets (assigned, unassigned, and closed)
+        tickets = Ticket.objects.all().order_by('-created_at')
     else:  # admin
         # Admins see all tickets
         tickets = Ticket.objects.all().order_by('-created_at')
@@ -352,8 +350,8 @@ def ticket_close(request, pk):
 @login_required
 def statistics_dashboard(request):
     """Statistics dashboard for trainers/customers and classroom issues"""
-    # Only admins and support agents can view statistics
-    if request.user.role not in ['admin', 'support_agent']:
+    # Only support agents can view statistics
+    if request.user.role != 'support_agent':
         return HttpResponseForbidden('Sie haben keine Berechtigung, diese Seite zu sehen.')
 
     from django.db.models import Count, Q, F, Value
@@ -361,10 +359,17 @@ def statistics_dashboard(request):
     from apps.accounts.models import User
     from .models import MobileClassroom, MobileClassroomLocation
 
+    # Get filter from request
+    category_filter = request.GET.get('category')
+
     # Get all closed and resolved tickets for analysis
     all_tickets = Ticket.objects.filter(
         models.Q(status='closed') | models.Q(status='resolved')
     ).select_related('created_by', 'category', 'mobile_classroom')
+
+    # Apply category filter if provided
+    if category_filter:
+        all_tickets = all_tickets.filter(category_id=category_filter)
 
     # Statistics per trainer/customer - use Concat for full_name
     trainer_stats = (
@@ -430,6 +435,9 @@ def statistics_dashboard(request):
         for stat in trainer_stats[:10]
     ]
 
+    # Get all categories for filter dropdown
+    all_categories = Category.objects.filter(is_active=True).order_by('name')
+
     context = {
         'total_tickets': all_tickets.count(),
         'trainer_stats': trainer_stats,
@@ -437,6 +445,8 @@ def statistics_dashboard(request):
         'classroom_stats': classroom_stats,
         'priority_stats': priority_stats,
         'top_trainers': top_problematic_trainers,
+        'all_categories': all_categories,
+        'selected_category': category_filter,
     }
 
     return render(request, 'tickets/statistics.html', context)

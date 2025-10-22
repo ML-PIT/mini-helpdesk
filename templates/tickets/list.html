@@ -34,6 +34,7 @@
                 <th>Klassenraum</th>
                 {% endif %}
                 <th>Erstellt am</th>
+                <th>Geschlossen am</th>
                 <th>Aktion</th>
             </tr>
         </thead>
@@ -90,6 +91,13 @@
                 </td>
                 {% endif %}
                 <td>{{ ticket.created_at|date:"d.m.Y H:i" }}</td>
+                <td>
+                    {% if ticket.closed_at %}
+                        {{ ticket.closed_at|date:"d.m.Y H:i" }}
+                    {% else %}
+                        <span style="color: #868e96;">-</span>
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{% url 'tickets:detail' ticket.pk %}" class="btn btn-sm btn-primary">Ansehen</a>
                 </td>

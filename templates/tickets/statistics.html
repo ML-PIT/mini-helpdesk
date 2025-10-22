@@ -42,9 +42,30 @@
     }
 </style>
 
-<h1 style="font-size: 28px; font-weight: 600; margin-bottom: 20px;">
-    Statistiken & Analysen
-</h1>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1 style="font-size: 28px; font-weight: 600; margin: 0;">
+        Statistiken & Analysen
+    </h1>
+</div>
+
+<!-- Category Filter -->
+<div class="card" style="margin-bottom: 20px; background: #f8f9fa;">
+    <form method="get" style="display: flex; gap: 15px; align-items: center;">
+        <label for="category" style="font-weight: 600; margin: 0;">Filter nach Kategorie:</label>
+        <select name="category" id="category" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+            <option value="">-- Alle Kategorien --</option>
+            {% for category in all_categories %}
+                <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary" style="padding: 8px 20px; white-space: nowrap;">Filtern</button>
+        {% if selected_category %}
+            <a href="{% url 'tickets:statistics' %}" class="btn btn-secondary" style="padding: 8px 20px; white-space: nowrap;">Filter löschen</a>
+        {% endif %}
+    </form>
+</div>
 
 <!-- Key Statistics -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
