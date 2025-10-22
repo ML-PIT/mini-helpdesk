@@ -5,3 +5,7 @@ class TicketsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.tickets'
     verbose_name = 'Ticket-System'
+
+    def ready(self):
+        """Import signals when app is ready"""
+        import apps.tickets.signals  # noqa
