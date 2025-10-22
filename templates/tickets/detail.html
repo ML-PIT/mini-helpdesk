@@ -47,10 +47,13 @@
             <button type="button" class="btn btn-info btn-sm" onclick="document.getElementById('assignModal').style.display='block';">Agent zuweisen</button>
             {% endif %}
 
-            <!-- Escalate and close buttons -->
-            {% if ticket.assigned_to == user or user.role == 'admin' or user.support_level == 4 %}
-            <a href="{% url 'tickets:escalate' ticket.pk %}" class="btn btn-warning btn-sm">Eskalieren</a>
+            <!-- Escalate button for agents working on ticket -->
+            {% if ticket.assigned_to == user and user.role == 'support_agent' %}
+            <a href="{% url 'tickets:escalate' ticket.pk %}" class="btn btn-warning btn-sm">Nach oben eskalieren</a>
+            {% endif %}
 
+            <!-- Close button for assigned agent, team lead, or admin -->
+            {% if ticket.assigned_to == user or user.role == 'admin' or user.support_level == 4 %}
             <form method="post" action="{% url 'tickets:close' ticket.pk %}" style="margin: 0;" onsubmit="return confirm('Ticket wirklich schließen? Der Verlauf wird an den Kunden gesendet.');">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger btn-sm">Schließen</button>
