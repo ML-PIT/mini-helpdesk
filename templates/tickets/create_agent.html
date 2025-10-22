@@ -74,6 +74,17 @@
             </small>
         </div>
 
+        <div class="form-group">
+            {{ form.mobile_classroom.label_tag }}
+            {{ form.mobile_classroom }}
+            {% if form.mobile_classroom.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.mobile_classroom.errors }}
+                </div>
+            {% endif %}
+            <small style="color: #868e96;">Wählen Sie den mobilen Klassenraum, auf den sich die Anfrage bezieht (optional).</small>
+        </div>
+
         <div style="display: flex; gap: 10px; margin-top: 30px;">
             <button type="submit" class="btn btn-primary">Ticket für Kunde erstellen</button>
             <a href="{% url 'tickets:list' %}" class="btn btn-secondary">Abbrechen</a>
