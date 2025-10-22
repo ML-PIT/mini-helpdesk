@@ -375,8 +375,9 @@ def statistics_dashboard(request):
             high_priority=Count('id', filter=models.Q(priority__in=['high', 'critical'])),
             avg_resolution_days=models.Avg(
                 models.F('resolved_at') - models.F('created_at'),
-                output_field=models.DurationField()
-            ) if all_tickets.filter(resolved_at__isnull=False).exists() else None
+                output_field=models.DurationField(),
+                filter=models.Q(resolved_at__isnull=False)
+            )
         )
         .order_by('-total_tickets')
     )
