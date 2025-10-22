@@ -6,6 +6,60 @@ import random
 import base64
 
 
+class MobileClassroomLocation(models.Model):
+    """Location/site where mobile classrooms are deployed"""
+
+    name = models.CharField(_('location name'), max_length=100, unique=True)
+    description = models.TextField(_('description'), blank=True)
+    address = models.CharField(_('address'), max_length=255, blank=True)
+    city = models.CharField(_('city'), max_length=100, blank=True)
+    created_at = models.DateTimeField(_('created at'), default=timezone.now)
+
+    class Meta:
+        verbose_name = _('mobile classroom location')
+        verbose_name_plural = _('mobile classroom locations')
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class MobileClassroom(models.Model):
+    """Mobile classroom equipment/resource"""
+
+    name = models.CharField(_('name'), max_length=100, unique=True)
+    description = models.TextField(_('description'), blank=True)
+    location = models.ForeignKey(MobileClassroomLocation,
+                                on_delete=models.SET_NULL,
+                                null=True, blank=True,
+                                related_name='classrooms',
+                                verbose_name=_('location'))
+    equipment_type = models.CharField(_('equipment type'), max_length=100, blank=True,
+                                     help_text='e.g., Laptop Cart, Projector Setup, etc.')
+    serial_number = models.CharField(_('serial number'), max_length=100, blank=True, unique=True)
+    is_active = models.BooleanField(_('active'), default=True)
+    created_at = models.DateTimeField(_('created at'), default=timezone.now)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    class Meta:
+        verbose_name = _('mobile classroom')
+        verbose_name_plural = _('mobile classrooms')
+        ordering = ['name']
+
+    def __str__(self):
+        return f'{self.name} ({self.location.name if self.location else "No Location"})'
+
+    def get_issue_count(self):
+        """Get total number of issues reported for this classroom"""
+        return self.tickets.count()
+
+    def get_recent_issues(self, days=30):
+        """Get recent issues for this classroom"""
+        from datetime import timedelta
+        cutoff_date = timezone.now() - timedelta(days=days)
+        return self.tickets.filter(created_at__gte=cutoff_date)
+
+
 class Category(models.Model):
     """Ticket categories for organization"""
 
@@ -89,6 +143,12 @@ class Ticket(models.Model):
                                 related_name='tickets',
                                 verbose_name=_('category'),
                                 db_index=True)
+    mobile_classroom = models.ForeignKey(MobileClassroom,
+                                        on_delete=models.SET_NULL,
+                                        null=True, blank=True,
+                                        related_name='tickets',
+                                        verbose_name=_('mobile classroom'),
+                                        db_index=True)
 
     # Status and priority
     status = models.CharField(_('status'), max_length=20, choices=STATUS_CHOICES,
@@ -241,6 +301,8 @@ class Ticket(models.Model):
             'creator': self.created_by.to_dict() if self.created_by else None,
             'assignee': self.assigned_to.to_dict() if self.assigned_to else None,
             'category': self.category.name if self.category else None,
+            'mobile_classroom': self.mobile_classroom.name if self.mobile_classroom else None,
+            'location': self.mobile_classroom.location.name if self.mobile_classroom and self.mobile_classroom.location else None,
             'sla_due_date': self.sla_due_date.isoformat() if self.sla_due_date else None,
             'sla_breached': self.sla_breached
         }

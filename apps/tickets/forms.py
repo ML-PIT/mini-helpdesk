@@ -7,7 +7,7 @@ class TicketCreateForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        fields = ['title', 'description', 'category', 'priority']
+        fields = ['title', 'description', 'category', 'priority', 'mobile_classroom']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -20,12 +20,14 @@ class TicketCreateForm(forms.ModelForm):
             }),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'priority': forms.Select(attrs={'class': 'form-control'}),
+            'mobile_classroom': forms.Select(attrs={'class': 'form-control'}),
         }
         labels = {
             'title': 'Titel',
             'description': 'Beschreibung',
             'category': 'Kategorie',
             'priority': 'Priorität',
+            'mobile_classroom': 'Mobiler Klassenraum (optional)',
         }
 
 
@@ -43,7 +45,7 @@ class AgentTicketCreateForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        fields = ['title', 'description', 'category', 'priority']
+        fields = ['title', 'description', 'category', 'priority', 'mobile_classroom']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -56,12 +58,14 @@ class AgentTicketCreateForm(forms.ModelForm):
             }),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'priority': forms.Select(attrs={'class': 'form-control'}),
+            'mobile_classroom': forms.Select(attrs={'class': 'form-control'}),
         }
         labels = {
             'title': 'Titel',
             'description': 'Beschreibung',
             'category': 'Kategorie',
             'priority': 'Priorität',
+            'mobile_classroom': 'Mobiler Klassenraum (optional)',
         }
 
 

@@ -83,6 +83,19 @@
             <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Kategorie</p>
             <p style="font-weight: 500;">{{ ticket.category.name|default:"Keine" }}</p>
         </div>
+        <div>
+            <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Mobiler Klassenraum</p>
+            <p style="font-weight: 500;">
+                {% if ticket.mobile_classroom %}
+                    {{ ticket.mobile_classroom.name }}
+                    {% if ticket.mobile_classroom.location %}
+                        <br><span style="font-size: 12px; color: #868e96;">({{ ticket.mobile_classroom.location.name }})</span>
+                    {% endif %}
+                {% else %}
+                    <span style="color: #868e96;">Nicht angegeben</span>
+                {% endif %}
+            </p>
+        </div>
         {% if ticket.closed_at %}
         <div>
             <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Geschlossen am</p>

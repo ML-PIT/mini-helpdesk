@@ -31,6 +31,7 @@
                 {% if user.role != 'customer' %}
                 <th>Erstellt von</th>
                 <th>Zugewiesen an</th>
+                <th>Klassenraum</th>
                 {% endif %}
                 <th>Erstellt am</th>
                 <th>Aktion</th>
@@ -78,6 +79,13 @@
                         {{ ticket.assigned_to.full_name }}
                     {% else %}
                         <span style="color: #868e96;">Nicht zugewiesen</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if ticket.mobile_classroom %}
+                        {{ ticket.mobile_classroom.name }}
+                    {% else %}
+                        <span style="color: #868e96;">-</span>
                     {% endif %}
                 </td>
                 {% endif %}

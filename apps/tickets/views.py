@@ -347,3 +347,92 @@ def ticket_close(request, pk):
             return redirect('tickets:detail', pk=ticket.pk)
 
     return HttpResponseForbidden('Keine Berechtigung')
+
+
+@login_required
+def statistics_dashboard(request):
+    """Statistics dashboard for trainers/customers and classroom issues"""
+    # Only admins and support agents can view statistics
+    if request.user.role not in ['admin', 'support_agent']:
+        return HttpResponseForbidden('Sie haben keine Berechtigung, diese Seite zu sehen.')
+
+    from django.db.models import Count, Q
+    from apps.accounts.models import User
+    from .models import MobileClassroom, MobileClassroomLocation
+
+    # Get all closed and resolved tickets for analysis
+    all_tickets = Ticket.objects.filter(
+        models.Q(status='closed') | models.Q(status='resolved')
+    ).select_related('created_by', 'category', 'mobile_classroom')
+
+    # Statistics per trainer/customer
+    trainer_stats = (
+        all_tickets
+        .values('created_by__id', 'created_by__full_name', 'created_by__email')
+        .annotate(
+            total_tickets=Count('id'),
+            high_priority=Count('id', filter=models.Q(priority__in=['high', 'critical'])),
+            avg_resolution_days=models.Avg(
+                models.F('resolved_at') - models.F('created_at'),
+                output_field=models.DurationField()
+            ) if all_tickets.filter(resolved_at__isnull=False).exists() else None
+        )
+        .order_by('-total_tickets')
+    )
+
+    # Convert duration to days
+    for stat in trainer_stats:
+        if stat.get('avg_resolution_days'):
+            stat['avg_resolution_days_display'] = stat['avg_resolution_days'].days
+        else:
+            stat['avg_resolution_days_display'] = 'N/A'
+
+    # Most common issues/categories
+    category_stats = (
+        all_tickets
+        .values('category__id', 'category__name')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+        .exclude(category__isnull=True)[:10]
+    )
+
+    # Mobile classroom issues
+    classroom_stats = (
+        all_tickets
+        .filter(mobile_classroom__isnull=False)
+        .values('mobile_classroom__id', 'mobile_classroom__name', 'mobile_classroom__location__name')
+        .annotate(count=Count('id'))
+        .order_by('-count')[:10]
+    )
+
+    # Priority distribution
+    priority_stats = (
+        all_tickets
+        .values('priority')
+        .annotate(count=Count('id'))
+        .order_by('priority')
+    )
+
+    # Get top problematic trainers (those with most issues)
+    top_problematic_trainers = [
+        {
+            'id': stat['created_by__id'],
+            'name': stat['created_by__full_name'],
+            'email': stat['created_by__email'],
+            'tickets': stat['total_tickets'],
+            'high_priority': stat['high_priority'],
+            'avg_days': stat['avg_resolution_days_display']
+        }
+        for stat in trainer_stats[:10]
+    ]
+
+    context = {
+        'total_tickets': all_tickets.count(),
+        'trainer_stats': trainer_stats,
+        'category_stats': category_stats,
+        'classroom_stats': classroom_stats,
+        'priority_stats': priority_stats,
+        'top_trainers': top_problematic_trainers,
+    }
+
+    return render(request, 'tickets/statistics.html', context)

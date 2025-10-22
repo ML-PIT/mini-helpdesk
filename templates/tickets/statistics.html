@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+
+{% block title %}Statistiken - ML Gruppe Helpdesk{% endblock %}
+
+{% block content %}
+<style>
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card.green {
+        background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);
+    }
+
+    .stat-card.orange {
+        background: linear-gradient(135deg, #ffa94d 0%, #ff922b 100%);
+    }
+
+    .stat-card.red {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    }
+
+    .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<h1 style="font-size: 28px; font-weight: 600; margin-bottom: 20px;">
+    Statistiken & Analysen
+</h1>
+
+<!-- Key Statistics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+    <div class="stat-card">
+        <div class="stat-number">{{ total_tickets }}</div>
+        <div class="stat-label">Geschlossene/Gelöste Tickets</div>
+    </div>
+    <div class="stat-card green">
+        <div class="stat-number">{{ trainer_stats|length }}</div>
+        <div class="stat-label">Trainer/Kunden mit Tickets</div>
+    </div>
+    <div class="stat-card orange">
+        <div class="stat-number">{{ category_stats|length }}</div>
+        <div class="stat-label">Problem-Kategorien</div>
+    </div>
+    <div class="stat-card red">
+        <div class="stat-number">{{ classroom_stats|length }}</div>
+        <div class="stat-label">Betroffene Klassenräume</div>
+    </div>
+</div>
+
+<!-- Top Trainers with Most Issues -->
+<div class="card" style="margin-bottom: 30px;">
+    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 15px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+        🎓 Top Trainer (die meisten Probleme)
+    </h2>
+
+    {% if top_trainers %}
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Trainer</th>
+                    <th>E-Mail</th>
+                    <th style="text-align: center;">Ticket-Anzahl</th>
+                    <th style="text-align: center;">Hohe Priorität</th>
+                    <th style="text-align: center;">Ø Bearbeitungszeit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trainer in top_trainers %}
+                <tr style="{% if trainer.tickets >= 5 %}background: #fff3cd;{% endif %}">
+                    <td><strong>{{ trainer.name }}</strong></td>
+                    <td>{{ trainer.email }}</td>
+                    <td style="text-align: center;">
+                        <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 20px; font-weight: 600;">
+                            {{ trainer.tickets }}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        {% if trainer.high_priority > 0 %}
+                            <span style="background: #ff6b6b; color: white; padding: 4px 10px; border-radius: 20px;">
+                                {{ trainer.high_priority }}
+                            </span>
+                        {% else %}
+                            <span style="color: #868e96;">0</span>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">
+                        {% if trainer.avg_days != 'N/A' %}
+                            {{ trainer.avg_days }} Tage
+                        {% else %}
+                            <span style="color: #868e96;">N/A</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="background: #e7f5ff; border-left: 4px solid #667eea; padding: 15px; border-radius: 4px; margin-top: 15px;">
+        <p style="margin: 0; color: #495057; font-size: 14px;">
+            <strong>💡 Hinweis:</strong> Trainer mit vielen Tickets könnten von zusätzlicher Schulung profitieren.
+            Hohe Priorität und lange Bearbeitungszeiten deuten auf Probleme mit spezifischem Klassenzimmer-Equipment hin.
+        </p>
+    </div>
+    {% else %}
+    <p style="color: #868e96; text-align: center; padding: 30px;">Keine Trainer-Daten verfügbar.</p>
+    {% endif %}
+</div>
+
+<!-- Most Common Issues -->
+<div class="card" style="margin-bottom: 30px;">
+    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 15px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+        🔴 Häufigste Fehler/Probleme
+    </h2>
+
+    {% if category_stats %}
+    <div style="display: grid; gap: 15px;">
+        {% for stat in category_stats %}
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <strong style="color: #495057;">{{ stat.category__name }}</strong>
+                    <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 20px; font-weight: 600;">
+                        {{ stat.count }} Tickets
+                    </span>
+                </div>
+                <div style="background: #e9ecef; border-radius: 4px; height: 20px; overflow: hidden;">
+                    {% widthratio stat.count max_category_count 100 %}
+                    <div style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: {{ stat_percent }}%; transition: width 0.3s ease;"></div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 4px; margin-top: 15px;">
+        <p style="margin: 0; color: #495057; font-size: 14px;">
+            <strong>🎯 Aktion:</strong> Fokussieren Sie Wartungs- und Update-Anstrengungen auf diese Kategorien.
+            Häufige Fehler könnten auf Systemprobleme hindeuten, die zentral gelöst werden können.
+        </p>
+    </div>
+    {% else %}
+    <p style="color: #868e96; text-align: center; padding: 30px;">Keine Problem-Kategorien verfügbar.</p>
+    {% endif %}
+</div>
+
+<!-- Problematic Classrooms -->
+<div class="card" style="margin-bottom: 30px;">
+    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 15px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+        🖥️ Klassenräume mit meisten Fehlern
+    </h2>
+
+    {% if classroom_stats %}
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Klassenraum</th>
+                    <th>Standort</th>
+                    <th style="text-align: center;">Fehleranzahl</th>
+                    <th style="text-align: center;">Kritikalität</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in classroom_stats %}
+                <tr style="{% if stat.count >= 3 %}background: #ffe0e0;{% endif %}">
+                    <td><strong>{{ stat.mobile_classroom__name }}</strong></td>
+                    <td>{{ stat.mobile_classroom__location__name|default:"Unbekannt" }}</td>
+                    <td style="text-align: center;">
+                        <span style="background: #ff922b; color: white; padding: 4px 10px; border-radius: 20px; font-weight: 600;">
+                            {{ stat.count }}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        {% if stat.count >= 5 %}
+                            <span style="background: #ff6b6b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                KRITISCH
+                            </span>
+                        {% elif stat.count >= 3 %}
+                            <span style="background: #ffc107; color: #333; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                HOCH
+                            </span>
+                        {% else %}
+                            <span style="background: #51cf66; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                MITTEL
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div style="background: #ffe0e0; border-left: 4px solid #ff6b6b; padding: 15px; border-radius: 4px; margin-top: 15px;">
+        <p style="margin: 0; color: #495057; font-size: 14px;">
+            <strong>🔧 Wartung erforderlich:</strong> Diese Klassenräume benötigen gezielte Wartung oder Hardware-Upgrades.
+            Priorisieren Sie Wartungsarbeiten bei Geräten mit hohen Fehlerzahlen.
+        </p>
+    </div>
+    {% else %}
+    <p style="color: #868e96; text-align: center; padding: 30px;">Keine Klassenraum-Daten verfügbar.</p>
+    {% endif %}
+</div>
+
+<!-- Priority Distribution -->
+<div class="card">
+    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 15px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+        ⚡ Prioritätsverteilung
+    </h2>
+
+    {% if priority_stats %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+        {% for stat in priority_stats %}
+        <div style="padding: 15px; border-radius: 8px;
+                    {% if stat.priority == 'critical' %}background: #ffe0e0; border: 1px solid #ff6b6b;
+                    {% elif stat.priority == 'high' %}background: #ffe0b2; border: 1px solid #ffa500;
+                    {% elif stat.priority == 'medium' %}background: #fff9c4; border: 1px solid #ffc107;
+                    {% else %}background: #e8f5e9; border: 1px solid #51cf66;
+                    {% endif %}">
+            <div style="font-size: 24px; font-weight: 700; margin-bottom: 5px;">
+                {{ stat.count }}
+            </div>
+            <div style="font-size: 14px; font-weight: 500;">
+                {% if stat.priority == 'critical' %}Kritisch
+                {% elif stat.priority == 'high' %}Hoch
+                {% elif stat.priority == 'medium' %}Mittel
+                {% else %}Niedrig
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="color: #868e96; text-align: center; padding: 30px;">Keine Prioritäts-Daten verfügbar.</p>
+    {% endif %}
+</div>
+
+<!-- Back Button -->
+<div style="margin-top: 30px;">
+    <a href="{% url 'tickets:list' %}" class="btn btn-secondary">← Zurück zu Tickets</a>
+</div>
+
+<script>
+    // Calculate max category count for bar width calculation
+    const categories = {{ category_stats|safe }};
+    let maxCount = 0;
+    categories.forEach(cat => {
+        if (cat.count > maxCount) maxCount = cat.count;
+    });
+</script>
+
+{% endblock %}

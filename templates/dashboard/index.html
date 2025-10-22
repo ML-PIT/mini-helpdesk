@@ -93,10 +93,18 @@
                 <div style="font-size: 32px; margin-bottom: 10px;">📋</div>
                 Alle Tickets
             </a>
+            <a href="{% url 'tickets:statistics' %}" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">📊</div>
+                Statistiken
+            </a>
         {% else %}
             <a href="{% url 'tickets:list' %}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
                 <div style="font-size: 32px; margin-bottom: 10px;">📋</div>
                 Alle Tickets
+            </a>
+            <a href="{% url 'tickets:statistics' %}" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">📊</div>
+                Statistiken
             </a>
             <a href="/admin/" style="background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
                 <div style="font-size: 32px; margin-bottom: 10px;">⚙️</div>
