@@ -64,6 +64,73 @@ Diese Email wurde automatisch vom ML Gruppe Helpdesk System gesendet.
         print(f"Failed to send notification email: {e}")
 
 
+def notify_agent_ticket_escalation(ticket, escalated_from_agent, escalated_to_agent, reason=''):
+    """Send email notification to agent when ticket is escalated to them"""
+    if not escalated_to_agent or not escalated_to_agent.email:
+        return
+
+    # Build ticket URL using SITE_URL setting
+    site_url = settings.SITE_URL.rstrip('/')
+    ticket_url = f"{site_url}/tickets/{ticket.pk}/"
+
+    # Get priority display
+    priority_display = ticket.get_priority_display()
+
+    # Priority urgency mapping
+    urgency_map = {
+        'critical': '🔴 KRITISCH - Sofortige Aktion erforderlich',
+        'high': '🟠 HOCH - Baldige Bearbeitung erforderlich',
+        'medium': '🟡 MITTEL - Normale Priorität',
+        'low': '🟢 NIEDRIG - Kann in Ruhe bearbeitet werden'
+    }
+
+    urgency_text = urgency_map.get(ticket.priority, priority_display)
+
+    subject = f'ESKALIERT: Ticket {ticket.ticket_number} - {ticket.title} ({priority_display})'
+
+    message = f"""Hallo {escalated_to_agent.first_name},
+
+ein Ticket wurde zu Ihnen eskaliert:
+
+{'=' * 70}
+DRINGLICHKEIT: {urgency_text}
+{'=' * 70}
+
+Ticket-Nummer: {ticket.ticket_number}
+Titel: {ticket.title}
+Priorität: {priority_display}
+Kategorie: {ticket.category.name if ticket.category else 'Keine'}
+Erstellt von: {ticket.created_by.full_name} ({ticket.created_by.email})
+Telefonnummer Kunde: {ticket.created_by.phone if ticket.created_by.phone else 'Nicht angegeben'}
+Erstellt am: {ticket.created_at.strftime('%d.%m.%Y %H:%M')}
+Eskaliert von: {escalated_from_agent.full_name if escalated_from_agent else 'System'}
+
+Beschreibung:
+{ticket.description}
+"""
+
+    if reason:
+        message += f"\nEskalations-Grund:\n{reason}\n"
+
+    message += f"""
+Ticket ansehen: {ticket_url}
+
+---
+Diese Email wurde automatisch vom ML Gruppe Helpdesk System gesendet.
+"""
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[escalated_to_agent.email],
+            fail_silently=True,  # Don't break escalation if email fails
+        )
+    except Exception as e:
+        print(f"Failed to send escalation notification email: {e}")
+
+
 @login_required
 def ticket_list(request):
     """List tickets based on user role"""
@@ -97,32 +164,83 @@ def ticket_create(request):
             form = AgentTicketCreateForm(request.POST, request.FILES)
             if form.is_valid():
                 customer_email = form.cleaned_data.get('customer_email')
+                customer_first_name = form.cleaned_data.get('customer_first_name', '').strip()
+                customer_last_name = form.cleaned_data.get('customer_last_name', '').strip()
+                customer_phone = form.cleaned_data.get('customer_phone', '').strip()
 
                 try:
+                    # Try to get existing customer by email
                     customer = User.objects.get(email=customer_email)
-                    ticket = form.save(commit=False)
-                    ticket.created_by = customer
-                    ticket.save()
 
-                    # Set SLA based on priority
-                    ticket.set_priority_based_sla()
-                    ticket.save()
-
-                    # Add internal note that agent created this
-                    TicketComment.objects.create(
-                        ticket=ticket,
-                        author=request.user,
-                        content=f'Ticket wurde von {request.user.full_name} für Kunde {customer.full_name} erstellt (telefonische Anfrage).',
-                        is_internal=True
-                    )
-
-                    # Send notification emails to other agents
-                    notify_agents_new_ticket(ticket)
-
-                    messages.success(request, f'Ticket {ticket.ticket_number} wurde für {customer.full_name} erstellt!')
-                    return redirect('tickets:detail', pk=ticket.pk)
+                    # Update phone if provided
+                    if customer_phone and not customer.phone:
+                        customer.phone = customer_phone
+                        customer.save()
                 except User.DoesNotExist:
-                    messages.error(request, f'Kein Kunde mit der Email {customer_email} gefunden.')
+                    # If customer doesn't exist, create a new one (requires name)
+                    if not customer_first_name or not customer_last_name:
+                        messages.error(
+                            request,
+                            f'Kunde mit Email {customer_email} existiert nicht. '
+                            'Bitte geben Sie Vor- und Nachname ein, um einen neuen Kunden zu erstellen.'
+                        )
+                        return render(request, 'tickets/create_agent.html', {'form': form})
+
+                    # Create new customer user
+                    # Generate username from email (remove domain part)
+                    username = customer_email.split('@')[0]
+
+                    # Ensure username is unique by appending counter if needed
+                    base_username = username
+                    counter = 1
+                    while User.objects.filter(username=username).exists():
+                        username = f"{base_username}{counter}"
+                        counter += 1
+
+                    try:
+                        # Create new customer user with initial password
+                        INITIAL_PASSWORD = 'P@ssw0rd123'
+                        customer = User.objects.create_user(
+                            email=customer_email,
+                            username=username,
+                            password=INITIAL_PASSWORD,
+                            first_name=customer_first_name,
+                            last_name=customer_last_name,
+                            phone=customer_phone,  # Add phone number
+                            role='customer',
+                            force_password_change=True  # Force password change on first login
+                        )
+                        messages.info(
+                            request,
+                            f'Neuer Kunde "{customer.full_name}" wurde im System erstellt. '
+                            f'Initial-Passwort: {INITIAL_PASSWORD}'
+                        )
+                    except Exception as e:
+                        messages.error(request, f'Fehler beim Erstellen des Kunden: {str(e)}')
+                        return render(request, 'tickets/create_agent.html', {'form': form})
+
+                # Create ticket for customer
+                ticket = form.save(commit=False)
+                ticket.created_by = customer
+                ticket.save()
+
+                # Set SLA based on priority
+                ticket.set_priority_based_sla()
+                ticket.save()
+
+                # Add internal note that agent created this
+                TicketComment.objects.create(
+                    ticket=ticket,
+                    author=request.user,
+                    content=f'Ticket wurde von {request.user.full_name} für Kunde {customer.full_name} erstellt (telefonische Anfrage).',
+                    is_internal=True
+                )
+
+                # Send notification emails to other agents
+                notify_agents_new_ticket(ticket)
+
+                messages.success(request, f'Ticket {ticket.ticket_number} wurde für {customer.full_name} erstellt!')
+                return redirect('tickets:detail', pk=ticket.pk)
         else:
             form = AgentTicketCreateForm()
 
@@ -308,7 +426,11 @@ def ticket_escalate(request, pk):
             )
 
             ticket.save()
-            messages.success(request, f'Ticket wurde eskaliert an {new_agent.full_name}')
+
+            # Send email notification to escalated agent with urgency
+            notify_agent_ticket_escalation(ticket, old_agent, new_agent, reason)
+
+            messages.success(request, f'Ticket wurde eskaliert an {new_agent.full_name} und Email wurde versendet')
 
         return redirect('tickets:detail', pk=ticket.pk)
 

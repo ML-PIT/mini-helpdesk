@@ -3,12 +3,26 @@
 {% block title %}Neuen FAQ-Artikel erstellen{% endblock %}
 
 {% block content %}
+<!-- TinyMCE from CDN with API Key -->
+<script src="https://cdn.tiny.cloud/1/l47j582yk73zrmlkzf81ypxxpkngdenogqa9j3e56ezonmdb/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+  tinymce.init({
+    selector: '#content',
+    height: 500,
+    plugins: ['advlist autolink lists link image charmap print preview hr anchor pagebreak', 'searchreplace wordcount visualblocks visualchars code fullscreen', 'insertdatetime media nonbreaking save table contextmenu directionality', 'emoticons template paste textpattern help'],
+    toolbar: 'formatselect | bold italic strikethrough forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code',
+    automatic_uploads: true,
+    paste_data_images: true,
+    relative_urls: false,
+    language: 'de',
+  });
+</script>
+
 <div class="card">
     <div class="card-header">Neuen FAQ-Artikel erstellen</div>
 
     <form method="post">
         {% csrf_token %}
-
 
         <div class="form-group">
             <label for="title">Titel *</label>
@@ -21,8 +35,8 @@
         </div>
 
         <div class="form-group">
-            <label for="content">Inhalt *</label>
-            <textarea name="content" id="content" class="form-control" rows="12" required placeholder="Detaillierte Antwort oder Anleitung..."></textarea>
+            <label for="content">Inhalt * (mit TinyMCE Editor)</label>
+            <textarea name="content" id="content" class="form-control" required placeholder="Detaillierte Antwort oder Anleitung..."></textarea>
         </div>
 
         <div class="form-group">

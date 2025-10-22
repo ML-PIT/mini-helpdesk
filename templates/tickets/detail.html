@@ -99,6 +99,16 @@
             <p style="font-weight: 500;">{{ ticket.created_by.full_name }}</p>
         </div>
         <div>
+            <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Telefonnummer</p>
+            <p style="font-weight: 500;">
+                {% if ticket.created_by.phone %}
+                    <a href="tel:{{ ticket.created_by.phone }}" style="color: #667eea; text-decoration: none;">{{ ticket.created_by.phone }}</a>
+                {% else %}
+                    <span style="color: #868e96;">Nicht angegeben</span>
+                {% endif %}
+            </p>
+        </div>
+        <div>
             <p style="color: #868e96; font-size: 13px; margin-bottom: 5px;">Erstellt am</p>
             <p style="font-weight: 500;">{{ ticket.created_at|date:"d.m.Y H:i" }} Uhr</p>
         </div>

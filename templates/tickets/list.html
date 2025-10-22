@@ -3,6 +3,42 @@
 {% block title %}Tickets - ML Gruppe Helpdesk{% endblock %}
 
 {% block content %}
+<style>
+    .table-wrapper {
+        overflow-x: auto;
+        margin: -15px -15px -15px -15px;
+        padding: 15px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        padding: 12px 8px;
+        text-align: left;
+        border-bottom: 2px solid #e9ecef;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    .table td {
+        padding: 12px 8px;
+        border-bottom: 1px solid #e9ecef;
+        font-size: 14px;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+</style>
 <div class="flex justify-between" style="align-items: center; margin-bottom: 20px;">
     <h1 style="font-size: 28px; font-weight: 600;">
         {% if user.role == 'customer' %}
@@ -20,7 +56,8 @@
 
 {% if tickets %}
 <div class="card">
-    <table class="table">
+    <div class="table-wrapper">
+        <table class="table">
         <thead>
             <tr>
                 <th>Ticket-Nr.</th>
@@ -104,7 +141,8 @@
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+        </table>
+    </div>
 </div>
 {% else %}
 <div class="card">

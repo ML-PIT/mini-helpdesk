@@ -78,6 +78,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_('active'), default=True, db_index=True)
     is_staff = models.BooleanField(_('staff status'), default=False)
     email_verified = models.BooleanField(_('email verified'), default=False)
+    force_password_change = models.BooleanField(_('force password change on next login'),
+                                               default=False,
+                                               help_text=_('If True, user must change password on next login'))
     last_login = models.DateTimeField(_('last login'), null=True, blank=True)
     created_at = models.DateTimeField(_('created at'), default=timezone.now, db_index=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)

@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from .models import User
 
 
@@ -60,3 +62,35 @@ def register(request):
         return redirect('main:dashboard')
 
     return render(request, 'accounts/register.html')
+
+
+@login_required
+def change_password(request):
+    """
+    Change password view - especially for users who must change password on first login
+    """
+    force_change = request.user.force_password_change
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+
+            # If this was a forced password change, clear the flag
+            if force_change:
+                user.force_password_change = False
+                user.save()
+
+            # Keep the user logged in after password change
+            update_session_auth_hash(request, user)
+
+            messages.success(request, 'Ihr Passwort wurde erfolgreich geändert!')
+            return redirect('main:dashboard')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    context = {
+        'form': form,
+        'force_change': force_change,
+    }
+    return render(request, 'accounts/change_password.html', context)

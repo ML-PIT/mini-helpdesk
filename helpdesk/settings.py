@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third-party apps (optional - uncomment when installed)
+    # Third-party apps
     # 'rest_framework',
     # 'rest_framework.authtoken',
     # 'corsheaders',
@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.accounts.middleware.ForcePasswordChangeMiddleware',  # Check for forced password changes
 ]
 
 ROOT_URLCONF = 'helpdesk.urls'

@@ -40,7 +40,40 @@ class AgentTicketCreateForm(forms.ModelForm):
             'class': 'form-control',
             'placeholder': 'kunde@example.com'
         }),
-        help_text='Email-Adresse des Kunden (muss im System existieren)'
+        help_text='Email-Adresse des Kunden'
+    )
+
+    customer_first_name = forms.CharField(
+        label='Vorname des Kunden',
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Vorname (optional, falls noch nicht registriert)'
+        }),
+        help_text='Nur erforderlich, wenn der Kunde noch nicht im System existiert'
+    )
+
+    customer_last_name = forms.CharField(
+        label='Nachname des Kunden',
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nachname (optional, falls noch nicht registriert)'
+        }),
+        help_text='Nur erforderlich, wenn der Kunde noch nicht im System existiert'
+    )
+
+    customer_phone = forms.CharField(
+        label='Telefonnummer des Kunden',
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'z.B. +49 30 12345678 oder 030/12345678'
+        }),
+        help_text='Telefonnummer des Kunden (optional, aber empfohlen)'
     )
 
     class Meta:

@@ -10,7 +10,7 @@
 
     <div style="background: #e3f2fd; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
         <strong>ℹ️ Information:</strong><br>
-        Sie erstellen ein Ticket im Namen eines Kunden. Der Kunde muss bereits im System registriert sein.
+        Sie erstellen ein Ticket im Namen eines Kunden. Wenn der Kunde noch nicht im System registriert ist, können Sie ihn durch Angabe seines Namens selbst erstellen.
     </div>
 
     <form method="post" enctype="multipart/form-data">
@@ -25,6 +25,41 @@
                 </div>
             {% endif %}
             <small style="color: #868e96;">{{ form.customer_email.help_text }}</small>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+            <div class="form-group">
+                {{ form.customer_first_name.label_tag }}
+                {{ form.customer_first_name }}
+                {% if form.customer_first_name.errors %}
+                    <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                        {{ form.customer_first_name.errors }}
+                    </div>
+                {% endif %}
+                <small style="color: #868e96;">{{ form.customer_first_name.help_text }}</small>
+            </div>
+
+            <div class="form-group">
+                {{ form.customer_last_name.label_tag }}
+                {{ form.customer_last_name }}
+                {% if form.customer_last_name.errors %}
+                    <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                        {{ form.customer_last_name.errors }}
+                    </div>
+                {% endif %}
+                <small style="color: #868e96;">{{ form.customer_last_name.help_text }}</small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form.customer_phone.label_tag }}
+            {{ form.customer_phone }}
+            {% if form.customer_phone.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.customer_phone.errors }}
+                </div>
+            {% endif %}
+            <small style="color: #868e96;">{{ form.customer_phone.help_text }}</small>
         </div>
 
         <div class="form-group">
@@ -95,10 +130,14 @@
 <div class="card">
     <h3 style="margin-bottom: 15px; font-size: 16px;">Wichtige Hinweise:</h3>
     <ul style="line-height: 1.8; color: #495057; padding-left: 20px;">
+        <li><strong>Existing Customer:</strong> Geben Sie einfach die E-Mail des Kunden ein. Vor-, Nachname und Telefonnummer sind optional.</li>
+        <li><strong>Neuer Customer:</strong> Wenn der Kunde noch nicht registriert ist, füllen Sie Vor- und Nachname aus. Der Kunde wird automatisch im System erstellt.</li>
+        <li><strong>Telefonnummer:</strong> Die Telefonnummer sollte immer angegeben werden, damit Sie den Kunden direkt kontaktieren können.</li>
+        <li>Neue Kunden erhalten das Initial-Passwort <code style="background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-family: monospace;">P@ssw0rd123</code></li>
+        <li>Der Kunde muss das Passwort bei der ersten Anmeldung ändern</li>
         <li>Der Kunde erhält automatisch eine Benachrichtigung über das erstellte Ticket</li>
         <li>Das System vermerkt intern, dass Sie dieses Ticket für den Kunden erstellt haben</li>
         <li>Der Kunde kann das Ticket in seinem Dashboard sehen und Kommentare hinzufügen</li>
-        <li>Sie können sich das Ticket selbst zuweisen oder es im Pool lassen</li>
     </ul>
 </div>
 {% endblock %}

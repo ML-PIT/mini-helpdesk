@@ -65,7 +65,14 @@ class KnowledgeArticle(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title)
+            self.slug = base_slug
+
+            # Ensure slug is unique by appending counter if needed
+            counter = 1
+            while KnowledgeArticle.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{base_slug}-{counter}"
+                counter += 1
 
         # Set published_at when status changes to published
         if self.status == 'published' and not self.published_at:

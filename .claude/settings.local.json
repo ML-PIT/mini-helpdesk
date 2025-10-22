@@ -5,7 +5,16 @@
       "Bash(python manage.py migrate tickets)",
       "Bash(dir:*)",
       "Bash(findstr:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(python manage.py:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(curl:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(timeout 5 curl:*)",
+      "Bash(timeout 10 curl:*)",
+      "Bash(pip uninstall:*)"
     ],
     "deny": [],
     "ask": [],
