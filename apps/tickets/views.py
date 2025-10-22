@@ -200,25 +200,59 @@ def ticket_detail(request, pk):
     else:
         comments = ticket.comments.all()
 
+    # Get available agents for team lead assignment
+    team_agents = User.objects.filter(
+        role='support_agent',
+        is_active=True
+    ).exclude(id=request.user.id).order_by('first_name', 'last_name')
+
     context = {
         'ticket': ticket,
         'comments': comments.order_by('created_at'),
         'form': form,
+        'team_agents': team_agents,
     }
     return render(request, 'tickets/detail.html', context)
 
 
 @login_required
 def ticket_assign(request, pk):
-    """Assign ticket to an agent - only for agents and admins"""
+    """Assign ticket to an agent - for self-assignment and team leads"""
     if request.user.role not in ['support_agent', 'admin']:
         return HttpResponseForbidden('Keine Berechtigung')
 
     ticket = get_object_or_404(Ticket, pk=pk)
 
-    # Agents can self-assign
     if request.method == 'POST':
-        ticket.assigned_to = request.user
+        # Check if user is Level 4 (Team Lead) or Admin
+        is_team_lead = request.user.role == 'support_agent' and request.user.support_level == 4
+        is_admin = request.user.role == 'admin'
+
+        # Team leads can assign to other agents, others can only self-assign
+        if is_team_lead or is_admin:
+            # Get agent_id from POST data if provided (team lead assigning to someone else)
+            agent_id = request.POST.get('agent_id')
+
+            if agent_id:
+                try:
+                    assigned_agent = User.objects.get(id=agent_id, role='support_agent', is_active=True)
+                    ticket.assigned_to = assigned_agent
+                    action_text = f'Ticket wurde von {request.user.full_name} (Team Lead) an {assigned_agent.full_name} zugewiesen.'
+                    success_msg = f'Ticket {ticket.ticket_number} wurde {assigned_agent.full_name} zugewiesen.'
+                except User.DoesNotExist:
+                    messages.error(request, 'Agent nicht gefunden.')
+                    return redirect('tickets:detail', pk=ticket.pk)
+            else:
+                # Self-assign for team lead
+                ticket.assigned_to = request.user
+                action_text = f'Ticket wurde von {request.user.full_name} übernommen.'
+                success_msg = f'Ticket {ticket.ticket_number} wurde Ihnen zugewiesen.'
+        else:
+            # Regular agents can only self-assign
+            ticket.assigned_to = request.user
+            action_text = f'Ticket wurde von {request.user.full_name} übernommen.'
+            success_msg = f'Ticket {ticket.ticket_number} wurde Ihnen zugewiesen.'
+
         ticket.status = 'in_progress'
         ticket.save()
 
@@ -226,11 +260,11 @@ def ticket_assign(request, pk):
         TicketComment.objects.create(
             ticket=ticket,
             author=request.user,
-            content=f'Ticket wurde von {request.user.full_name} übernommen.',
+            content=action_text,
             is_internal=True
         )
 
-        messages.success(request, f'Ticket {ticket.ticket_number} wurde Ihnen zugewiesen.')
+        messages.success(request, success_msg)
         return redirect('tickets:detail', pk=ticket.pk)
 
     return redirect('tickets:detail', pk=ticket.pk)

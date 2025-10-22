@@ -34,6 +34,7 @@
 
         {% if user.role != 'customer' and ticket.status != 'closed' %}
         <div style="display: flex; gap: 10px;">
+            <!-- Self-assign button for agents -->
             {% if not ticket.assigned_to and user.role == 'support_agent' %}
             <form method="post" action="{% url 'tickets:assign' ticket.pk %}" style="margin: 0;">
                 {% csrf_token %}
@@ -41,7 +42,13 @@
             </form>
             {% endif %}
 
-            {% if ticket.assigned_to == user or user.role == 'admin' %}
+            <!-- Assign button for team leads (Level 4) -->
+            {% if not ticket.assigned_to and user.role == 'support_agent' and user.support_level == 4 %}
+            <button type="button" class="btn btn-info btn-sm" onclick="document.getElementById('assignModal').style.display='block';">Agent zuweisen</button>
+            {% endif %}
+
+            <!-- Escalate and close buttons -->
+            {% if ticket.assigned_to == user or user.role == 'admin' or user.support_level == 4 %}
             <a href="{% url 'tickets:escalate' ticket.pk %}" class="btn btn-warning btn-sm">Eskalieren</a>
 
             <form method="post" action="{% url 'tickets:close' ticket.pk %}" style="margin: 0;" onsubmit="return confirm('Ticket wirklich schließen? Der Verlauf wird an den Kunden gesendet.');">
@@ -49,6 +56,32 @@
                 <button type="submit" class="btn btn-danger btn-sm">Schließen</button>
             </form>
             {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Modal for agent assignment (Team Lead only) -->
+        {% if user.role == 'support_agent' and user.support_level == 4 %}
+        <div id="assignModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4);">
+            <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 300px; border-radius: 8px;">
+                <span style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;" onclick="document.getElementById('assignModal').style.display='none';">&times;</span>
+                <h2 style="margin-top: 0; font-size: 18px;">Agent auswählen</h2>
+                <form method="post" action="{% url 'tickets:assign' ticket.pk %}" style="margin: 0;">
+                    {% csrf_token %}
+                    <div style="margin-bottom: 15px;">
+                        <label for="agent_id" style="display: block; margin-bottom: 5px; font-weight: 600;">Support Agent:</label>
+                        <select name="agent_id" id="agent_id" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required>
+                            <option value="">-- Agent auswählen --</option>
+                            {% for agent in team_agents %}
+                            <option value="{{ agent.id }}">{{ agent.full_name }} (Level {{ agent.support_level }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary" style="flex: 1;">Zuweisen</button>
+                        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="document.getElementById('assignModal').style.display='none';">Abbrechen</button>
+                    </div>
+                </form>
+            </div>
         </div>
         {% endif %}
     </div>
