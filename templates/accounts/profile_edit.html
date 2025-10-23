@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil bearbeiten - {{ app_title }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <h1 style="font-size: 28px; font-weight: 600; margin-bottom: 30px;">
+        Profil bearbeiten
+    </h1>
+
+    <!-- Info Box -->
+    <div style="background: #e7f5ff; border-left: 4px solid #667eea; padding: 15px; border-radius: 6px; margin-bottom: 30px;">
+        <p style="margin: 0; color: #495057; font-size: 14px;">
+            <strong>ℹ️ Information:</strong> Hier können Sie Ihre persönlichen Daten und Ihr Passwort aktualisieren.
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <!-- Left Column: Profile Information -->
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    👤 Persönliche Daten
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="profile">
+
+                    <div class="form-group">
+                        {{ profile_form.first_name.label_tag }}
+                        {{ profile_form.first_name }}
+                        {% if profile_form.first_name.errors %}
+                            <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                                {{ profile_form.first_name.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ profile_form.last_name.label_tag }}
+                        {{ profile_form.last_name }}
+                        {% if profile_form.last_name.errors %}
+                            <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                                {{ profile_form.last_name.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ profile_form.email.label_tag }}
+                        {{ profile_form.email }}
+                        {% if profile_form.email.errors %}
+                            <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                                {{ profile_form.email.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ profile_form.phone.label_tag }}
+                        {{ profile_form.phone }}
+                        {% if profile_form.phone.errors %}
+                            <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                                {{ profile_form.phone.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ profile_form.department.label_tag }}
+                        {{ profile_form.department }}
+                        {% if profile_form.department.errors %}
+                            <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                                {{ profile_form.department.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ profile_form.location.label_tag }}
+                        {{ profile_form.location }}
+                        {% if profile_form.location.errors %}
+                            <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                                {{ profile_form.location.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                        Änderungen speichern
+                    </button>
+                </form>
+
+                <div style="background: #f0f0f0; padding: 15px; border-radius: 6px; margin-top: 20px; font-size: 13px; color: #495057;">
+                    <strong>Benutzername:</strong> {{ user.username }} (kann nicht geändert werden)<br>
+                    <strong>Benutzerkonto erstellt:</strong> {{ user.created_at|date:"d.m.Y H:i" }}<br>
+                    <strong>Rolle:</strong>
+                    {% if user.role == 'admin' %}
+                        <span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 3px;">Administrator</span>
+                    {% elif user.role == 'support_agent' %}
+                        <span style="background: #667eea; color: white; padding: 2px 6px; border-radius: 3px;">Support Agent</span>
+                    {% else %}
+                        <span style="background: #51cf66; color: white; padding: 2px 6px; border-radius: 3px;">Kunde</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Password Change -->
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    🔐 Passwort ändern
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="password">
+
+                    <div class="form-group">
+                        {{ password_form.current_password.label_tag }}
+                        {{ password_form.current_password }}
+                        {% if password_form.current_password.errors %}
+                            <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                                {{ password_form.current_password.errors }}
+                            </div>
+                        {% endif %}
+                        <small style="color: #868e96;">{{ password_form.current_password.help_text }}</small>
+                    </div>
+
+                    <div class="form-group">
+                        {{ password_form.new_password.label_tag }}
+                        {{ password_form.new_password }}
+                        {% if password_form.new_password.errors %}
+                            <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                                {{ password_form.new_password.errors }}
+                            </div>
+                        {% endif %}
+                        <small style="color: #868e96;">{{ password_form.new_password.help_text }}</small>
+                    </div>
+
+                    <div class="form-group">
+                        {{ password_form.new_password_confirm.label_tag }}
+                        {{ password_form.new_password_confirm }}
+                        {% if password_form.new_password_confirm.errors %}
+                            <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                                {{ password_form.new_password_confirm.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if password_form.non_field_errors %}
+                        <div style="background: #ffe0e0; border-left: 4px solid #ff6b6b; padding: 12px; border-radius: 4px; margin-bottom: 15px;">
+                            {% for error in password_form.non_field_errors %}
+                                <p style="margin: 5px 0; color: #c92a2a; font-size: 13px;">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+                        Passwort ändern
+                    </button>
+                </form>
+
+                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 6px; margin-top: 20px;">
+                    <h4 style="margin-top: 0; margin-bottom: 10px; font-size: 13px; color: #856404;">
+                        Passwort-Anforderungen
+                    </h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #856404; font-size: 12px; line-height: 1.8;">
+                        <li>Mindestens 8 Zeichen lang</li>
+                        <li>Darf nicht dem aktuellen Passwort entsprechen</li>
+                        <li>Bestätigung erforderlich</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="{% url 'main:dashboard' %}" class="btn btn-secondary">← Zurück zum Dashboard</a>
+    </div>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"],
+    .form-group textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="email"]:focus,
+    .form-group input[type="password"]:focus,
+    .form-group textarea:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5568d3;
+    }
+
+    .btn-secondary {
+        background: #868e96;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #748088;
+    }
+
+    @media (max-width: 768px) {
+        div[style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+
+{% endblock %}
