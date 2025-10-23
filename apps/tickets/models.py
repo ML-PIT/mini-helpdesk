@@ -240,6 +240,34 @@ class Ticket(models.Model):
             return delta.total_seconds() / 3600
         return None
 
+    def get_processing_time_hours(self):
+        """Get total processing time in hours (from creation to closure/resolution)"""
+        end_time = self.closed_at or self.resolved_at
+        if end_time:
+            delta = end_time - self.created_at
+            return delta.total_seconds() / 3600
+        return None
+
+    def get_processing_time_display(self):
+        """Get processing time in human-readable format (e.g., '2 days, 3 hours')"""
+        processing_hours = self.get_processing_time_hours()
+        if processing_hours is None:
+            return 'N/A'
+
+        days = int(processing_hours // 24)
+        hours = int(processing_hours % 24)
+        minutes = int((processing_hours % 1) * 60)
+
+        parts = []
+        if days > 0:
+            parts.append(f"{days} {'Tag' if days == 1 else 'Tage'}")
+        if hours > 0:
+            parts.append(f"{hours} {'Stunde' if hours == 1 else 'Stunden'}")
+        if minutes > 0 and days == 0:
+            parts.append(f"{minutes} {'Minute' if minutes == 1 else 'Minuten'}")
+
+        return ', '.join(parts) if parts else '< 1 Minute'
+
     def get_history_as_text(self):
         """Generate complete ticket history as formatted text for email export"""
         lines = []

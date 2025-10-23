@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Ticket für Kunde erstellen - ML Gruppe Helpdesk{% endblock %}
+{% block title %}Ticket für Kunde erstellen - {{ app_title }}{% endblock %}
 
 {% block content %}
 <div class="card">
@@ -15,6 +15,20 @@
 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+
+        <!-- Customer Search Field -->
+        <div class="form-group">
+            {{ form.customer_search.label_tag }}
+            {{ form.customer_search }}
+            {% if form.customer_search.errors %}
+                <div style="color: #c92a2a; font-size: 13px; margin-top: 5px;">
+                    {{ form.customer_search.errors }}
+                </div>
+            {% endif %}
+            <small style="color: #868e96;">{{ form.customer_search.help_text }}</small>
+            <!-- Autocomplete dropdown -->
+            <div id="customer-search-results" style="position: absolute; background: white; border: 1px solid #ddd; border-radius: 4px; max-width: 400px; max-height: 200px; overflow-y: auto; display: none; z-index: 1000; margin-top: 5px;"></div>
+        </div>
 
         <div class="form-group">
             {{ form.customer_email.label_tag }}
@@ -140,4 +154,100 @@
         <li>Der Kunde kann das Ticket in seinem Dashboard sehen und Kommentare hinzufügen</li>
     </ul>
 </div>
+
+<script>
+// Customer Search Autocomplete
+document.addEventListener('DOMContentLoaded', function() {
+    const searchField = document.getElementById('customer-search-field');
+    const resultsDiv = document.getElementById('customer-search-results');
+    const emailField = document.getElementById('customer-email-field');
+    const firstNameField = document.getElementById('customer-first-name-field');
+    const lastNameField = document.getElementById('customer-last-name-field');
+    const phoneField = document.getElementById('customer-phone-field');
+
+    if (!searchField) return;
+
+    // Show results on input
+    searchField.addEventListener('input', function() {
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        // Fetch customer search results
+        fetch(`/tickets/api/search-customers/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                resultsDiv.innerHTML = '';
+
+                if (data.results.length === 0) {
+                    resultsDiv.innerHTML = '<div style="padding: 10px; color: #868e96;">Keine Kunden gefunden</div>';
+                    resultsDiv.style.display = 'block';
+                    return;
+                }
+
+                data.results.forEach(customer => {
+                    const item = document.createElement('div');
+                    item.style.cssText = 'padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; transition: background 0.2s;';
+                    item.innerHTML = `
+                        <div style="font-weight: 500;">${customer.name}</div>
+                        <div style="font-size: 12px; color: #868e96;">${customer.email}</div>
+                    `;
+
+                    item.addEventListener('mouseover', function() {
+                        this.style.background = '#f0f0f0';
+                    });
+
+                    item.addEventListener('mouseout', function() {
+                        this.style.background = 'transparent';
+                    });
+
+                    item.addEventListener('click', function() {
+                        // Fill in the customer details
+                        emailField.value = customer.email;
+                        firstNameField.value = customer.first_name;
+                        lastNameField.value = customer.last_name;
+
+                        // Fill in phone number if available
+                        if (customer.phone && phoneField) {
+                            phoneField.value = customer.phone;
+                        }
+
+                        // Clear search field
+                        searchField.value = '';
+                        resultsDiv.style.display = 'none';
+                    });
+
+                    resultsDiv.appendChild(item);
+                });
+
+                resultsDiv.style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error fetching customers:', error);
+                resultsDiv.innerHTML = '<div style="padding: 10px; color: #c92a2a;">Fehler beim Suchen von Kunden</div>';
+                resultsDiv.style.display = 'block';
+            });
+    });
+
+    // Hide results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (e.target !== searchField && !resultsDiv.contains(e.target)) {
+            resultsDiv.style.display = 'none';
+        }
+    });
+});
+</script>
+
+<style>
+#customer-search-results {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#customer-search-results > div:last-child {
+    border-bottom: none;
+}
+</style>
 {% endblock %}

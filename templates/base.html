@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ML Gruppe Helpdesk{% endblock %}</title>
+    <title>{% block title %}{{ app_title }}{% endblock %}</title>
     <style>
         * {
             margin: 0;
@@ -37,6 +37,20 @@
         .navbar-brand {
             font-size: 20px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-brand-logo {
+            height: 40px;
+            width: auto;
+            max-width: 200px;
+        }
+
+        .navbar-brand-text {
+            display: flex;
+            align-items: center;
         }
 
         .navbar-menu {
@@ -390,7 +404,12 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="navbar-container">
-            <div class="navbar-brand">ML Gruppe Helpdesk</div>
+            <div class="navbar-brand">
+                {% if logo_url %}
+                <img src="{{ logo_url }}" alt="{{ app_name }}" class="navbar-brand-logo">
+                {% endif %}
+                <span class="navbar-brand-text">{{ app_name }}</span>
+            </div>
             <div class="navbar-menu">
                 {% if user.is_authenticated %}
                 <a href="{% url 'main:dashboard' %}">Dashboard</a>

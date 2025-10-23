@@ -77,6 +77,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.main.context_processors.branding_context',  # Custom branding settings
             ],
         },
     },
@@ -333,3 +334,12 @@ LOGGING = {
 
 # Create logs directory if it doesn't exist
 os.makedirs(BASE_DIR / 'logs', exist_ok=True)
+
+
+# Customizable Branding Settings (for multi-tenant reusability)
+# These settings allow the application to be rebranded for different companies
+# by simply changing environment variables
+APP_NAME = os.environ.get('APP_NAME', 'ML Gruppe Helpdesk')
+COMPANY_NAME = os.environ.get('COMPANY_NAME', 'ML Gruppe')
+LOGO_URL = os.environ.get('LOGO_URL', '/static/images/logo.png')
+APP_TITLE = os.environ.get('APP_TITLE', 'ML Gruppe Helpdesk')

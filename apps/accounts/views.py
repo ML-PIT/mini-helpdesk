@@ -3,7 +3,9 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+from django.views.decorators.http import require_http_methods
 from .models import User
+from .forms import ProfileForm, PasswordChangeForm as ProfilePasswordChangeForm
 
 
 def register(request):
@@ -62,6 +64,59 @@ def register(request):
         return redirect('main:dashboard')
 
     return render(request, 'accounts/register.html')
+
+
+@login_required
+def profile_edit(request):
+    """
+    User profile edit view - allows users to change their personal data and password
+    """
+    if request.method == 'POST':
+        action = request.POST.get('action')  # 'profile' or 'password'
+
+        if action == 'profile':
+            # Handle profile updates
+            profile_form = ProfileForm(request.POST, instance=request.user)
+            password_form = ProfilePasswordChangeForm(request.user)
+
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Ihr Profil wurde erfolgreich aktualisiert!')
+                return redirect('accounts:profile_edit')
+            else:
+                for field, errors in profile_form.errors.items():
+                    for error in errors:
+                        messages.error(request, f'{field}: {error}')
+
+        elif action == 'password':
+            # Handle password change
+            profile_form = ProfileForm(instance=request.user)
+            password_form = ProfilePasswordChangeForm(request.user, request.POST)
+
+            if password_form.is_valid():
+                # Update password
+                request.user.set_password(password_form.cleaned_data['new_password'])
+                request.user.save()
+
+                # Keep the user logged in after password change
+                update_session_auth_hash(request, request.user)
+
+                messages.success(request, 'Ihr Passwort wurde erfolgreich geändert!')
+                return redirect('accounts:profile_edit')
+            else:
+                for field, errors in password_form.errors.items():
+                    for error in errors:
+                        messages.error(request, f'{field}: {error}')
+    else:
+        profile_form = ProfileForm(instance=request.user)
+        password_form = ProfilePasswordChangeForm(request.user)
+
+    context = {
+        'profile_form': profile_form,
+        'password_form': password_form,
+        'user': request.user,
+    }
+    return render(request, 'accounts/profile_edit.html', context)
 
 
 @login_required

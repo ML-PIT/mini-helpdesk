@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard - ML Gruppe Helpdesk{% endblock %}
+{% block title %}Dashboard - {{ app_title }}{% endblock %}
 
 {% block content %}
 <!-- Welcome Card -->
@@ -88,6 +88,10 @@
                 <div style="font-size: 32px; margin-bottom: 10px;">📋</div>
                 Meine Tickets
             </a>
+            <a href="{% url 'accounts:profile_edit' %}" style="background: linear-gradient(135deg, #4ecdc4 0%, #2d9cdb 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">👤</div>
+                Profil bearbeiten
+            </a>
         {% elif user.role == 'support_agent' %}
             <a href="{% url 'tickets:list' %}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
                 <div style="font-size: 32px; margin-bottom: 10px;">📋</div>
@@ -96,6 +100,10 @@
             <a href="{% url 'tickets:statistics' %}" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
                 <div style="font-size: 32px; margin-bottom: 10px;">📊</div>
                 Statistiken
+            </a>
+            <a href="{% url 'accounts:profile_edit' %}" style="background: linear-gradient(135deg, #4ecdc4 0%, #2d9cdb 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">👤</div>
+                Profil bearbeiten
             </a>
         {% else %}
             <a href="{% url 'tickets:list' %}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
@@ -110,9 +118,13 @@
                 <div style="font-size: 32px; margin-bottom: 10px;">⚙️</div>
                 Admin-Bereich
             </a>
-            <a href="/admin/accounts/user/" style="background: linear-gradient(135deg, #4ecdc4 0%, #2d9cdb 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+            <a href="/admin/accounts/user/" style="background: linear-gradient(135deg, #ffa94d 0%, #ff922b 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
                 <div style="font-size: 32px; margin-bottom: 10px;">👥</div>
                 Benutzerverwaltung
+            </a>
+            <a href="{% url 'accounts:profile_edit' %}" style="background: linear-gradient(135deg, #4ecdc4 0%, #2d9cdb 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">👤</div>
+                Profil bearbeiten
             </a>
         {% endif %}
     </div>

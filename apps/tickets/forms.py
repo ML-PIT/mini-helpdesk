@@ -34,13 +34,29 @@ class TicketCreateForm(forms.ModelForm):
 class AgentTicketCreateForm(forms.ModelForm):
     """Form for agents to create tickets on behalf of customers"""
 
+    customer_search = forms.CharField(
+        label='Kunde suchen (Name oder Email)',
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Kundenname (z.B. "Max Mustermann") oder Email eingeben...',
+            'id': 'customer-search-field',
+            'autocomplete': 'off',
+            'data-url': '/tickets/api/search-customers/'
+        }),
+        help_text='Geben Sie den Namen oder die Email eines Kunden ein, um diesen zu suchen'
+    )
+
     customer_email = forms.EmailField(
         label='Kunden-Email',
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
-            'placeholder': 'kunde@example.com'
+            'placeholder': 'kunde@example.com',
+            'id': 'customer-email-field'
         }),
-        help_text='Email-Adresse des Kunden'
+        help_text='Email-Adresse des Kunden',
+        required=False
     )
 
     customer_first_name = forms.CharField(
@@ -49,7 +65,8 @@ class AgentTicketCreateForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Vorname (optional, falls noch nicht registriert)'
+            'placeholder': 'Vorname (optional, falls noch nicht registriert)',
+            'id': 'customer-first-name-field'
         }),
         help_text='Nur erforderlich, wenn der Kunde noch nicht im System existiert'
     )
@@ -60,7 +77,8 @@ class AgentTicketCreateForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Nachname (optional, falls noch nicht registriert)'
+            'placeholder': 'Nachname (optional, falls noch nicht registriert)',
+            'id': 'customer-last-name-field'
         }),
         help_text='Nur erforderlich, wenn der Kunde noch nicht im System existiert'
     )
@@ -71,7 +89,8 @@ class AgentTicketCreateForm(forms.ModelForm):
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'z.B. +49 30 12345678 oder 030/12345678'
+            'placeholder': 'z.B. +49 30 12345678 oder 030/12345678',
+            'id': 'customer-phone-field'
         }),
         help_text='Telefonnummer des Kunden (optional, aber empfohlen)'
     )

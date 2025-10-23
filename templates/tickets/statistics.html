@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Statistiken - ML Gruppe Helpdesk{% endblock %}
+{% block title %}Statistiken - {{ app_title }}{% endblock %}
 
 {% block content %}
 <style>
@@ -74,16 +74,16 @@
         <div class="stat-label">Geschlossene/Gelöste Tickets</div>
     </div>
     <div class="stat-card green">
+        <div class="stat-number">{{ avg_processing_time }}</div>
+        <div class="stat-label">Ø Bearbeitungszeit</div>
+    </div>
+    <div class="stat-card orange">
         <div class="stat-number">{{ trainer_stats|length }}</div>
         <div class="stat-label">Trainer/Kunden mit Tickets</div>
     </div>
-    <div class="stat-card orange">
+    <div class="stat-card red">
         <div class="stat-number">{{ category_stats|length }}</div>
         <div class="stat-label">Problem-Kategorien</div>
-    </div>
-    <div class="stat-card red">
-        <div class="stat-number">{{ classroom_stats|length }}</div>
-        <div class="stat-label">Betroffene Klassenräume</div>
     </div>
 </div>
 
@@ -154,6 +154,81 @@
             <span style="color: #868e96; font-size: 14px;">Erstellen und schließen Sie einige Tickets, um Statistiken zu sehen.</span>
         </p>
     </div>
+    {% endif %}
+</div>
+
+<!-- Support Staff Performance (Agent Handling Times) -->
+<div class="card" style="margin-bottom: 30px;">
+    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 15px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+        👨‍💼 Support-Team Leistung (Bearbeitungszeiten)
+    </h2>
+
+    <!-- Permission Info Box -->
+    {% if not can_view_all_agent_stats %}
+    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+        <p style="margin: 0; color: #856404; font-size: 14px;">
+            <strong>🔒 Eingeschränkte Ansicht:</strong> Sie können nur Ihre eigenen Bearbeitungszeiten einsehen.
+            Nur Support-Agenten der Level 4 (Team Lead) und Administratoren können die Bearbeitungszeiten aller Support-Mitarbeiter einsehen.
+        </p>
+    </div>
+    {% endif %}
+
+    {% if agent_stats %}
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Support Agent</th>
+                        <th style="text-align: center;">Bearbeitete Tickets</th>
+                        <th style="text-align: center;">Hohe Priorität</th>
+                        <th style="text-align: center;">Ø Bearbeitungszeit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agent in agent_stats %}
+                    <tr>
+                        <td>
+                            <div><strong>{{ agent.name }}</strong></div>
+                            <div style="font-size: 12px; color: #868e96;">{{ agent.email }}</div>
+                        </td>
+                        <td style="text-align: center;">
+                            <span style="background: #667eea; color: white; padding: 4px 10px; border-radius: 20px; font-weight: 600;">
+                                {{ agent.total_handled }}
+                            </span>
+                        </td>
+                        <td style="text-align: center;">
+                            {% if agent.high_priority_handled > 0 %}
+                                <span style="background: #ff6b6b; color: white; padding: 4px 10px; border-radius: 20px;">
+                                    {{ agent.high_priority_handled }}
+                                </span>
+                            {% else %}
+                                <span style="color: #868e96;">0</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <strong>{{ agent.avg_time_display }}</strong>
+                            <br>
+                            <span style="font-size: 12px; color: #868e96;">Ø {{ agent.avg_hours|floatformat:1 }} Std</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="background: #e7f5ff; border-left: 4px solid #667eea; padding: 15px; border-radius: 4px; margin-top: 15px;">
+            <p style="margin: 0; color: #495057; font-size: 14px;">
+                {% if can_view_all_agent_stats %}
+                    <strong>📊 Hinweis:</strong> Diese Metriken zeigen, wie lange jeder Support-Agent durchschnittlich für die Bearbeitung seiner Tickets benötigt.
+                    Längere Bearbeitungszeiten können auf komplexere Probleme hindeuten oder auf Schulungsbedarf.
+                {% else %}
+                    <strong>📊 Ihre Leistung:</strong> Diese Metriken zeigen Ihre durchschnittliche Bearbeitungszeit und Workload.
+                    Verwenden Sie diese Daten, um Ihre Effizienz zu verbessern.
+                {% endif %}
+            </p>
+        </div>
+    {% else %}
+    <p style="color: #868e96; text-align: center; padding: 30px;">Keine Support-Agent-Daten verfügbar.</p>
     {% endif %}
 </div>
 

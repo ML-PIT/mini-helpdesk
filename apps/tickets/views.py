@@ -13,11 +13,19 @@ from apps.accounts.models import User
 
 
 def notify_agents_new_ticket(ticket):
-    """Send email notification to all agents about new ticket"""
-    # Get all agents (not admins, not the ticket creator)
+    """
+    Send email notification to Level 1-2 support agents about new ticket.
+
+    IMPORTANT: Level 3+ support agents are NOT notified about new tickets.
+    They will only be notified when tickets are explicitly escalated to them.
+    This ensures expert agents only handle tickets that require their expertise.
+    """
+    # Get Level 1-2 agents only (not Level 3+, not admins, not the ticket creator)
+    # Level 3 and above agents should only be notified when tickets are escalated to them
     agents = User.objects.filter(
         role='support_agent',
-        is_active=True
+        is_active=True,
+        support_level__in=[1, 2]  # Only Level 1 and Level 2 support agents
     ).exclude(id=ticket.created_by.id)
 
     if not agents.exists():
@@ -65,7 +73,19 @@ Diese Email wurde automatisch vom ML Gruppe Helpdesk System gesendet.
 
 
 def notify_agent_ticket_escalation(ticket, escalated_from_agent, escalated_to_agent, reason=''):
-    """Send email notification to agent when ticket is escalated to them"""
+    """
+    Send email notification to agent when ticket is escalated to them.
+
+    This is the PRIMARY notification method for Level 3+ support agents.
+    They receive notifications ONLY when tickets are explicitly escalated to them,
+    not for all new tickets in the system.
+
+    Args:
+        ticket: Ticket instance being escalated
+        escalated_from_agent: User who escalated the ticket (or None if system escalation)
+        escalated_to_agent: User who is receiving the escalated ticket
+        reason: Optional explanation for the escalation
+    """
     if not escalated_to_agent or not escalated_to_agent.email:
         return
 
@@ -163,30 +183,55 @@ def ticket_create(request):
         if request.method == 'POST':
             form = AgentTicketCreateForm(request.POST, request.FILES)
             if form.is_valid():
-                customer_email = form.cleaned_data.get('customer_email')
+                customer_email = form.cleaned_data.get('customer_email', '').strip()
                 customer_first_name = form.cleaned_data.get('customer_first_name', '').strip()
                 customer_last_name = form.cleaned_data.get('customer_last_name', '').strip()
                 customer_phone = form.cleaned_data.get('customer_phone', '').strip()
 
-                try:
-                    # Try to get existing customer by email
-                    customer = User.objects.get(email=customer_email)
+                customer = None
 
-                    # Update phone if provided
-                    if customer_phone and not customer.phone:
-                        customer.phone = customer_phone
-                        customer.save()
-                except User.DoesNotExist:
-                    # If customer doesn't exist, create a new one (requires name)
+                # First, try to find customer by email if provided
+                if customer_email:
+                    try:
+                        customer = User.objects.get(email=customer_email)
+
+                        # Update phone if provided
+                        if customer_phone and not customer.phone:
+                            customer.phone = customer_phone
+                            customer.save()
+                    except User.DoesNotExist:
+                        # Email provided but customer doesn't exist
+                        if not customer_first_name or not customer_last_name:
+                            messages.error(
+                                request,
+                                f'Kunde mit Email {customer_email} existiert nicht. '
+                                'Bitte geben Sie Vor- und Nachname ein, um einen neuen Kunden zu erstellen.'
+                            )
+                            return render(request, 'tickets/create_agent.html', {'form': form})
+
+                        # Create new customer with the provided email and name
+                        customer = None  # Will be created below
+
+                # If no customer found yet, try to create new one from name
+                if not customer:
                     if not customer_first_name or not customer_last_name:
                         messages.error(
                             request,
-                            f'Kunde mit Email {customer_email} existiert nicht. '
-                            'Bitte geben Sie Vor- und Nachname ein, um einen neuen Kunden zu erstellen.'
+                            'Bitte geben Sie entweder die Email eines existierenden Kunden ein '
+                            'oder Vor- und Nachname eines neuen Kunden.'
                         )
                         return render(request, 'tickets/create_agent.html', {'form': form})
 
-                    # Create new customer user
+                    # Generate email from name if not provided
+                    if not customer_email:
+                        customer_email = f"{customer_first_name.lower()}.{customer_last_name.lower()}@example.com"
+                        # Ensure email is unique by appending counter if needed
+                        base_email = customer_email
+                        counter = 1
+                        while User.objects.filter(email=customer_email).exists():
+                            customer_email = f"{customer_first_name.lower()}.{customer_last_name.lower()}{counter}@example.com"
+                            counter += 1
+
                     # Generate username from email (remove domain part)
                     username = customer_email.split('@')[0]
 
@@ -515,11 +560,23 @@ def statistics_dashboard(request):
     # Get all closed and resolved tickets for analysis
     all_tickets = Ticket.objects.filter(
         models.Q(status='closed') | models.Q(status='resolved')
-    ).select_related('created_by', 'category', 'mobile_classroom')
+    ).select_related('created_by', 'assigned_to', 'category', 'mobile_classroom')
 
     # Apply category filter if provided
     if category_filter:
         all_tickets = all_tickets.filter(category_id=category_filter)
+
+    # Calculate overall average processing time
+    total_processing_time = 0
+    tickets_with_time = 0
+    for ticket in all_tickets:
+        processing_hours = ticket.get_processing_time_hours()
+        if processing_hours is not None:
+            total_processing_time += processing_hours
+            tickets_with_time += 1
+
+    avg_processing_hours = (total_processing_time / tickets_with_time) if tickets_with_time > 0 else 0
+    avg_processing_days = avg_processing_hours / 24
 
     # Statistics per trainer/customer - use Concat for full_name
     trainer_stats = (
@@ -545,6 +602,75 @@ def statistics_dashboard(request):
             stat['avg_resolution_days_display'] = 'N/A'
         # Create full_name from first_name and last_name
         stat['full_name'] = f"{stat['created_by__first_name']} {stat['created_by__last_name']}"
+
+    # Statistics per assigned agent (support staff handling time)
+    agent_tickets = all_tickets.filter(assigned_to__isnull=False)
+    agent_stats = {}
+    for ticket in agent_tickets:
+        agent_id = ticket.assigned_to.id
+        if agent_id not in agent_stats:
+            agent_stats[agent_id] = {
+                'id': agent_id,
+                'name': ticket.assigned_to.full_name,
+                'email': ticket.assigned_to.email,
+                'total_handled': 0,
+                'high_priority_handled': 0,
+                'total_hours': 0,
+                'tickets': []
+            }
+
+        agent_stats[agent_id]['total_handled'] += 1
+        if ticket.priority in ['high', 'critical']:
+            agent_stats[agent_id]['high_priority_handled'] += 1
+
+        processing_hours = ticket.get_processing_time_hours()
+        if processing_hours is not None:
+            agent_stats[agent_id]['total_hours'] += processing_hours
+
+        agent_stats[agent_id]['tickets'].append({
+            'number': ticket.ticket_number,
+            'title': ticket.title,
+            'priority': ticket.priority,
+            'processing_time': ticket.get_processing_time_display(),
+            'created_at': ticket.created_at
+        })
+
+    # Calculate average time per agent and convert to sorted list
+    # IMPORTANT: Only Level 4 support agents can see all agents' performance data
+    # Other support agents can only see their own performance
+    agent_stats_list = []
+    user_support_level = request.user.support_level if hasattr(request.user, 'support_level') else None
+
+    for agent_id, stats in agent_stats.items():
+        # Permission check: Only show agent data if:
+        # 1. User is Level 4 (can see all agents), OR
+        # 2. User is viewing their own performance data
+        if user_support_level != 4 and agent_id != request.user.id:
+            continue  # Skip this agent's data - user doesn't have permission to view it
+
+        avg_hours = stats['total_hours'] / stats['total_handled'] if stats['total_handled'] > 0 else 0
+        avg_days = avg_hours / 24
+
+        # Format average processing time
+        if avg_days > 0:
+            days_int = int(avg_days)
+            hours_int = int((avg_days % 1) * 24)
+            if days_int > 0:
+                avg_time_display = f"{days_int} Tage"
+            else:
+                avg_time_display = f"{hours_int} Stunden"
+        else:
+            avg_time_display = "N/A"
+
+        agent_stats_list.append({
+            **stats,
+            'avg_hours': avg_hours,
+            'avg_days': avg_days,
+            'avg_time_display': avg_time_display
+        })
+
+    # Sort by total handled tickets descending
+    agent_stats_list.sort(key=lambda x: x['total_handled'], reverse=True)
 
     # Most common issues/categories
     category_stats = (
@@ -588,9 +714,30 @@ def statistics_dashboard(request):
     # Get all categories for filter dropdown
     all_categories = Category.objects.filter(is_active=True).order_by('name')
 
+    # Format average processing time for display
+    if avg_processing_days > 0:
+        days_int = int(avg_processing_days)
+        hours_int = int((avg_processing_days % 1) * 24)
+        if days_int > 0:
+            avg_processing_display = f"{days_int} {'Tag' if days_int == 1 else 'Tage'}"
+            if hours_int > 0:
+                avg_processing_display += f", {hours_int} {'Stunde' if hours_int == 1 else 'Stunden'}"
+        else:
+            avg_processing_display = f"{hours_int} {'Stunde' if hours_int == 1 else 'Stunden'}"
+    else:
+        avg_processing_display = "N/A"
+
+    # Add information about whether user can view all agent stats
+    can_view_all_agent_stats = (request.user.role == 'support_agent' and user_support_level == 4) or request.user.role == 'admin'
+
     context = {
         'total_tickets': all_tickets.count(),
+        'avg_processing_time': avg_processing_display,
+        'avg_processing_hours': round(avg_processing_hours, 1),
         'trainer_stats': trainer_stats,
+        'agent_stats': agent_stats_list,
+        'can_view_all_agent_stats': can_view_all_agent_stats,
+        'user_support_level': user_support_level,
         'category_stats': category_stats,
         'classroom_stats': classroom_stats,
         'priority_stats': priority_stats,
@@ -600,3 +747,45 @@ def statistics_dashboard(request):
     }
 
     return render(request, 'tickets/statistics.html', context)
+
+
+# API Endpoints for AJAX requests
+
+@login_required
+def search_customers_api(request):
+    """
+    API endpoint to search customers by name or email.
+    Returns JSON list of matching customers.
+    """
+    from django.http import JsonResponse
+    from django.db.models import Q
+    
+    query = request.GET.get('q', '').strip()
+    
+    if len(query) < 2:
+        return JsonResponse({'results': []})
+    
+    # Search by first name, last name, or email
+    customers = User.objects.filter(
+        role='customer',
+        is_active=True
+    ).filter(
+        Q(first_name__icontains=query) |
+        Q(last_name__icontains=query) |
+        Q(email__icontains=query)
+    ).values('id', 'first_name', 'last_name', 'email', 'phone')[:10]
+    
+    results = []
+    for customer in customers:
+        full_name = f"{customer['first_name']} {customer['last_name']}".strip()
+        results.append({
+            'id': customer['id'],
+            'name': full_name,
+            'first_name': customer['first_name'],
+            'last_name': customer['last_name'],
+            'email': customer['email'],
+            'phone': customer['phone'] or '',
+            'display': f"{full_name} ({customer['email']})"
+        })
+
+    return JsonResponse({'results': results})

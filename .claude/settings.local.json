@@ -14,7 +14,10 @@
       "Bash(pip install:*)",
       "Bash(timeout 5 curl:*)",
       "Bash(timeout 10 curl:*)",
-      "Bash(pip uninstall:*)"
+      "Bash(pip uninstall:*)",
+      "Bash(timeout 5 python:*)",
+      "Bash(awk '{print $9, \"\"\"\"(\"\"\"\" $5 \"\"\"\")\"\"\"\"}')",
+      "Bash(awk:*)"
     ],
     "deny": [],
     "ask": [],
