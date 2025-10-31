@@ -1,0 +1,248 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                    ABoro-Soft Helpdesk - PREISÜBERSICHT                        ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                              STARTER PAKET                                    ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Für kleine Teams (1-5 Support Agenten)                                       ┃
+┃                                                                               ┃
+┃ Einmalige Setup-Gebühr:     €499                                             ┃
+┃ Monatliche Gebühr:          €199/Monat                                       ┃
+┃ ────────────────────────────────────────                                     ┃
+┃ JAHRESKOSTEN:               €2.887                                           ┃
+┃ PRO AGENT/MONAT:            €240                                             ┃
+┃                                                                               ┃
+┃ ✅ Unbegrenzte Kunden                                                        ┃
+┃ ✅ Unbegrenzte Tickets                                                       ┃
+┃ ✅ 10 Support Agenten                                                        ┃
+┃ ✅ 50 GB Speicher                                                            ┃
+┃ ✅ SMTP/IMAP Integration                                                     ┃
+┃ ✅ Knowledge Base                                                            ┃
+┃ ✅ Mobile Ready                                                              ┃
+┃ ✅ Email Support                                                             ┃
+┃ ❌ KI-Automation (Claude AI)                                                 ┃
+┃ ❌ API Access                                                                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                           PROFESSIONAL PAKET ⭐                               ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Für wachsende Unternehmen (5-20 Support Agenten)                             ┃
+┃                                                                               ┃
+┃ Einmalige Setup-Gebühr:     €999                                             ┃
+┃ Monatliche Gebühr:          €499/Monat                                       ┃
+┃ ────────────────────────────────────────                                     ┃
+┃ JAHRESKOSTEN:               €6.987                                           ┃
+┃ PRO AGENT/MONAT:            €117                                             ┃
+┃                                                                               ┃
+┃ ✅ Alles aus Starter PLUS:                                                  ┃
+┃ ✅ 50 Support Agenten                                                        ┃
+┃ ✅ 250 GB Speicher                                                           ┃
+┃ ✅ KI-Automation (Claude AI) ← EINZIGARTIG!                                  ┃
+┃ ✅ Advanced Reporting & Analytics                                            ┃
+┃ ✅ Custom Branding                                                           ┃
+┃ ✅ Priority Email Support                                                    ┃
+┃ ❌ API Access                                                                ┃
+┃ ❌ SSO/LDAP Integration                                                      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                            ENTERPRISE PAKET                                   ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Für Großunternehmen (20+ Support Agenten)                                    ┃
+┃                                                                               ┃
+┃ Einmalige Setup-Gebühr:     €2.499                                           ┃
+┃ Monatliche Gebühr:          €1.299/Monat                                     ┃
+┃ ────────────────────────────────────────                                     ┃
+┃ JAHRESKOSTEN:               €17.587                                          ┃
+┃ PRO AGENT/MONAT:            €58                                              ┃
+┃                                                                               ┃
+┃ ✅ Alles aus Professional PLUS:                                              ┃
+┃ ✅ Unbegrenzte Support Agenten                                               ┃
+┃ ✅ 1 TB Speicher                                                             ┃
+┃ ✅ Full API Access & Webhooks                                                ┃
+┃ ✅ SSO/LDAP Integration                                                      ┃
+┃ ✅ SLA Management                                                            ┃
+┃ ✅ Custom Development (auf Anfrage)                                          ┃
+┃ ✅ Dedicated Account Manager                                                 ┃
+┃ ✅ 24/7 Phone Support                                                        ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃                         ON-PREMISE LIZENZ                                     ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Für Unternehmen mit Compliance/Sicherheitsanforderungen                      ┃
+┃                                                                               ┃
+┃ Einmalige Lizenzgebühr:     €10.000                                          ┃
+┃ Jährliches Support/Update:  €2.000/Jahr                                      ┃
+┃                                                                               ┃
+┃ ✅ Unbegrenzte Installationen                                                ┃
+┃ ✅ Unbegrenzte Benutzer                                                      ┃
+┃ ✅ Alle Features included                                                    ┃
+┃ ✅ Direkt zu Developer Team Support                                          ┃
+┃ ✅ Quellcode-Zugriff (optional)                                              ┃
+┃                                                                               ┃
+┃ Ideal für: Healthcare, Finance, Government, DSGVO-strict                    ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                        KOSTENVERGLEICH VS. KONKURRENZ
+                           für 10 Support Agenten/Jahr
+
+┌──────────────────┬─────────────┬──────────┬─────────────┐
+│ Provider         │ Kosten/Jahr │ vs. ABS  │ Einsparung  │
+├──────────────────┼─────────────┼──────────┼─────────────┤
+│ 🏆 ABoro-Soft    │  €2.887     │ Basis    │ -           │
+│ Zendesk          │  €8.280     │ +€5.393  │ -65%        │
+│ Freshdesk        │  €7.080     │ +€4.193  │ -59%        │
+│ Intercom         │  €7.200     │ +€4.313  │ -60%        │
+│ Jira Service Desk│  €6.000     │ +€3.113  │ -52%        │
+└──────────────────┴─────────────┴──────────┴─────────────┘
+
+💰 Durchschnittliche Einsparung: -60% (€4.000+/Jahr)
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                            ROI-BERECHNUNG
+
+Beispiel: Unternehmen mit 3 Support Agenten
+
+├─ Durchschnittlicher Support-Agent Gehalt: €3.000/Monat
+├─ Arbeitszeit für Support: 100% = €3.000/Monat
+└─ Effizienz-Verlust durch schlechtes System: 40%
+
+   KOSTEN DER INEFFIZIENZ: €1.200/Monat × 3 Agenten = €3.600/Monat
+
+   Mit ABoro-Soft sparen Sie:
+   ✅ 40% Effizienz = €1.200/Agent/Monat × 3 = €3.600/Monat
+
+   ➖ ABoro-Soft Kosten:       €200/Monat
+   ═══════════════════════════════════════
+   ✅ NETTO EINSPARUNG:        €3.400/Monat
+
+   💰 Amortisierung:           0.06 Monate = 2 Tage!! 🚀
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                        ZUSÄTZLICHE OPTIONEN
+
+┌─────────────────────────────────────────────────────────────┐
+│ Implementation Services                          €2.000     │
+│ (Konfiguration, Migration, Onboarding)                      │
+├─────────────────────────────────────────────────────────────┤
+│ Custom Development (für Enterprise)            €150/Stunde  │
+│ (SLA Features, Custom Integrations, Etc.)                   │
+├─────────────────────────────────────────────────────────────┤
+│ Premium Training für Ihr Team                  €500-€2.000  │
+│ (Workshops, Online Courses, Certification)                  │
+├─────────────────────────────────────────────────────────────┤
+│ API Ecosystem Integration                      €1.000-€5.000│
+│ (Shopify, WooCommerce, CRM, Slack, Etc.)                    │
+└─────────────────────────────────────────────────────────────┘
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                         PAYMENT & BILLING
+
+Zahlungsarten:
+├─ Monatliche Abrechnung (flexibel)
+├─ Jährliche Zahlung (-10% Rabatt)
+├─ 3-Jahres Vertrag (-20% Rabatt)
+└─ Custom Arrangements für Enterprise
+
+Zahlungsmethoden:
+├─ Kreditkarte (Visa, Mastercard, Amex)
+├─ Banküberweisung/SEPA
+├─ PayPal
+└─ Rechnung (Net-30, Enterprise nur)
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                      VERTRAGSBEDINGUNGEN
+
+Kündigungsfrist:
+├─ Monatlich: 30 Tage Kündigungsfrist
+├─ Jährlich: 60 Tage Kündigungsfrist vor Jahresende
+└─ Enterprise: Individual vereinbart
+
+Kostenlos testen:
+├─ 30 Tage kostenlosen Zugriff
+├─ Alle Features freigeschaltet
+├─ Keine Kreditkarte erforderlich
+└─ Automatische Aktivierung nach Testphase (falls nicht gekündigt)
+
+Geld-zurück Garantie:
+├─ 30 Tage volle Rückerstattung, wenn nicht zufrieden
+├─ Keine Fragen gestellt
+└─ Auch wenn Sie alles konfiguriert haben
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                        SPECIAL OFFERS & PROMOTIONS
+
+🎉 Launch Promotion:
+   ├─ Erste 50 Kunden: 30% Rabatt aufs erste Jahr
+   ├─ Gutscheincode: LAUNCH30
+   └─ Gültig bis: 31.12.2025
+
+📚 Educational Discount:
+   ├─ Schulen, Universitäten: 50% Rabatt
+   ├─ Non-Profits: 40% Rabatt
+   └─ Proof of Status erforderlich
+
+🤝 Referral Program:
+   ├─ Erfolgreiche Referral: €100 Gutschrift
+   ├─ Referent erhält auch €100
+   └─ Unlimitiert pro Kunde
+
+💼 Enterprise Package Deal:
+   ├─ 3-Jahres Vertrag: -20% Rabatt
+   ├─ Implementation Services inkludiert
+   ├─ Dedicated Support Manager
+   └─ Custom Development Budget: €5.000
+
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                           KONTAKTIEREN SIE UNS
+
+📧 Email:        sales@aborosoft.de
+📞 Telefon:      +49 (0) XXXX-XXXXXX
+💻 Website:      www.aborosoft.de/helpdesk
+📅 Demo buchen:  calendly.com/aborosoft/demo
+💬 Chat:         Live Chat auf Website
+
+Geschäftzeiten: Montag-Freitag, 09:00-18:00 CET
+Antwortzeit:    < 2 Stunden
+
+═════════════════════════════════════════════════════════════════════════════════
+
+                    NEXT STEPS - STARTEN SIE JETZT!
+
+1️⃣  Kostenlos 30 Tage testen (keine Kreditkarte nötig)
+    → www.aborosoft.de/free-trial
+
+2️⃣  Live Demo buchen (30 Minuten mit unserem Team)
+    → calendly.com/aborosoft/demo
+
+3️⃣  Preiskalkulator nutzen (für Ihre Situation)
+    → www.aborosoft.de/pricing-calculator
+
+4️⃣  Zum Paket upgraden (wenn Sie bereit sind)
+    → 3 Klicks und Sie sind online!
+
+═════════════════════════════════════════════════════════════════════════════════
+
+Version: 2.0
+Stand: 31.10.2025
+Status: 🚀 VERKAUFSBEREIT
+
+"ABoro-Soft Helpdesk - Professioneller Support ohne die professionellen Preise"

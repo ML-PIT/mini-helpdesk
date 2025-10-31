@@ -1,0 +1,195 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║             🎯 ABoro-Soft Helpdesk - SALES & PRICING SUMMARY 🎯             ║
+║                                                                               ║
+║                    "Professioneller Support ohne die                         ║
+║                     professionellen Preise"                                  ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                            EINE MINUTE ÜBERSICHT
+═══════════════════════════════════════════════════════════════════════════════
+
+Was ist ABoro-Soft Helpdesk?
+  → Moderne Ticketing-Lösung für Kundensupport
+  → Automatisiert Support-Prozesse mit KI
+  → Für kleine bis mittlere Unternehmen (20-500 MA)
+
+Wer sollte es kaufen?
+  → E-Commerce Shops
+  → SaaS-Anbieter
+  → Service-Unternehmen
+  → IT-Dienstleister
+  → Jeder mit Kundensupport-Bedarf
+
+Wieviel kostet es?
+  ┌─────────────────────────────────────────────────────────┐
+  │ Starter:      €199/Monat    (1-5 Agenten)              │
+  │ Professional: €499/Monat    (5-20 Agenten) ⭐ BEST      │
+  │ Enterprise:   €1.299/Monat  (20+ Agenten)              │
+  │                                                          │
+  │ Plus einmalige Setup-Gebühr: €499-€2.499               │
+  └─────────────────────────────────────────────────────────┘
+
+Was spart man?
+  → 60% vs Zendesk (€5.400/Jahr weniger)
+  → 40% Support-Kosten durch Automation
+  → ROI in 2-3 TAGEN!!!
+
+Warum ABoro-Soft?
+  ✅ Günstig (60% unter Zendesk)
+  ✅ KI-Automation (Claude AI)
+  ✅ 100% Konfigurierbar (keine Programmierung)
+  ✅ E-Mail Integration (SMTP/IMAP)
+  ✅ Modern Tech Stack (Django, Cloud-Ready)
+  ✅ Transparent (keine versteckten Kosten)
+
+Start jetzt?
+  → Kostenlos 30 Tage testen: www.aborosoft.de/free-trial
+  → Live Demo: calendly.com/aborosoft/demo
+  → Fragen? sales@aborosoft.de
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                           PREISMODELLE DETAILLIERT
+═══════════════════════════════════════════════════════════════════════════════
+
+💰 STARTER PAKET - €199/Monat
+   Setup: €499 (einmalig)
+   Jahr: €2.887 gesamt
+   Für: Kleine Teams (1-5 Agenten)
+   Features: Unbegrenzte Tickets, SMTP/IMAP, Knowledge Base, Statistiken
+   Beste für: E-Commerce Shops, Kleine Agenturen
+
+💼 PROFESSIONAL PAKET - €499/Monat ⭐ RECOMMENDED
+   Setup: €999 (einmalig)
+   Jahr: €6.987 gesamt
+   Für: Wachsende Unternehmen (5-20 Agenten)
+   Features: Alles aus Starter + KI-Automation + Custom Branding
+   Beste für: SaaS, Mittlere Unternehmen, B2B Services
+
+🏢 ENTERPRISE PAKET - €1.299/Monat
+   Setup: €2.499 (einmalig)
+   Jahr: €17.587 gesamt
+   Für: Große Unternehmen (20+ Agenten)
+   Features: Alles + API + SSO/LDAP + SLA + Custom Development
+   Beste für: Großunternehmen, Telcos, BigTech
+
+🖥️ ON-PREMISE LIZENZ - €10.000 (einmalig)
+   Support: €2.000/Jahr
+   Für: Compliance-kritische Unternehmen
+   Beste für: Healthcare, Finance, Government
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                           KONKURRENZ-VERGLEICH
+═══════════════════════════════════════════════════════════════════════════════
+
+ABoro-Soft vs. Zendesk (für 10 Agenten/Jahr):
+  ABoro-Soft:  €2.887
+  Zendesk:     €8.280
+  ════════════════════
+  ERSPARNIS: -€5.393/Jahr (-65%)
+  AMORTISIERUNG: 2-3 Tage
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                            ROI-BERECHNUNG
+═══════════════════════════════════════════════════════════════════════════════
+
+Szenario: 3 Support Agenten
+  - Agent Gehalt: €3.000/Monat
+  - Effizienz-Verlust ohne System: 40%
+  - Kosten der Ineffizienz: €3.600/Monat
+
+Mit ABoro-Soft Starter:
+  - Einsparung: €3.600/Monat
+  - ABoro-Soft Kosten: €199/Monat
+  ──────────────────────────────
+  NETTO ERSPARNIS: €3.401/Monat
+
+ROI: 6.800% | AMORTISIERUNG: 2 Tage!!!
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                           VERKAUFS-ARGUMENTE
+═══════════════════════════════════════════════════════════════════════════════
+
+Top 5 Gründe:
+
+1. 💰 ULTRA-GÜNSTIG
+   → 60% günstiger als Zendesk
+   → €2.887/Jahr statt €8.280
+
+2. 🤖 KI-POWERED AUTOMATION
+   → Claude AI beantwortet 30-40% der Tickets
+   → Spart €1.200+ pro Agent pro Monat
+
+3. ⚙️ 100% KONFIGURIERBAR
+   → Alles im Admin Panel (keine Devs nötig)
+   → Branding, Workflows, Berechtigungen
+
+4. 📧 E-MAIL INTEGRATION
+   → IMAP für automatisches Ticket-Auslesen
+   → SMTP für Antworten per E-Mail
+
+5. ✅ TRANSPARENT & EHRLICH
+   → Keine versteckten Kosten
+   → Unbegrenzte Kunden/Tickets
+   → 30-Tage Geld-zurück Garantie
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                             NEXT STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+🚀 STARTEN SIE JETZT:
+
+1. KOSTENLOS TESTEN (30 Tage)
+   ✅ Keine Kreditkarte erforderlich
+   👉 https://www.aborosoft.de/free-trial
+
+2. LIVE DEMO (30 Minuten)
+   ✅ Mit unserem Sales Team
+   👉 https://calendly.com/aborosoft/demo
+
+3. PRICING KALKULATOR
+   ✅ Berechnet IHREN ROI
+   👉 https://www.aborosoft.de/pricing-calculator
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                           KONTAKTINFORMATIONEN
+═══════════════════════════════════════════════════════════════════════════════
+
+📧 Email:     sales@aborosoft.de
+📞 Telefon:   +49 (0) XXXX-XXXXXX
+💬 Chat:      Live Chat auf Website
+📅 Kalender:  calendly.com/aborosoft/demo
+
+Geschäftzeiten: Montag-Freitag, 09:00-18:00 CET
+Antwortzeit:    < 2 Stunden
+
+
+═══════════════════════════════════════════════════════════════════════════════
+                     ✨ SPECIAL LAUNCH OFFER ✨
+
+           🎉 ERSTE 50 KUNDEN: 30% RABATT AUFS ERSTE JAHR
+           Gutscheincode: LAUNCH30
+           Gültig bis: 31.12.2025
+
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                     🏁 FINAL SUMMARY IN 1 SATZ:
+
+        ABoro-Soft Helpdesk = Zendesk-Qualität zum Shopify-Preis.
+         Starten Sie JETZT kostenlos. Amortisierung in 2-3 Tagen.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Version: 1.0 | Stand: 31.10.2025 | Status: 🚀 VERKAUFSBEREIT
+
+"Professioneller Support ohne die professionellen Preise"

@@ -70,7 +70,7 @@ class ClaudeAIService:
                 kb_context += f"\n- {article.title}:\n{article.content[:500]}...\n"
 
         # Build prompt for Claude
-        prompt = f"""Du bist ein hilfsbereiter Support-Agent für das ML Gruppe Helpdesk-System.
+        prompt = f"""Du bist ein hilfsbereiter Support-Agent für das ABoro-Soft Helpdesk-System.
 
 Ein Kunde hat folgendes Ticket erstellt:
 

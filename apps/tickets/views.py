@@ -54,7 +54,7 @@ Beschreibung:
 Ticket ansehen: {ticket_url}
 
 ---
-Diese Email wurde automatisch vom ML Gruppe Helpdesk System gesendet.
+Diese Email wurde automatisch vom ABoro-Soft Helpdesk System gesendet.
 """
 
     # Send to all agents
@@ -136,7 +136,7 @@ Beschreibung:
 Ticket ansehen: {ticket_url}
 
 ---
-Diese Email wurde automatisch vom ML Gruppe Helpdesk System gesendet.
+Diese Email wurde automatisch vom ABoro-Soft Helpdesk System gesendet.
 """
 
     try:
