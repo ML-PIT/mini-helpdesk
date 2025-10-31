@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABoro Helpdesk - Moderne Ticketing & Support-Software</title>
+    <meta name="description" content="Professionelle Helpdesk-Software für KMUs und Enterprise. Günstiger als Zendesk, einfacher zu nutzen.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: -1px;
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        header nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        header nav a:hover {
+            opacity: 0.8;
+        }
+
+        header .cta-btn {
+            background: white;
+            color: #667eea;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+
+        header .cta-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero .comparison {
+            background: rgba(255,255,255,0.15);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem auto;
+            max-width: 500px;
+            font-size: 1.1rem;
+        }
+
+        .hero .comparison strong {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: #f8f9fa;
+        }
+
+        .features .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin: 1rem 0;
+            color: #667eea;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .pricing .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            border: 2px solid #e0e0e0;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .pricing-card.featured {
+            border-color: #667eea;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .pricing-card li {
+            padding: 0.7rem 0;
+            color: #666;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .cta-section .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Lead Form */
+        .lead-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 2rem auto 0;
+            color: #333;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .lead-form h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-submit {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .form-submit:hover {
+            background: #764ba2;
+        }
+
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        footer .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        footer h4 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        footer ul {
+            list-style: none;
+        }
+
+        footer a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+
+        footer .footer-bottom {
+            border-top: 1px solid #444;
+            padding-top: 2rem;
+            text-align: center;
+            color: #999;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 6rem 2rem;
+            background: #f8f9fa;
+        }
+
+        .testimonials .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .testimonial p {
+            color: #666;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .testimonial .author {
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header nav ul {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            footer .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">ABoro</div>
+            <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Preise</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+                <li><a href="#" class="cta-btn">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Helpdesk-Software für moderne Teams</h1>
+        <p class="subtitle">Ticket-Management, Live-Chat, Knowledge Base - alles in einem System</p>
+        <div class="comparison">
+            <strong>€299/Monat vs €1.299+ (Zendesk)</strong>
+            <p>Die gleiche Power, ein Bruchteil der Kosten</p>
+        </div>
+        <div class="hero-buttons">
+            <a href="#contact" class="btn btn-primary">30 Tage kostenlosen Test starten</a>
+            <a href="#features" class="btn btn-secondary">Mehr erfahren →</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Kernfunktionen</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>📧 Ticket Management</h3>
+                    <p>Zentralisiertes Ticketing aus Email, Chat, Web-Forms. Automatische Priorisierung und Routing.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>💬 Live Chat</h3>
+                    <p>Echtzeit-Chat auf Ihrer Website mit Operator-Status, Offline-Messages und Visitor-Tracking.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📚 Knowledge Base</h3>
+                    <p>Self-Service Portal mit FAQ, Tutorials und Community. Reduziert Support Tickets um 40%.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🤖 AI Automation</h3>
+                    <p>Automatische Responses, Sentiment-Analyse, Smart Routing. Spart 30% Support-Zeit.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📊 Analytics & Reporting</h3>
+                    <p>Real-time Dashboards, KPI-Tracking, Team-Performance. Data-driven Optimization.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔌 Integrationen</h3>
+                    <p>100+ Integrationen: Slack, Microsoft Teams, Stripe, Shopify, Wordpress, uvm.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2 class="section-title">Was Kunden sagen</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <p>"ABoro hat unseren Support revolutioniert. Setup dauerte 2 Stunden, Kosten sanken um 60%. Sehr zu empfehlen!"</p>
+                    <div class="author">→ Sarah M., TechStartup GmbH</div>
+                </div>
+                <div class="testimonial">
+                    <p>"Gegenüber Zendesk eindeutig die bessere Wahl. Benutzerfreundlicher, Features sind genauso gut, Kosten halb so hoch."</p>
+                    <div class="author">→ Marcus P., CloudServices AG</div>
+                </div>
+                <div class="testimonial">
+                    <p>"Die AI Automation erspart uns täglich 3 Stunden Arbeit. Beste Investment der letzten Jahre!"</p>
+                    <div class="author">→ Julia K., Support Manager E-Commerce</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Einfache, transparente Preise</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Starter</h3>
+                    <div class="price">€299<span>/Monat</span></div>
+                    <p>Ideal für kleine Teams</p>
+                    <ul>
+                        <li>✓ bis 5 Agents</li>
+                        <li>✓ Unbegrenzte Tickets</li>
+                        <li>✓ Email + Web-Form</li>
+                        <li>✓ Basic Reports</li>
+                        <li>✓ Email Support</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary">Jetzt testen</a>
+                </div>
+                <div class="pricing-card featured">
+                    <h3>Professional</h3>
+                    <div class="price">€699<span>/Monat</span></div>
+                    <p>Für wachsende Unternehmen</p>
+                    <ul>
+                        <li>✓ bis 20 Agents</li>
+                        <li>✓ + Live Chat</li>
+                        <li>✓ + Knowledge Base</li>
+                        <li>✓ + AI Automation</li>
+                        <li>✓ Priority Support</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary">Jetzt testen</a>
+                </div>
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">Custom</div>
+                    <p>Unbegrenzte Skalierbarkeit</p>
+                    <ul>
+                        <li>✓ Unlimited Agents</li>
+                        <li>✓ + Custom Workflows</li>
+                        <li>✓ + API Access</li>
+                        <li>✓ + Dedicated Account Manager</li>
+                        <li>✓ 24/7 Phone Support</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary">Kontakt</a>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 2rem; color: #666;">
+                Alle Pläne inklusive 30 Tage kostenlos testen. Keine Kreditkarte erforderlich. Jederzeit kündbar.
+            </p>
+        </div>
+    </section>
+
+    <!-- Lead Form Section -->
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <h2>Kostenlosen Test starten</h2>
+            <p>30 Tage voll Zugriff. Keine Kreditkarte erforderlich. Keine Verpflichtung.</p>
+
+            <div class="lead-form">
+                <h3>Jetzt Zugang anfragen</h3>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Firma</label>
+                        <input type="text" name="company">
+                    </div>
+                    <div class="form-group">
+                        <label>Mitarbeiter-Anzahl</label>
+                        <input type="text" name="team_size" placeholder="z.B. 10-50">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon (optional)</label>
+                        <input type="tel" name="phone">
+                    </div>
+                    <button type="submit" class="form-submit">Test-Zugang anfordern →</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div>
+                <h4>Produkt</h4>
+                <ul>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Preise</a></li>
+                    <li><a href="#">Security</a></li>
+                    <li><a href="#">Roadmap</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Unternehmen</h4>
+                <ul>
+                    <li><a href="#">Über uns</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Karriere</a></li>
+                    <li><a href="#">Kontakt</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Dokumentation</a></li>
+                    <li><a href="#">API Docs</a></li>
+                    <li><a href="#">Community</a></li>
+                    <li><a href="#">Status</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Datenschutz</a></li>
+                    <li><a href="#">AGB</a></li>
+                    <li><a href="#">Security</a></li>
+                    <li><a href="#">Impressum</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 ABoro. Alle Rechte vorbehalten. | Made with care in Germany</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            // In production, send to backend
+            console.log('Lead captured:', data);
+            alert('Vielen Dank! Wir senden Ihnen einen kostenlosen Test-Zugang per Email.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>

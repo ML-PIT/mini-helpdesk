@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleibo - Helpdesk für Startups & Agencies</title>
+    <meta name="description" content="Der einfachste Helpdesk für Startups, Agencies und Freelancer. Günstiger, einfacher, schneller als Zendesk.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+            background: #fafafa;
+        }
+
+        /* Header & Navigation */
+        header {
+            background: white;
+            color: #1a1a1a;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-bottom: 3px solid #ff6b6b;
+        }
+
+        header nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            letter-spacing: 1px;
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        header nav a {
+            color: #1a1a1a;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        header nav a:hover {
+            color: #ff6b6b;
+        }
+
+        header .cta-btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        header .cta-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.2);
+            padding: 1.5rem;
+            border-radius: 10px;
+            min-width: 150px;
+        }
+
+        .stat .number {
+            font-size: 2rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #ff6b6b;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #ff6b6b;
+        }
+
+        /* Why Section */
+        .why {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .why .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .why-card {
+            background: #f5f5f5;
+            padding: 2rem;
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .why-card h3 {
+            font-size: 1.3rem;
+            margin: 1rem 0;
+            color: #1a1a1a;
+        }
+
+        .why-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: #f5f5f5;
+        }
+
+        .features .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #1a1a1a;
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .feature-item .icon {
+            color: #ff6b6b;
+            font-size: 1.5rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .feature-item h4 {
+            margin: 0.5rem 0;
+            color: #1a1a1a;
+        }
+
+        .feature-item p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .pricing .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-intro {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-intro p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-top: 1rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            border: 2px solid #e0e0e0;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .pricing-card.featured {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+            transform: scale(1.05);
+        }
+
+        .pricing-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        .pricing-card .subtitle {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin: 1.5rem 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .pricing-card li {
+            padding: 0.7rem 0;
+            color: #666;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 100%);
+            color: white;
+            padding: 4rem 2rem;
+        }
+
+        .form-section .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .form-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .lead-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+            color: #1a1a1a;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+        }
+
+        .form-submit {
+            width: 100%;
+            background: #ff6b6b;
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .form-submit:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 3rem 2rem 1rem;
+        }
+
+        footer .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        footer h4 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            color: #ff6b6b;
+        }
+
+        footer ul {
+            list-style: none;
+        }
+
+        footer a {
+            color: #bbb;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        footer a:hover {
+            color: #ff6b6b;
+        }
+
+        footer .footer-bottom {
+            border-top: 1px solid #333;
+            padding-top: 1rem;
+            text-align: center;
+            color: #999;
+        }
+
+        /* Comparison */
+        .comparison-section {
+            padding: 6rem 2rem;
+            background: #f5f5f5;
+        }
+
+        .comparison-section .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .check {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .cross {
+            color: #999;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header nav ul {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero-stats {
+                gap: 1rem;
+                flex-direction: column;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            footer .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            footer h4 {
+                color: white;
+            }
+
+            footer a {
+                display: inline;
+                margin-right: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .comparison-table {
+                font-size: 0.9rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">Sleibo</div>
+            <ul>
+                <li><a href="#why">Warum?</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Preise</a></li>
+                <li><a href="#comparison">vs. Zendesk</a></li>
+                <li><a href="#" class="cta-btn">Kostenlos testen</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Der einfachste Helpdesk.</h1>
+        <p class="tagline">Für Startups, Agencies und kleine Teams.</p>
+        <p class="subtitle">Support, Tickets, Live-Chat. Alles was Du brauchst. Alles was Du willst.</p>
+
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="number">60%</span>
+                <span class="label">günstiger als Zendesk</span>
+            </div>
+            <div class="stat">
+                <span class="number">2 min</span>
+                <span class="label">Setup-Zeit</span>
+            </div>
+            <div class="stat">
+                <span class="number">30 Tage</span>
+                <span class="label">Kostenlos</span>
+            </div>
+        </div>
+
+        <div class="hero-buttons">
+            <a href="#" class="btn btn-primary">Jetzt starten (kostenlos)</a>
+            <a href="#why" class="btn btn-secondary">Mehr erfahren →</a>
+        </div>
+    </section>
+
+    <!-- Why Section -->
+    <section class="why" id="why">
+        <div class="container">
+            <h2 class="section-title">Warum Sleibo?</h2>
+            <div class="why-grid">
+                <div class="why-card">
+                    <h3>⚡ Schnell</h3>
+                    <p>2 Minuten Setup. Keine komplexen Einstellungen. Werde sofort produktiv.</p>
+                </div>
+                <div class="why-card">
+                    <h3>💰 Bezahlbar</h3>
+                    <p>€99/Monat für Startups. Skaliert mit Deinem Wachstum. Keine versteckten Kosten.</p>
+                </div>
+                <div class="why-card">
+                    <h3>😊 Einfach</h3>
+                    <p>Designed für Teams, nicht für Enterprise-Admins. Intuitiv. Minimalistisch. Effektiv.</p>
+                </div>
+                <div class="why-card">
+                    <h3>🔧 Powerful</h3>
+                    <p>Live Chat, Automation, Knowledge Base, Analytics - alles dabei. Keine Add-ons nötig.</p>
+                </div>
+                <div class="why-card">
+                    <h3>🌍 Deutschsprachig</h3>
+                    <p>Deutsche Oberfläche, deutscher Support, deutschen Standards. Made in Germany.</p>
+                </div>
+                <div class="why-card">
+                    <h3>🚀 Für Startups gemacht</h3>
+                    <p>Von Startups, für Startups. Wir verstehen Deine Herausforderungen.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Alles was Du brauchst</h2>
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="icon">✓</div>
+                    <div>
+                        <h4>Ticket Management</h4>
+                        <p>Email, Web-Forms, Chat - alle in einem Dashboard</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">✓</div>
+                    <div>
+                        <h4>Live Chat</h4>
+                        <p>Chat auf deiner Website. Besucher helfen, bevor sie weg sind</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">✓</div>
+                    <div>
+                        <h4>Knowledge Base</h4>
+                        <p>Self-Service Portal. Kunden helfen sich selbst</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">✓</div>
+                    <div>
+                        <h4>Automation</h4>
+                        <p>Automatische Replies, Smart Routing, Rules Engine</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">✓</div>
+                    <div>
+                        <h4>Analytics</h4>
+                        <p>Real-time Stats. Sehe was funktioniert</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">✓</div>
+                    <div>
+                        <h4>Integrationen</h4>
+                        <p>Slack, Teams, Stripe, Shopify, WordPress & mehr</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">✓</div>
+                    <div>
+                        <h4>Teams Collaboration</h4>
+                        <p>Arbeite mit deinem Team. Zuweisungen, Notizen, Handoff</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">✓</div>
+                    <div>
+                        <h4>Mobile App</h4>
+                        <p>iOS & Android Apps. Support von überall</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">✓</div>
+                    <div>
+                        <h4>Kostenlose Migration</h4>
+                        <p>Von Zendesk, Freshdesk, oder anderen? Wir helfen dir</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="comparison-section" id="comparison">
+        <div class="container">
+            <h2 class="section-title">Sleibo vs. Zendesk</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Sleibo</th>
+                        <th>Zendesk</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Preis (Starter)</td>
+                        <td><span class="check">€99/Monat</span></td>
+                        <td>€299/Monat</td>
+                    </tr>
+                    <tr>
+                        <td>Setup Zeit</td>
+                        <td><span class="check">2 Minuten</span></td>
+                        <td>2-3 Tage</td>
+                    </tr>
+                    <tr>
+                        <td>Live Chat</td>
+                        <td><span class="check">✓ Inklusive</span></td>
+                        <td>+ €50/Monat (Zusatz)</td>
+                    </tr>
+                    <tr>
+                        <td>Knowledge Base</td>
+                        <td><span class="check">✓ Inklusive</span></td>
+                        <td>+ €60/Monat (Zusatz)</td>
+                    </tr>
+                    <tr>
+                        <td>Automation</td>
+                        <td><span class="check">✓ Inklusive</span></td>
+                        <td>+ €100/Monat (Zusatz)</td>
+                    </tr>
+                    <tr>
+                        <td>Deutschsprachiger Support</td>
+                        <td><span class="check">✓ Ja</span></td>
+                        <td><span class="cross">✗ Nur English</span></td>
+                    </tr>
+                    <tr>
+                        <td>Deutsche Datenschutz (DSGVO)</td>
+                        <td><span class="check">✓ Ja</span></td>
+                        <td><span class="cross">⚠ US-Server</span></td>
+                    </tr>
+                    <tr>
+                        <td>Monatlich kündbar</td>
+                        <td><span class="check">✓ Ja</span></td>
+                        <td>Jahresvertrag nötig</td>
+                    </tr>
+                    <tr>
+                        <td>Total Kosten/Jahr (3 Agents)</td>
+                        <td><span class="check">€2.988</span></td>
+                        <td>€11.916</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Einfache Preise</h2>
+            <div class="pricing-intro">
+                <p>30 Tage kostenlos. Dann monatlich. Jederzeit kündbar.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Starter</h3>
+                    <div class="subtitle">Für Freelancer & Small Teams</div>
+                    <div class="price">€99<span>/Monat</span></div>
+                    <ul>
+                        <li>✓ 3 Agents</li>
+                        <li>✓ Unbegrenzte Tickets</li>
+                        <li>✓ Email & Web-Form</li>
+                        <li>✓ Live Chat</li>
+                        <li>✓ Knowledge Base</li>
+                        <li>✓ Basic Automation</li>
+                        <li>✓ Email Support</li>
+                    </ul>
+                    <a href="#form" class="btn btn-primary">Kostenlos testen</a>
+                </div>
+
+                <div class="pricing-card featured">
+                    <h3>Wachstum</h3>
+                    <div class="subtitle">Beliebtester Plan</div>
+                    <div class="price">€299<span>/Monat</span></div>
+                    <ul>
+                        <li>✓ 10 Agents</li>
+                        <li>✓ Alles aus Starter</li>
+                        <li>✓ Advanced Automation</li>
+                        <li>✓ Custom Workflows</li>
+                        <li>✓ Advanced Analytics</li>
+                        <li>✓ API Access</li>
+                        <li>✓ Priority Support</li>
+                    </ul>
+                    <a href="#form" class="btn btn-primary">Kostenlos testen</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="subtitle">Für große Teams</div>
+                    <div class="price">Custom</div>
+                    <ul>
+                        <li>✓ Unbegrenzte Agents</li>
+                        <li>✓ Alles aus Wachstum</li>
+                        <li>✓ Custom Integration</li>
+                        <li>✓ Dedicated Support</li>
+                        <li>✓ SLA Guarantees</li>
+                        <li>✓ White Label</li>
+                        <li>✓ On-Premise Option</li>
+                    </ul>
+                    <a href="#form" class="btn btn-primary">Kontakt</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lead Form Section -->
+    <section class="form-section" id="form">
+        <div class="container">
+            <h2>Starten Sie kostenlos</h2>
+
+            <div class="lead-form">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Startupname</label>
+                        <input type="text" name="startup_name">
+                    </div>
+                    <div class="form-group">
+                        <label>Team-Größe</label>
+                        <select name="team_size">
+                            <option>1-5 Leute</option>
+                            <option>6-10 Leute</option>
+                            <option>11-20 Leute</option>
+                            <option>20+ Leute</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon (optional)</label>
+                        <input type="tel" name="phone">
+                    </div>
+                    <button type="submit" class="form-submit">Kostenlos starten →</button>
+                    <p style="text-align: center; margin-top: 1rem; color: #999; font-size: 0.9rem;">
+                        30 Tage kostenlos. Keine Kreditkarte. Jederzeit kündbar.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div>
+                <h4>Produkt</h4>
+                <ul>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Preise</a></li>
+                    <li><a href="#">Roadmap</a></li>
+                    <li><a href="#">Status</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Unternehmen</h4>
+                <ul>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Community</a></li>
+                    <li><a href="#">Kontakt</a></li>
+                    <li><a href="#">Karriere</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="#">Docs</a></li>
+                    <li><a href="#">API</a></li>
+                    <li><a href="#">Templates</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#">Security</a></li>
+                    <li><a href="#">Impressum</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Sleibo. Proudly made for startups.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            console.log('Lead captured:', data);
+            alert('Vielen Dank! Kostenlos-Zugang wird per Email gesendet. Welcome! 🚀');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
