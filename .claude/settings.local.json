@@ -17,12 +17,16 @@
       "Bash(pip uninstall:*)",
       "Bash(timeout 5 python:*)",
       "Bash(awk '{print $9, \"\"\"\"(\"\"\"\" $5 \"\"\"\")\"\"\"\"}')",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(mkdir:*)",
+      "Bash(taskkill:*)",
+      "Bash(wmic:*)",
+      "Bash(rg:*)"
     ],
     "deny": [],
-    "ask": [],
     "additionalDirectories": [
       "C:\\Users\\aborowczyk\\PycharmProjects\\FlaskProject\\mini-helpdesk"
-    ]
+    ],
+    "ask": []
   }
 }

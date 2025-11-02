@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Chat Support</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+        }
+    </style>
+</head>
+<body>
+
+<!-- Live Chat Widget -->
+<div id="chat-widget" style="position: fixed; {{ settings.widget_position|default:'bottom-right' }}: 20px; z-index: 9999; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <!-- Chat Button -->
+    <div id="chat-button" 
+         style="width: 60px; height: 60px; background: {{ settings.widget_color|default:'#667eea' }}; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s;"
+         onclick="toggleChat()">
+        <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12c0 1.54.36 3.04 1.05 4.35L2 22l5.65-1.05C9.96 21.64 11.46 22 13 22h-1c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.4 0-2.74-.35-3.9-.99L4 20l.99-4.1C4.35 14.74 4 13.4 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8z"/>
+        </svg>
+    </div>
+
+    <!-- Chat Window -->
+    <div id="chat-window" 
+         style="display: none; width: 350px; height: 450px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); margin-bottom: 10px; overflow: hidden; border: 1px solid #e0e0e0;">
+        
+        <!-- Chat Header -->
+        <div style="background: {{ settings.widget_color|default:'#667eea' }}; color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600;">Live Support</h3>
+                <p style="margin: 0; font-size: 12px; opacity: 0.9;" id="chat-status">
+                    {% if available_agents > 0 %}
+                        {{ available_agents }} Agent{{ available_agents|pluralize }} online
+                    {% elif ai_available %}
+                        KI-Support verfügbar - Agent übernimmt bei Bedarf
+                    {% else %}
+                        Offline - Senden Sie uns eine Nachricht
+                    {% endif %}
+                </p>
+            </div>
+            <button onclick="toggleChat()" class="close-btn" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0;">×</button>
+        </div>
+
+        <!-- Pre-Chat Form -->
+        <div id="pre-chat-form" style="padding: 20px; {% if not is_available %}display: none;{% endif %}">
+            {% if is_customer %}
+            <h4 style="margin: 0 0 16px 0; font-size: 14px; color: #333;">Hallo {{ user_name }}! 👋</h4>
+            <p style="margin: 0 0 16px 0; font-size: 12px; color: #666;">
+                {% if available_agents > 0 %}
+                    Ein Support-Agent ist verfügbar. Starten Sie den Chat!
+                {% elif ai_available %}
+                    Unser KI-Assistent hilft Ihnen gerne weiter. Ein menschlicher Agent übernimmt bei komplexeren Fragen.
+                {% else %}
+                    Derzeit ist kein Agent verfügbar. Hinterlassen Sie eine Nachricht.
+                {% endif %}
+            </p>
+            <div style="margin-bottom: 16px;">
+                <textarea id="initial-message" placeholder="Wie können wir Ihnen helfen?" 
+                          style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical; height: 80px;" required></textarea>
+            </div>
+            <button onclick="startChat()" 
+                    style="width: 100%; padding: 12px; background: {{ settings.widget_color|default:'#667eea' }}; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 600;">
+                {% if available_agents > 0 %}💬 Chat starten{% elif ai_available %}🤖 KI-Chat starten{% else %}📧 Nachricht senden{% endif %}
+            </button>
+            {% else %}
+            <h4 style="margin: 0 0 16px 0; font-size: 14px; color: #333;">Starten Sie ein Gespräch</h4>
+            <div style="margin-bottom: 12px;">
+                <input type="text" id="visitor-name" placeholder="Ihr Name" 
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;" required>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <input type="email" id="visitor-email" placeholder="Ihre E-Mail" 
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;" required>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <textarea id="initial-message" placeholder="Wie können wir Ihnen helfen?" 
+                          style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical; height: 80px;" required></textarea>
+            </div>
+            <button onclick="startChat()" 
+                    style="width: 100%; padding: 12px; background: {{ settings.widget_color|default:'#667eea' }}; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 600;">
+                Chat starten
+            </button>
+            {% endif %}
+        </div>
+
+        <!-- Offline Form -->
+        <div id="offline-form" style="padding: 20px; {% if is_available %}display: none;{% endif %}">
+            <h4 style="margin: 0 0 16px 0; font-size: 14px; color: #333;">Senden Sie uns eine Nachricht</h4>
+            <p style="font-size: 12px; color: #666; margin-bottom: 16px;">{{ settings.offline_message }}</p>
+            <div style="margin-bottom: 12px;">
+                <input type="text" id="offline-name" placeholder="Ihr Name" 
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;" required>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <input type="email" id="offline-email" placeholder="Ihre E-Mail" 
+                       style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;" required>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <textarea id="offline-message" placeholder="Ihre Nachricht" 
+                          style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; resize: vertical; height: 80px;" required></textarea>
+            </div>
+            <button onclick="sendOfflineMessage()" 
+                    style="width: 100%; padding: 12px; background: #666; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 600;">
+                Nachricht senden
+            </button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="chat-messages" style="display: none; height: 300px; overflow-y: auto; padding: 16px; border-bottom: 1px solid #eee;">
+            <!-- Messages will be loaded here -->
+        </div>
+
+        <!-- Chat Input -->
+        <div id="chat-input" style="display: none; padding: 16px; background: #f8f9fa;">
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="message-input" placeholder="Nachricht eingeben..." 
+                       style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;"
+                       onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()" 
+                        style="padding: 10px 16px; background: {{ settings.widget_color|default:'#667eea' }}; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let chatOpen = false;
+let chatSession = null;
+let sessionId = '{{ session_id }}';
+let messagePolling = null;
+let isCustomer = {{ is_customer|yesno:"true,false" }};
+let customerName = '{{ user_name|escapejs }}';
+let customerEmail = '{{ user_email|escapejs }}';
+
+function toggleChat() {
+    chatOpen = !chatOpen;
+    const chatWindow = document.getElementById('chat-window');
+    const chatButton = document.getElementById('chat-button');
+    
+    if (chatOpen) {
+        chatWindow.style.display = 'block';
+        chatButton.style.transform = 'scale(0.9)';
+    } else {
+        chatWindow.style.display = 'none';
+        chatButton.style.transform = 'scale(1)';
+        if (messagePolling) {
+            clearInterval(messagePolling);
+        }
+    }
+}
+
+function startChat() {
+    let name, email;
+    const message = document.getElementById('initial-message').value.trim();
+    
+    if (isCustomer) {
+        // Use logged-in customer data
+        name = customerName;
+        email = customerEmail;
+        
+        if (!message) {
+            alert('Bitte geben Sie eine Nachricht ein.');
+            return;
+        }
+    } else {
+        // Use form data for anonymous visitors
+        name = document.getElementById('visitor-name').value.trim();
+        email = document.getElementById('visitor-email').value.trim();
+        
+        if (!name || !email || !message) {
+            alert('Bitte füllen Sie alle Felder aus.');
+            return;
+        }
+    }
+    
+    const data = {
+        session_id: sessionId,
+        name: name,
+        email: email,
+        message: message,
+        page_url: window.location.href
+    };
+    
+    fetch('/chat/api/start/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            chatSession = data;
+            showChatInterface();
+            startMessagePolling();
+        } else {
+            alert('Fehler beim Starten des Chats: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Fehler beim Starten des Chats.');
+    });
+}
+
+function showChatInterface() {
+    document.getElementById('pre-chat-form').style.display = 'none';
+    document.getElementById('chat-messages').style.display = 'block';
+    document.getElementById('chat-input').style.display = 'block';
+    
+    // Update status
+    const statusEl = document.getElementById('chat-status');
+    if (chatSession.status === 'active') {
+        statusEl.textContent = `${chatSession.assigned_agent} ist online`;
+    } else {
+        statusEl.textContent = 'Warten auf einen Mitarbeiter...';
+    }
+    
+    loadMessages();
+}
+
+function sendMessage() {
+    const messageInput = document.getElementById('message-input');
+    const message = messageInput.value.trim();
+    
+    if (!message || !chatSession) return;
+    
+    const data = {
+        session_id: sessionId,
+        message: message
+    };
+    
+    fetch('/chat/api/send/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            messageInput.value = '';
+            loadMessages();
+        } else {
+            alert('Fehler beim Senden der Nachricht: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function loadMessages() {
+    if (!chatSession) return;
+    
+    fetch(`/chat/api/messages/${sessionId}/`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayMessages(data.messages);
+            
+            // Update status if changed
+            if (data.session_status !== chatSession.status) {
+                chatSession.status = data.session_status;
+                const statusEl = document.getElementById('chat-status');
+                if (data.session_status === 'active') {
+                    statusEl.textContent = 'Agent ist online';
+                } else if (data.session_status === 'ended') {
+                    statusEl.textContent = 'Chat beendet';
+                    if (messagePolling) {
+                        clearInterval(messagePolling);
+                    }
+                }
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error loading messages:', error);
+    });
+}
+
+function displayMessages(messages) {
+    const messagesContainer = document.getElementById('chat-messages');
+    messagesContainer.innerHTML = '';
+    
+    messages.forEach(msg => {
+        const messageEl = document.createElement('div');
+        messageEl.style.marginBottom = '12px';
+        
+        const isVisitor = msg.is_from_visitor;
+        const isSystem = msg.message_type === 'system';
+        
+        if (isSystem) {
+            messageEl.innerHTML = `
+                <div style="text-align: center; color: #666; font-size: 12px; font-style: italic;">
+                    ${msg.message}
+                </div>
+            `;
+        } else {
+            const alignStyle = isVisitor ? 'margin-left: 20px; text-align: right;' : 'margin-right: 20px;';
+            const bgColor = isVisitor ? '{{ settings.widget_color|default:"#667eea" }}' : '#f1f3f4';
+            const textColor = isVisitor ? 'white' : '#333';
+            
+            messageEl.innerHTML = `
+                <div style="${alignStyle}">
+                    <div style="display: inline-block; max-width: 80%; padding: 8px 12px; border-radius: 12px; background: ${bgColor}; color: ${textColor}; font-size: 14px; word-wrap: break-word;">
+                        ${msg.message}
+                    </div>
+                    <div style="font-size: 11px; color: #666; margin-top: 4px;">
+                        ${new Date(msg.timestamp).toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'})}
+                    </div>
+                </div>
+            `;
+        }
+        
+        messagesContainer.appendChild(messageEl);
+    });
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function startMessagePolling() {
+    // Poll for new messages every 2 seconds
+    messagePolling = setInterval(loadMessages, 2000);
+}
+
+// Auto-open chat if in iframe
+window.addEventListener('message', function(event) {
+    if (event.data && event.data.action === 'openChat') {
+        if (document.getElementById('chat-window').style.display === 'none') {
+            toggleChat();
+        }
+    }
+});
+
+// Check if loaded in iframe and auto-open
+if (window !== window.parent) {
+    // This is in an iframe
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            if (document.getElementById('chat-window').style.display === 'none') {
+                toggleChat();
+            }
+        }, 500);
+    });
+}
+
+function sendOfflineMessage() {
+    const name = document.getElementById('offline-name').value.trim();
+    const email = document.getElementById('offline-email').value.trim();
+    const message = document.getElementById('offline-message').value.trim();
+    
+    if (!name || !email || !message) {
+        alert('Bitte füllen Sie alle Felder aus.');
+        return;
+    }
+    
+    // Create a ticket instead of chat for offline messages
+    const data = {
+        name: name,
+        email: email,
+        message: message,
+        source: 'chat_widget'
+    };
+    
+    // You could integrate this with your ticket system
+    alert('Vielen Dank für Ihre Nachricht. Wir melden uns so schnell wie möglich bei Ihnen.');
+    toggleChat();
+}
+</script>
+
+</body>
+</html>

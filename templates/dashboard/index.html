@@ -114,13 +114,17 @@
                 <div style="font-size: 32px; margin-bottom: 10px;">📊</div>
                 Statistiken
             </a>
-            <a href="/admin/" style="background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+            <a href="{% url 'main:admin_settings' %}" style="background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
                 <div style="font-size: 32px; margin-bottom: 10px;">⚙️</div>
-                Admin-Bereich
+                System Einstellungen
             </a>
             <a href="/admin/accounts/user/" style="background: linear-gradient(135deg, #ffa94d 0%, #ff922b 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
                 <div style="font-size: 32px; margin-bottom: 10px;">👥</div>
                 Benutzerverwaltung
+            </a>
+            <a href="/admin/" style="background: linear-gradient(135deg, #868e96 0%, #495057 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
+                <div style="font-size: 32px; margin-bottom: 10px;">🔧</div>
+                Erweiterte Admin
             </a>
             <a href="{% url 'accounts:profile_edit' %}" style="background: linear-gradient(135deg, #4ecdc4 0%, #2d9cdb 100%); color: white; padding: 25px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.2s; font-weight: 600;">
                 <div style="font-size: 32px; margin-bottom: 10px;">👤</div>

@@ -701,5 +701,22 @@
             this.reset();
         });
     </script>
+
+    <!-- Live Chat Widget -->
+    <iframe src="/chat/widget/" 
+            style="position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; border: none; z-index: 9999; background: transparent;"
+            id="chat-widget-frame">
+    </iframe>
+
+    <script>
+    // Auto-resize chat widget iframe
+    window.addEventListener('message', function(e) {
+        if (e.data.type === 'chatWidgetResize') {
+            const iframe = document.getElementById('chat-widget-frame');
+            iframe.style.width = e.data.width + 'px';
+            iframe.style.height = e.data.height + 'px';
+        }
+    });
+    </script>
 </body>
 </html>

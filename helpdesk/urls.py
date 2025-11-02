@@ -11,6 +11,7 @@ urlpatterns = [
     path('auth/', include('apps.accounts.urls')),
     path('tickets/', include('apps.tickets.urls')),
     path('kb/', include('apps.knowledge.urls')),
+    path('chat/', include('apps.chat.urls')),
     # path('api/v1/', include('apps.api.urls')),  # Uncomment when REST framework is installed
     path('', include('apps.main.urls')),
 ]
@@ -21,6 +22,6 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # Customize admin site
-admin.site.site_header = "ML Gruppe Helpdesk Administration"
-admin.site.site_title = "ML Gruppe Helpdesk Admin"
-admin.site.index_title = "Willkommen im Helpdesk Admin"
+admin.site.site_header = f"{settings.COMPANY_NAME} Helpdesk Administration"
+admin.site.site_title = f"{settings.COMPANY_NAME} Helpdesk Administration"
+admin.site.index_title = f"Willkommen im {settings.COMPANY_NAME} Helpdesk Admin"

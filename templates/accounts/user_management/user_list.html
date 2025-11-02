@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Benutzerverwaltung - {{ app_title }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="font-size: 28px; font-weight: 600; margin: 0;">👥 Benutzerverwaltung</h1>
+    {% if can_create_users %}
+    <a href="{% url 'accounts:user_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Neuen Benutzer erstellen
+    </a>
+    {% endif %}
+</div>
+
+<!-- Filter and Search -->
+<div class="card" style="margin-bottom: 20px;">
+    <form method="get" class="filter-form">
+        <div style="display: grid; grid-template-columns: 1fr 200px 150px 120px; gap: 15px; align-items: end;">
+            <div>
+                <label for="search" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">Suchen:</label>
+                <input type="text" name="search" id="search" value="{{ search }}" 
+                       placeholder="Name, E-Mail oder Benutzername..." 
+                       style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            
+            {% if available_roles %}
+            <div>
+                <label for="role" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">Rolle:</label>
+                <select name="role" id="role" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">Alle Rollen</option>
+                    {% for value, label in available_roles %}
+                    <option value="{{ value }}" {% if role_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            
+            <div>
+                <label for="status" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">Status:</label>
+                <select name="status" id="status" style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">Alle</option>
+                    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Aktiv</option>
+                    <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inaktiv</option>
+                </select>
+            </div>
+            
+            <div>
+                <button type="submit" style="width: 100%; padding: 8px 12px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Filtern
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Users Table -->
+<div class="card">
+    {% if users %}
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #495057;">Benutzer</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #495057;">Rolle</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #495057;">Kontakt</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #495057;">Status</th>
+                    <th style="padding: 12px; text-align: left; font-weight: 600; color: #495057;">Erstellt</th>
+                    <th style="padding: 12px; text-align: center; font-weight: 600; color: #495057;">Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr style="border-bottom: 1px solid #dee2e6;" data-user-id="{{ user.id }}">
+                    <td style="padding: 12px;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 40px; height: 40px; background: {% if user.is_active %}#667eea{% else %}#6c757d{% endif %}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 12px;">
+                                {{ user.first_name.0|upper }}{{ user.last_name.0|upper }}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: #333;">{{ user.full_name }}</div>
+                                <div style="font-size: 14px; color: #666;">@{{ user.username }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="padding: 12px;">
+                        <span style="background: {% if user.role == 'admin' %}#dc3545{% elif user.role == 'support_agent' %}#28a745{% else %}#6c757d{% endif %}; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                            {{ user.get_role_display }}
+                        </span>
+                        {% if user.role == 'support_agent' and user.support_level %}
+                        <div style="font-size: 12px; color: #666; margin-top: 2px;">Level {{ user.support_level }}</div>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px;">
+                        <div style="font-size: 14px; color: #333;">{{ user.email }}</div>
+                        {% if user.phone %}
+                        <div style="font-size: 12px; color: #666;">{{ user.phone }}</div>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px;">
+                        <span class="status-badge" style="background: {% if user.is_active %}#d4edda; color: #155724{% else %}#f8d7da; color: #721c24{% endif %}; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                            {% if user.is_active %}✅ Aktiv{% else %}❌ Inaktiv{% endif %}
+                        </span>
+                    </td>
+                    <td style="padding: 12px;">
+                        <div style="font-size: 14px; color: #333;">{{ user.created_at|date:"d.m.Y" }}</div>
+                        <div style="font-size: 12px; color: #666;">{{ user.created_at|date:"H:i" }}</div>
+                    </td>
+                    <td style="padding: 12px; text-align: center;">
+                        <div style="display: flex; gap: 5px; justify-content: center;">
+                            <a href="{% url 'accounts:user_detail' user.id %}" 
+                               style="padding: 6px 10px; background: #17a2b8; color: white; text-decoration: none; border-radius: 4px; font-size: 12px;" 
+                               title="Details anzeigen">
+                                👁️
+                            </a>
+                            <a href="{% url 'accounts:user_edit' user.id %}" 
+                               style="padding: 6px 10px; background: #ffc107; color: #212529; text-decoration: none; border-radius: 4px; font-size: 12px;" 
+                               title="Bearbeiten">
+                                ✏️
+                            </a>
+                            {% if user != request.user %}
+                            <button onclick="toggleUserStatus({{ user.id }})" 
+                                    style="padding: 6px 10px; background: {% if user.is_active %}#dc3545{% else %}#28a745{% endif %}; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;" 
+                                    title="{% if user.is_active %}Deaktivieren{% else %}Aktivieren{% endif %}">
+                                {% if user.is_active %}🔒{% else %}🔓{% endif %}
+                            </button>
+                            <button onclick="resetUserPassword({{ user.id }})" 
+                                    style="padding: 6px 10px; background: #6f42c1; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;" 
+                                    title="Passwort zurücksetzen">
+                                🔑
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if users.has_other_pages %}
+    <div style="margin-top: 20px; text-align: center;">
+        <div style="display: inline-flex; gap: 5px;">
+            {% if users.has_previous %}
+            <a href="?page=1{% if search %}&search={{ search }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+               style="padding: 8px 12px; background: #f8f9fa; border: 1px solid #dee2e6; text-decoration: none; color: #495057; border-radius: 4px;">
+                « Erste
+            </a>
+            <a href="?page={{ users.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+               style="padding: 8px 12px; background: #f8f9fa; border: 1px solid #dee2e6; text-decoration: none; color: #495057; border-radius: 4px;">
+                ‹ Zurück
+            </a>
+            {% endif %}
+            
+            <span style="padding: 8px 12px; background: #667eea; color: white; border-radius: 4px; font-weight: 600;">
+                Seite {{ users.number }} von {{ users.paginator.num_pages }}
+            </span>
+            
+            {% if users.has_next %}
+            <a href="?page={{ users.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+               style="padding: 8px 12px; background: #f8f9fa; border: 1px solid #dee2e6; text-decoration: none; color: #495057; border-radius: 4px;">
+                Weiter ›
+            </a>
+            <a href="?page={{ users.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% if role_filter %}&role={{ role_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" 
+               style="padding: 8px 12px; background: #f8f9fa; border: 1px solid #dee2e6; text-decoration: none; color: #495057; border-radius: 4px;">
+                Letzte »
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <div style="text-align: center; padding: 40px; color: #666;">
+        <div style="font-size: 48px; margin-bottom: 20px;">👥</div>
+        <h3>Keine Benutzer gefunden</h3>
+        <p>{% if search or role_filter or status_filter %}Versuchen Sie andere Suchkriterien.{% else %}Es sind noch keine Benutzer vorhanden.{% endif %}</p>
+        {% if can_create_users %}
+        <a href="{% url 'accounts:user_create' %}" class="btn btn-primary" style="margin-top: 15px;">
+            Ersten Benutzer erstellen
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleUserStatus(userId) {
+    if (!confirm('Möchten Sie den Status dieses Benutzers wirklich ändern?')) {
+        return;
+    }
+    
+    fetch(`/auth/users/${userId}/toggle-status/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Fehler: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ein Fehler ist aufgetreten.');
+    });
+}
+
+function resetUserPassword(userId) {
+    if (!confirm('Möchten Sie das Passwort dieses Benutzers wirklich zurücksetzen? Der Benutzer muss beim nächsten Login ein neues Passwort vergeben.')) {
+        return;
+    }
+    
+    fetch(`/auth/users/${userId}/reset-password/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Neues temporäres Passwort: ${data.temp_password}\n\nBitte notieren Sie sich das Passwort und geben Sie es sicher an den Benutzer weiter. Der Benutzer muss das Passwort beim nächsten Login ändern.`);
+        } else {
+            alert('Fehler: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ein Fehler ist aufgetreten.');
+    });
+}
+</script>
+
+{% endblock %}

@@ -73,6 +73,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(_('phone'), max_length=20, blank=True, null=True)
     department = models.CharField(_('department'), max_length=100, blank=True, null=True)
     location = models.CharField(_('location'), max_length=100, blank=True, null=True)
+    
+    # Address information for customers
+    street = models.CharField(_('street'), max_length=200, blank=True, null=True)
+    postal_code = models.CharField(_('postal code'), max_length=10, blank=True, null=True)
+    city = models.CharField(_('city'), max_length=100, blank=True, null=True)
+    country = models.CharField(_('country'), max_length=100, blank=True, null=True, default='Deutschland')
 
     # Status and metadata
     is_active = models.BooleanField(_('active'), default=True, db_index=True)
@@ -82,6 +88,8 @@ class User(AbstractBaseUser, PermissionsMixin):
                                                default=False,
                                                help_text=_('If True, user must change password on next login'))
     last_login = models.DateTimeField(_('last login'), null=True, blank=True)
+    last_activity = models.DateTimeField(_('last activity'), null=True, blank=True, 
+                                        help_text=_('Last time user was active (for online status)'))
     created_at = models.DateTimeField(_('created at'), default=timezone.now, db_index=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
@@ -102,6 +110,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     def full_name(self):
         """Return the user's full name"""
         return f"{self.first_name} {self.last_name}"
+    
+    @property
+    def is_online(self):
+        """Check if user is considered online (active within last 5 minutes)"""
+        if not self.last_activity:
+            return False
+        
+        from datetime import timedelta
+        return timezone.now() - self.last_activity < timedelta(minutes=5)
+    
+    def update_activity(self):
+        """Update last activity timestamp"""
+        self.last_activity = timezone.now()
+        self.save(update_fields=['last_activity'])
 
     def has_permission(self, permission):
         """Check if user has specific permission based on role"""
@@ -172,6 +194,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             'phone': self.phone,
             'department': self.department,
             'location': self.location,
+            'street': self.street,
+            'postal_code': self.postal_code,
+            'city': self.city,
+            'country': self.country,
             'is_active': self.is_active,
             'email_verified': self.email_verified,
             'last_login': self.last_login.isoformat() if self.last_login else None,

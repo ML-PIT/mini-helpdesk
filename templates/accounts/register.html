@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrierung - ML Gruppe Helpdesk</title>
+    <title>Registrierung - {{ app_title }}</title>
     <style>
         * {
             margin: 0;
@@ -121,7 +121,7 @@
 <body>
     <div class="register-container">
         <h1>Konto erstellen</h1>
-        <p class="subtitle">Registrieren Sie sich für das ML Gruppe Helpdesk</p>
+        <p class="subtitle">Registrieren Sie sich für das {{ company_name }} Helpdesk</p>
 
         {% if messages %}
             {% for message in messages %}

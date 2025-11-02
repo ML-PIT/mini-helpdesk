@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Zugriff verweigert - {{ app_title }}{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 60px 20px;">
+    <svg width="64" height="64" fill="#dc3545" viewBox="0 0 24 24" style="margin-bottom: 20px;">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+    </svg>
+    
+    <h1 style="color: #dc3545; margin-bottom: 16px; font-size: 28px;">Zugriff verweigert</h1>
+    
+    <p style="color: #6c757d; margin-bottom: 32px; font-size: 16px;">
+        Sie haben nicht die erforderlichen Berechtigungen, um auf den Live Chat zuzugreifen.<br>
+        Nur Support-Agenten und Administratoren können das Chat-System verwenden.
+    </p>
+    
+    <a href="{% url 'main:dashboard' %}" class="btn btn-primary">
+        Zurück zum Dashboard
+    </a>
+</div>
+{% endblock %}

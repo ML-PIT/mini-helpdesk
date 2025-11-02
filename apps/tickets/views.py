@@ -552,7 +552,7 @@ def statistics_dashboard(request):
 
     from django.db.models import Count, Q, F, Value
     from django.db.models.functions import Concat
-    from .models import MobileClassroom, MobileClassroomLocation
+    # MobileClassroom imports removed - not needed
 
     # Get filter from request
     category_filter = request.GET.get('category')
@@ -560,7 +560,7 @@ def statistics_dashboard(request):
     # Get all closed and resolved tickets for analysis
     all_tickets = Ticket.objects.filter(
         models.Q(status='closed') | models.Q(status='resolved')
-    ).select_related('created_by', 'assigned_to', 'category', 'mobile_classroom')
+    ).select_related('created_by', 'assigned_to', 'category')
 
     # Apply category filter if provided
     if category_filter:
@@ -681,14 +681,8 @@ def statistics_dashboard(request):
         .exclude(category__isnull=True)[:10]
     )
 
-    # Mobile classroom issues
-    classroom_stats = (
-        all_tickets
-        .filter(mobile_classroom__isnull=False)
-        .values('mobile_classroom__id', 'mobile_classroom__name', 'mobile_classroom__location__name')
-        .annotate(count=Count('id'))
-        .order_by('-count')[:10]
-    )
+    # Mobile classroom stats removed - not needed
+    classroom_stats = []
 
     # Priority distribution
     priority_stats = (

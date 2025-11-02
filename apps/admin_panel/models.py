@@ -121,6 +121,47 @@ class SystemSettings(models.Model):
         help_text='When the license was last validated'
     )
 
+    # AI Settings
+    ai_enabled = models.BooleanField(
+        _('AI Chat Support aktiviert'),
+        default=False,
+        help_text='KI-gestützte Antworten im Live Chat aktivieren'
+    )
+    ai_provider = models.CharField(
+        _('AI Provider'),
+        max_length=20,
+        choices=[
+            ('chatgpt', 'ChatGPT (OpenAI)'),
+            ('claude', 'Claude (Anthropic)'),
+        ],
+        default='claude',
+        help_text='Welche KI für automatische Antworten verwenden'
+    )
+    openai_api_key = models.CharField(
+        _('OpenAI API Key'),
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text='API Key für ChatGPT Integration'
+    )
+    anthropic_api_key = models.CharField(
+        _('Anthropic API Key'),
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text='API Key für Claude Integration (optional, nutzt sonst Free-Version)'
+    )
+    ai_response_delay = models.IntegerField(
+        _('AI Antwort Verzögerung (Sekunden)'),
+        default=3,
+        help_text='Wartezeit bevor KI antwortet (um natürlicher zu wirken)'
+    )
+    ai_max_tokens = models.IntegerField(
+        _('AI Max Tokens'),
+        default=500,
+        help_text='Maximale Länge der KI-Antworten'
+    )
+
     # System Settings
     timezone = models.CharField(_('Timezone'), max_length=100, default='Europe/Berlin')
     language = models.CharField(
@@ -214,3 +255,143 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.action} - {self.created_at}"
+
+
+class CustomField(models.Model):
+    """Dynamic custom fields that can be added to models"""
+    
+    FIELD_TYPES = [
+        ('text', _('Text Field')),
+        ('textarea', _('Text Area')),
+        ('number', _('Number')),
+        ('email', _('Email')),
+        ('url', _('URL')),
+        ('date', _('Date')),
+        ('datetime', _('Date & Time')),
+        ('boolean', _('Yes/No')),
+        ('select', _('Dropdown')),
+        ('multiselect', _('Multiple Selection')),
+    ]
+    
+    TARGET_MODELS = [
+        ('user', _('User/Customer')),
+        ('ticket', _('Ticket')),
+        ('company', _('Company/Organization')),
+    ]
+    
+    name = models.CharField(_('Field Name'), max_length=100)
+    label = models.CharField(_('Display Label'), max_length=200)
+    field_type = models.CharField(_('Field Type'), max_length=20, choices=FIELD_TYPES)
+    target_model = models.CharField(_('Target Model'), max_length=20, choices=TARGET_MODELS)
+    
+    # Field configuration
+    is_required = models.BooleanField(_('Required'), default=False)
+    default_value = models.TextField(_('Default Value'), blank=True, null=True)
+    help_text = models.TextField(_('Help Text'), blank=True, null=True)
+    choices = models.TextField(_('Choices (one per line)'), blank=True, null=True,
+                              help_text='For dropdown/multiselect fields, enter one option per line')
+    
+    # Display options
+    is_visible_in_list = models.BooleanField(_('Visible in List View'), default=False)
+    is_searchable = models.BooleanField(_('Searchable'), default=False)
+    display_order = models.IntegerField(_('Display Order'), default=0)
+    
+    # Permissions
+    visible_to_customers = models.BooleanField(_('Visible to Customers'), default=True)
+    editable_by_customers = models.BooleanField(_('Editable by Customers'), default=True)
+    
+    is_active = models.BooleanField(_('Active'), default=True)
+    created_at = models.DateTimeField(_('created at'), default=timezone_now)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+    
+    class Meta:
+        verbose_name = _('Custom Field')
+        verbose_name_plural = _('Custom Fields')
+        ordering = ['target_model', 'display_order', 'name']
+        unique_together = ['name', 'target_model']
+    
+    def __str__(self):
+        return f"{self.get_target_model_display()}: {self.label}"
+    
+    def get_choices_list(self):
+        """Get choices as a list"""
+        if self.choices:
+            return [choice.strip() for choice in self.choices.split('\n') if choice.strip()]
+        return []
+    
+    def get_form_field(self):
+        """Generate Django form field for this custom field"""
+        from django import forms
+        
+        field_kwargs = {
+            'label': self.label,
+            'required': self.is_required,
+            'help_text': self.help_text,
+        }
+        
+        if self.default_value:
+            field_kwargs['initial'] = self.default_value
+        
+        if self.field_type == 'text':
+            return forms.CharField(max_length=255, **field_kwargs)
+        elif self.field_type == 'textarea':
+            return forms.CharField(widget=forms.Textarea, **field_kwargs)
+        elif self.field_type == 'number':
+            return forms.IntegerField(**field_kwargs)
+        elif self.field_type == 'email':
+            return forms.EmailField(**field_kwargs)
+        elif self.field_type == 'url':
+            return forms.URLField(**field_kwargs)
+        elif self.field_type == 'date':
+            return forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), **field_kwargs)
+        elif self.field_type == 'datetime':
+            return forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}), **field_kwargs)
+        elif self.field_type == 'boolean':
+            return forms.BooleanField(**field_kwargs)
+        elif self.field_type == 'select':
+            choices = [(choice, choice) for choice in self.get_choices_list()]
+            return forms.ChoiceField(choices=choices, **field_kwargs)
+        elif self.field_type == 'multiselect':
+            choices = [(choice, choice) for choice in self.get_choices_list()]
+            return forms.MultipleChoiceField(choices=choices, widget=forms.CheckboxSelectMultiple, **field_kwargs)
+        
+        return forms.CharField(**field_kwargs)
+
+
+class CustomFieldValue(models.Model):
+    """Values for custom fields"""
+    
+    field = models.ForeignKey(CustomField, on_delete=models.CASCADE, related_name='values')
+    object_id = models.PositiveIntegerField(_('Object ID'))  # ID of the target object (user, ticket, etc.)
+    value = models.TextField(_('Value'), blank=True, null=True)
+    
+    created_at = models.DateTimeField(_('created at'), default=timezone_now)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+    
+    class Meta:
+        verbose_name = _('Custom Field Value')
+        verbose_name_plural = _('Custom Field Values')
+        unique_together = ['field', 'object_id']
+    
+    def __str__(self):
+        return f"{self.field.label}: {self.value}"
+    
+    def get_formatted_value(self):
+        """Get value formatted according to field type"""
+        if not self.value:
+            return None
+        
+        if self.field.field_type == 'boolean':
+            return self.value.lower() in ['true', '1', 'yes', 'on']
+        elif self.field.field_type == 'number':
+            try:
+                return int(self.value)
+            except ValueError:
+                return None
+        elif self.field.field_type == 'multiselect':
+            try:
+                return json.loads(self.value) if self.value.startswith('[') else [self.value]
+            except (json.JSONDecodeError, AttributeError):
+                return [self.value]
+        
+        return self.value

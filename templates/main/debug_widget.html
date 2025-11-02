@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug: Chat Widget Codes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #495057;
+            margin-top: 30px;
+        }
+        .code-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .code {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Debug: Chat Widget Integration Codes</h1>
+        
+        <div class="info">
+            <h3>📊 Aktuelle Einstellungen:</h3>
+            <ul>
+                <li><strong>Site URL:</strong> {{ site_url }}</li>
+                <li><strong>Widget URL:</strong> {{ widget_url }}</li>
+                <li><strong>Chat aktiviert:</strong> {% if chat_settings.is_enabled %}✅ Ja{% else %}❌ Nein{% endif %}</li>
+                <li><strong>Chat Farbe:</strong> <span style="background: {{ chat_settings.widget_color }}; color: white; padding: 2px 8px; border-radius: 3px;">{{ chat_settings.widget_color }}</span></li>
+                <li><strong>AI aktiviert:</strong> {% if system_settings.ai_enabled %}✅ Ja{% else %}❌ Nein{% endif %}</li>
+                <li><strong>AI Provider:</strong> {{ system_settings.ai_provider|title }}</li>
+            </ul>
+        </div>
+
+        <h2>📋 HTML iframe Code (empfohlen):</h2>
+        <div class="code-box">
+            <p>Fügen Sie diesen Code vor dem &lt;/body&gt; Tag Ihrer Website ein:</p>
+            <div class="code" id="iframe-code">{{ embed_code }}</div>
+            <button class="btn" onclick="copyToClipboard('iframe-code')">📋 Code kopieren</button>
+        </div>
+
+        <h2>⚡ JavaScript Code (dynamisch):</h2>
+        <div class="code-box">
+            <p>Alternative: Lädt das Widget dynamisch nach dem Seitenaufbau:</p>
+            <div class="code" id="js-code">{{ js_embed_code }}</div>
+            <button class="btn" onclick="copyToClipboard('js-code')">📋 Code kopieren</button>
+        </div>
+
+        <h2>🧪 Widget Test:</h2>
+        <div class="code-box">
+            <p>Testen Sie das Widget direkt:</p>
+            <button class="btn" onclick="window.open('{{ widget_url }}', '_blank')">🚀 Widget in neuem Tab öffnen</button>
+        </div>
+
+        <h2>💡 Integration Tipps:</h2>
+        <div class="info">
+            <ul>
+                <li>Das Widget wird automatisch unten rechts auf der Seite angezeigt</li>
+                <li>Es ist responsive und funktioniert auf Desktop und Mobile</li>
+                <li>Position und Farbe können in den Chat Einstellungen angepasst werden</li>
+                <li>Das Widget zeigt automatisch Online/Offline Status</li>
+                <li>{% if system_settings.ai_enabled %}✅ AI ist aktiviert - automatische Antworten verfügbar{% else %}❌ AI ist deaktiviert{% endif %}</li>
+                <li>{% if chat_settings.is_enabled %}✅ Chat ist aktiviert{% else %}❌ Chat ist deaktiviert - Widget wird "Offline" anzeigen{% endif %}</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/" class="btn">🏠 Zurück zum Dashboard</a>
+            {% if user.is_superuser %}
+            <a href="/settings/" class="btn">⚙️ Zu den Settings</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+    function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        const text = element.textContent;
+        
+        // Moderne Clipboard API
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                showCopySuccess(event.target);
+            }).catch(err => {
+                fallbackCopy(text, event.target);
+            });
+        } else {
+            fallbackCopy(text, event.target);
+        }
+    }
+
+    function fallbackCopy(text, button) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            showCopySuccess(button);
+        } catch (err) {
+            alert('Kopieren fehlgeschlagen. Bitte manuell markieren und kopieren.');
+        }
+        
+        document.body.removeChild(textArea);
+    }
+
+    function showCopySuccess(button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '✅ Kopiert!';
+        button.style.background = '#28a745';
+        
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.style.background = '#667eea';
+        }, 2000);
+    }
+    </script>
+</body>
+</html>

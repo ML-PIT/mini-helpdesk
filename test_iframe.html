@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+        }
+        iframe {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Aboro-IT Helpdesk Chat Widget Test</h1>
+        
+        <div class="test-section">
+            <h2>📱 Chat Widget Eingebettet</h2>
+            <p>Das folgende iframe zeigt das Live Chat Widget:</p>
+            
+            <!-- Aboro-IT Helpdesk Live Chat Widget -->
+            <iframe src="http://localhost:8000/chat/widget/?iframe=true" 
+                    width="400" 
+                    height="600" 
+                    frameborder="0" 
+                    style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+            </iframe>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔧 Integration Code</h2>
+            <p>Fügen Sie diesen Code in Ihre Website ein:</p>
+            <pre style="background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 12px;">
+&lt;!-- Aboro-IT Helpdesk Live Chat Widget --&gt;
+&lt;iframe src="http://localhost:8000/chat/widget/?iframe=true" 
+        width="400" 
+        height="600" 
+        frameborder="0" 
+        style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);"&gt;
+&lt;/iframe&gt;
+            </pre>
+        </div>
+        
+        <div class="test-section">
+            <h2>✨ Features</h2>
+            <ul>
+                <li>✅ Responsive Design für Desktop und Mobile</li>
+                <li>✅ KI-gestützte Antworten (Claude & ChatGPT)</li>
+                <li>✅ Automatische Agent-Zuweisung</li>
+                <li>✅ Echtzeit-Messaging</li>
+                <li>✅ Anpassbare Farben und Position</li>
+                <li>✅ Online/Offline Status</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,381 @@
+/* Custom Admin Theme - Match Main Design */
+
+/* Main Admin Styling */
+#header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border-bottom: none !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+}
+
+#header a:link, #header a:visited {
+    color: rgba(255,255,255,0.9) !important;
+}
+
+#header a:hover, #header a:focus {
+    color: white !important;
+    text-decoration: none !important;
+}
+
+#branding h1, #branding h1 a:link, #branding h1 a:visited {
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+/* User Tools */
+#user-tools {
+    color: rgba(255,255,255,0.9) !important;
+}
+
+#user-tools a {
+    color: rgba(255,255,255,0.9) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+#user-tools a:hover {
+    color: white !important;
+    border-bottom: 1px solid white !important;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    background: #f8f9fa !important;
+    border: none !important;
+    color: #495057 !important;
+    border-radius: 0 !important;
+    padding: 15px 20px !important;
+    margin: 0 !important;
+}
+
+.breadcrumbs a {
+    color: #667eea !important;
+    text-decoration: none !important;
+}
+
+.breadcrumbs a:hover {
+    color: #495057 !important;
+}
+
+/* Main Content */
+#content {
+    margin: 0 !important;
+    padding: 20px !important;
+    background: #f8f9fa !important;
+    min-height: calc(100vh - 120px) !important;
+}
+
+/* Module Styling */
+.module {
+    background: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+    margin-bottom: 20px !important;
+    overflow: hidden !important;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 15px 20px !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+}
+
+/* Tables */
+table {
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+thead th {
+    background: #f8f9fa !important;
+    color: #495057 !important;
+    font-weight: 600 !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    padding: 12px !important;
+}
+
+tbody tr {
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+tbody tr:hover {
+    background: #f8f9fa !important;
+}
+
+tbody td {
+    padding: 12px !important;
+    border: none !important;
+}
+
+/* Forms */
+.form-row {
+    border-bottom: 1px solid #dee2e6 !important;
+    padding: 15px 0 !important;
+}
+
+.form-row:last-child {
+    border-bottom: none !important;
+}
+
+fieldset {
+    background: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+    margin-bottom: 20px !important;
+    padding: 0 !important;
+}
+
+fieldset h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 15px 20px !important;
+    margin: 0 0 20px 0 !important;
+    font-size: 16px !important;
+}
+
+fieldset .form-row {
+    padding: 10px 20px !important;
+}
+
+/* Input Fields */
+input[type="text"], input[type="password"], input[type="email"], 
+input[type="url"], input[type="number"], textarea, select {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 6px !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    transition: border-color 0.2s !important;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, 
+input[type="email"]:focus, input[type="url"]:focus, 
+input[type="number"]:focus, textarea:focus, select:focus {
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+    outline: none !important;
+}
+
+/* Buttons */
+.default, input[type="submit"], .button, button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 10px 20px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: transform 0.2s !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+}
+
+.default:hover, input[type="submit"]:hover, .button:hover, button:hover {
+    transform: translateY(-1px) !important;
+    color: white !important;
+    text-decoration: none !important;
+}
+
+.default:active, input[type="submit"]:active, .button:active, button:active {
+    transform: translateY(0) !important;
+}
+
+/* Delete Button */
+.deletelink {
+    background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%) !important;
+    color: white !important;
+}
+
+.deletelink:hover {
+    color: white !important;
+}
+
+/* Success/Error Messages */
+.messagelist {
+    margin: 0 0 20px 0 !important;
+    padding: 0 !important;
+}
+
+.messagelist li {
+    background: #d4edda !important;
+    color: #155724 !important;
+    border: 1px solid #c3e6cb !important;
+    border-radius: 6px !important;
+    padding: 12px 15px !important;
+    margin-bottom: 10px !important;
+    list-style: none !important;
+}
+
+.messagelist li.error {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+    border-color: #f5c6cb !important;
+}
+
+.messagelist li.warning {
+    background: #fff3cd !important;
+    color: #856404 !important;
+    border-color: #ffeaa7 !important;
+}
+
+/* Dashboard Modules */
+#content-main .module {
+    margin-bottom: 20px !important;
+}
+
+.dashboard .module table {
+    width: 100% !important;
+}
+
+.dashboard .module h2 a {
+    color: white !important;
+    text-decoration: none !important;
+}
+
+/* Sidebar */
+#changelist-sidebar {
+    background: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+    padding: 0 !important;
+}
+
+#changelist-sidebar h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 15px 20px !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+}
+
+#changelist-sidebar h3 {
+    background: #f8f9fa !important;
+    color: #495057 !important;
+    font-weight: 600 !important;
+    padding: 10px 20px !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    border-top: 1px solid #dee2e6 !important;
+}
+
+#changelist-sidebar ul {
+    padding: 10px 0 !important;
+    margin: 0 !important;
+}
+
+#changelist-sidebar li {
+    padding: 5px 20px !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+}
+
+#changelist-sidebar li:last-child {
+    border-bottom: none !important;
+}
+
+#changelist-sidebar a {
+    color: #667eea !important;
+    text-decoration: none !important;
+}
+
+#changelist-sidebar a:hover {
+    color: #495057 !important;
+}
+
+/* Change List */
+#changelist .actions {
+    background: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+    padding: 15px 20px !important;
+    margin-bottom: 20px !important;
+}
+
+.actions select {
+    margin-right: 10px !important;
+}
+
+/* Pagination */
+.paginator {
+    color: #495057 !important;
+    text-align: center !important;
+    padding: 20px !important;
+}
+
+.paginator a {
+    color: #667eea !important;
+    text-decoration: none !important;
+    padding: 8px 12px !important;
+    margin: 0 2px !important;
+    border-radius: 4px !important;
+    border: 1px solid #dee2e6 !important;
+    display: inline-block !important;
+}
+
+.paginator a:hover {
+    background: #667eea !important;
+    color: white !important;
+    border-color: #667eea !important;
+}
+
+.paginator .this-page {
+    background: #667eea !important;
+    color: white !important;
+    padding: 8px 12px !important;
+    margin: 0 2px !important;
+    border-radius: 4px !important;
+    border: 1px solid #667eea !important;
+    display: inline-block !important;
+}
+
+/* Login Form */
+.login {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+}
+
+.login .form-row {
+    border-bottom: none !important;
+    padding: 10px 0 !important;
+}
+
+.login input[type="text"], .login input[type="password"] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Footer */
+#footer {
+    background: #f8f9fa !important;
+    color: #868e96 !important;
+    text-align: center !important;
+    padding: 20px !important;
+    border-top: 1px solid #dee2e6 !important;
+    margin-top: 40px !important;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    #content {
+        padding: 10px !important;
+    }
+    
+    .module h2, fieldset h2 {
+        font-size: 14px !important;
+        padding: 12px 15px !important;
+    }
+    
+    .form-row {
+        padding: 10px 15px !important;
+    }
+    
+    fieldset .form-row {
+        padding: 8px 15px !important;
+    }
+}

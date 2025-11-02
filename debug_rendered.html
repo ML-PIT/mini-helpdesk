@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Einstellungen - </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-brand-logo {
+            height: 40px;
+            width: auto;
+            max-width: 200px;
+        }
+
+        .navbar-brand-text {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .navbar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .navbar-menu a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .navbar-menu button:hover {
+            background: rgba(255,255,255,0.2) !important;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .role-badge.admin {
+            background: #ff6b6b;
+        }
+
+        .role-badge.support_agent {
+            background: #4ecdc4;
+        }
+
+        .role-badge.customer {
+            background: #95e1d3;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+
+        /* Messages */
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #51cf66;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffd43b;
+            color: #333;
+        }
+
+        .btn-secondary {
+            background: #868e96;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Status badges */
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-open {
+            background: #51cf66;
+            color: white;
+        }
+
+        .status-in_progress {
+            background: #ffd43b;
+            color: #333;
+        }
+
+        .status-pending {
+            background: #74c0fc;
+            color: white;
+        }
+
+        .status-resolved {
+            background: #51cf66;
+            color: white;
+        }
+
+        .status-closed {
+            background: #868e96;
+            color: white;
+        }
+
+        /* Priority badges */
+        .priority-badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .priority-low {
+            background: #d3f9d8;
+            color: #2b8a3e;
+        }
+
+        .priority-medium {
+            background: #fff3bf;
+            color: #f08c00;
+        }
+
+        .priority-high {
+            background: #ffc9c9;
+            color: #c92a2a;
+        }
+
+        .priority-critical {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        /* Support Level Badges */
+        .level-badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .level-level_1 {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .level-level_2 {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .level-level_3 {
+            background: #fce4ec;
+            color: #c2185b;
+        }
+
+        .level-level_4 {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        /* Table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background: #f8f9fa;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #868e96;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        /* Utility classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-3 {
+            margin-top: 20px;
+        }
+
+        .mb-3 {
+            margin-bottom: 20px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 10px;
+        }
+    </style>
+    
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                
+                <span class="navbar-brand-text"></span>
+            </div>
+            <div class="navbar-menu">
+                
+                <a href="/auth/login/">Login</a>
+                <a href="/auth/register/">Registrieren</a>
+                
+                
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Messages -->
+        
+
+        
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="font-size: 28px; font-weight: 600; margin: 0;">System Einstellungen</h1>
+    <a href="/" class="btn btn-secondary">
+        ← Zurück zum Dashboard
+    </a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    
+    
+    <!-- Branding Section -->
+    <div class="card" style="margin-bottom: 30px;">
+        <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 25px 0; color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">
+            🎨 Branding & Erscheinungsbild
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+            <div class="form-group">
+                <label for="id_app_name" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    Anwendungsname
+                </label>
+                <input type="text" name="app_name" value="Helpdesk" class="form-control" maxlength="255" required id="id_app_name">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_company_name" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    Firmenname
+                </label>
+                <input type="text" name="company_name" value="Company" class="form-control" maxlength="255" required id="id_company_name">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_site_url" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    Website URL
+                </label>
+                <input type="url" name="site_url" value="http://localhost:8000" class="form-control" required id="id_site_url">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_logo" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    Logo
+                </label>
+                <input type="file" name="logo" class="form-control" accept="image/*" id="id_logo">
+                
+            </div>
+        </div>
+    </div>
+    
+    <!-- Email Configuration -->
+    <div class="card" style="margin-bottom: 30px;">
+        <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 25px 0; color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">
+            📧 E-Mail Konfiguration
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+            <div class="form-group">
+                <label for="id_smtp_host" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    SMTP Server
+                </label>
+                <input type="text" name="smtp_host" value="smtp.office365.com" class="form-control" maxlength="255" required id="id_smtp_host">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_smtp_port" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    SMTP Port
+                </label>
+                <input type="number" name="smtp_port" value="587" class="form-control" required id="id_smtp_port">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_smtp_username" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    SMTP Benutzername
+                </label>
+                <input type="text" name="smtp_username" class="form-control" maxlength="255" id="id_smtp_username">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_smtp_password" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    SMTP Passwort
+                </label>
+                <input type="password" name="smtp_password" class="form-control" id="id_smtp_password">
+                <small style="color: #868e96; font-size: 12px;">Leer lassen um aktuelles Passwort zu behalten</small>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="smtp_use_tls" class="form-check-input" id="id_smtp_use_tls" checked>
+                <label for="id_smtp_use_tls" style="margin: 0; cursor: pointer; font-weight: 600; color: #495057;">
+                    TLS verwenden
+                </label>
+            </div>
+            
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+                <input type="checkbox" name="send_email_notifications" class="form-check-input" id="id_send_email_notifications" checked>
+                <label for="id_send_email_notifications" style="margin: 0; cursor: pointer; font-weight: 600; color: #495057;">
+                    E-Mail Benachrichtigungen senden
+                </label>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Features -->
+    <div class="card" style="margin-bottom: 30px;">
+        <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 25px 0; color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">
+            ⚙️ System Features
+        </h2>
+        
+        <div class="form-group">
+            <label for="id_max_upload_size_mb" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                Maximale Upload-Größe (MB)
+            </label>
+            <input type="number" name="max_upload_size_mb" value="16" class="form-control" required id="id_max_upload_size_mb">
+        </div>
+    </div>
+    
+    <!-- Live Chat Settings -->
+    <div class="card" style="margin-bottom: 30px;">
+        <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 25px 0; color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">
+            💬 Live Chat Einstellungen
+        </h2>
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="chat_enabled" class="form-check-input" id="id_chat_enabled" checked>
+                <label for="id_chat_enabled" style="margin: 0; cursor: pointer; font-weight: 600; color: #495057;">
+                    Live Chat aktiviert
+                </label>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+                <label for="id_widget_color" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    Chat Widget Farbe
+                </label>
+                <input type="color" name="widget_color" value="#667eea" class="form-control" maxlength="7" required id="id_widget_color">
+            </div>
+            
+            <div class="form-group">
+                <label for="id_widget_position" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    Chat Widget Position
+                </label>
+                <select name="widget_position" class="form-control" id="id_widget_position">
+  <option value="bottom-right" selected>Unten Rechts</option>
+
+  <option value="bottom-left">Unten Links</option>
+
+</select>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+                <label for="id_welcome_message" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    Willkommensnachricht
+                </label>
+                <textarea name="welcome_message" cols="40" rows="3" class="form-control" required id="id_welcome_message">
+Hallo! Wie können wir Ihnen helfen?</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_offline_message" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    Offline-Nachricht
+                </label>
+                <textarea name="offline_message" cols="40" rows="3" class="form-control" required id="id_offline_message">
+Wir sind derzeit offline. Senden Sie uns eine E-Mail und wir melden uns so schnell wie möglich.</textarea>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="auto_assign" class="form-check-input" id="id_auto_assign" checked>
+                <label for="id_auto_assign" style="margin: 0; cursor: pointer; font-weight: 600; color: #495057;">
+                    Automatische Zuweisung
+                </label>
+            </div>
+            <small style="color: #868e96; font-size: 12px; display: block; margin-top: 5px;">
+                Neue Chats automatisch an verfügbare Agenten zuweisen
+            </small>
+        </div>
+    </div>
+    
+    <!-- Chat Widget Integration -->
+    <div class="card" style="margin-bottom: 30px;">
+        <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 25px 0; color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">
+            🔗 Chat Widget Integration
+        </h2>
+        
+        <div style="margin-bottom: 20px;">
+            <p style="color: #495057; margin-bottom: 15px;">
+                Verwenden Sie den folgenden Code, um das Live Chat Widget in externe Websites einzubinden:
+            </p>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                <strong style="color: #495057; display: block; margin-bottom: 10px;">Widget URL:</strong>
+                <div style="background: white; padding: 12px; border: 1px solid #dee2e6; border-radius: 4px; font-family: monospace; font-size: 14px; color: #6f42c1;">
+                    http://localhost:8000/chat/widget/
+                </div>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+                <strong style="color: #495057; display: block; margin-bottom: 10px;">📋 HTML Iframe Code (empfohlen):</strong>
+                <textarea readonly 
+                          style="width: 100%; height: 120px; font-family: monospace; font-size: 12px; background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 12px; resize: vertical;"
+                          onclick="this.select();">&lt;!-- Aboro-IT Helpdesk Live Chat Widget --&gt;
+&lt;iframe src=&quot;http://localhost:8000/chat/widget/&quot; 
+        width=&quot;400&quot; 
+        height=&quot;600&quot; 
+        frameborder=&quot;0&quot; 
+        style=&quot;position: fixed; bottom: 20px; right: 20px; z-index: 9999; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);&quot;&gt;
+&lt;/iframe&gt;</textarea>
+                <div style="margin-top: 10px;">
+                    <button type="button" onclick="copyToClipboard('iframe-code')" class="btn" style="background: #28a745; color: white; font-size: 12px; padding: 8px 16px;">
+                        📋 Code kopieren
+                    </button>
+                    <small style="color: #868e96; margin-left: 10px;">Fügen Sie diesen Code vor dem schließenden &lt;/body&gt; Tag ein</small>
+                </div>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px;">
+                <strong style="color: #495057; display: block; margin-bottom: 10px;">⚡ JavaScript Code (dynamisch):</strong>
+                <textarea readonly 
+                          style="width: 100%; height: 140px; font-family: monospace; font-size: 12px; background: white; border: 1px solid #dee2e6; border-radius: 4px; padding: 12px; resize: vertical;"
+                          onclick="this.select();">&lt;!-- Aboro-IT Helpdesk Live Chat Widget (JavaScript) --&gt;
+&lt;script&gt;
+(function() {
+    var iframe = document.createElement(&#x27;iframe&#x27;);
+    iframe.src = &#x27;http://localhost:8000/chat/widget/&#x27;;
+    iframe.width = &#x27;400&#x27;;
+    iframe.height = &#x27;600&#x27;;
+    iframe.frameBorder = &#x27;0&#x27;;
+    iframe.style.cssText = &#x27;position: fixed; bottom: 20px; right: 20px; z-index: 9999; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);&#x27;;
+    document.body.appendChild(iframe);
+})();
+&lt;/script&gt;</textarea>
+                <div style="margin-top: 10px;">
+                    <button type="button" onclick="copyToClipboard('js-code')" class="btn" style="background: #17a2b8; color: white; font-size: 12px; padding: 8px 16px;">
+                        📋 Code kopieren
+                    </button>
+                    <small style="color: #868e96; margin-left: 10px;">Lädt das Widget dynamisch nach dem Seitenaufbau</small>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-radius: 6px; border-left: 4px solid #2196f3;">
+                <h4 style="margin: 0 0 10px 0; color: #1976d2; font-size: 16px;">💡 Integration Tipps:</h4>
+                <ul style="margin: 0; padding-left: 20px; color: #495057;">
+                    <li>Das Widget wird automatisch unten rechts auf der Seite angezeigt</li>
+                    <li>Es ist responsive und funktioniert auf Desktop und Mobile</li>
+                    <li>Position und Farbe können in den Chat Einstellungen angepasst werden</li>
+                    <li>Das Widget zeigt automatisch Online/Offline Status</li>
+                    <li>✅ Chat ist derzeit <strong>aktiviert</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Settings -->
+    <div class="card" style="margin-bottom: 30px;">
+        <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 25px 0; color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">
+            🤖 KI Chat Support
+        </h2>
+        
+        <div class="form-group" style="margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="ai_enabled" class="form-check-input" id="id_ai_enabled" checked>
+                <label for="id_ai_enabled" style="margin: 0; cursor: pointer; font-weight: 600; color: #495057;">
+                    KI Chat Support aktiviert
+                </label>
+            </div>
+            <small style="color: #868e96; font-size: 12px; display: block; margin-top: 5px;">
+                KI-gestützte Antworten für den Live Chat aktivieren
+            </small>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+                <label for="id_ai_provider" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    KI Provider
+                </label>
+                <select name="ai_provider" class="form-control" id="id_ai_provider">
+  <option value="chatgpt">ChatGPT (OpenAI)</option>
+
+  <option value="claude" selected>Claude (Anthropic)</option>
+
+</select>
+                <small style="color: #868e96; font-size: 12px; display: block; margin-top: 5px;">
+                    Claude kann auch ohne API Key in der Free-Version genutzt werden
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_ai_response_delay" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    KI Antwort Verzögerung (Sekunden)
+                </label>
+                <input type="number" name="ai_response_delay" value="3" class="form-control" min="1" max="60" required id="id_ai_response_delay">
+                <small style="color: #868e96; font-size: 12px; display: block; margin-top: 5px;">
+                    Wartezeit bevor KI antwortet (wirkt natürlicher)
+                </small>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+                <label for="id_openai_api_key" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    OpenAI API Key
+                </label>
+                <input type="text" name="openai_api_key" class="form-control" placeholder="sk-..." id="id_openai_api_key">
+                <small style="color: #868e96; font-size: 12px; display: block; margin-top: 5px;">
+                    Erforderlich für ChatGPT Integration. Leer lassen um aktuellen Key zu behalten.
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_anthropic_api_key" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    Anthropic API Key
+                </label>
+                <input type="text" name="anthropic_api_key" class="form-control" placeholder="sk-ant-..." id="id_anthropic_api_key">
+                <small style="color: #868e96; font-size: 12px; display: block; margin-top: 5px;">
+                    Optional für Claude Pro Features. Leer lassen um Free-Version zu nutzen.
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_ai_max_tokens" style="font-weight: 600; color: #495057; margin-bottom: 8px; display: block;">
+                    KI Max Tokens
+                </label>
+                <input type="number" name="ai_max_tokens" value="500" class="form-control" min="100" max="2000" required id="id_ai_max_tokens">
+                <small style="color: #868e96; font-size: 12px; display: block; margin-top: 5px;">
+                    Maximale Länge der KI-Antworten (100-2000 Tokens)
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Save Button -->
+    <div style="text-align: center; margin-top: 40px;">
+        <button type="submit" class="btn btn-primary" style="padding: 15px 40px; font-size: 16px; font-weight: 600;">
+            💾 Einstellungen speichern
+        </button>
+    </div>
+</form>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    outline: none;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+input[type="color"].form-control {
+    height: 50px;
+    padding: 5px;
+    border-radius: 8px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: #868e96;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+}
+</style>
+
+<script>
+function copyToClipboard(type) {
+    let text = '';
+    
+    if (type === 'iframe-code') {
+        text = `\u003C!\u002D\u002D Aboro\u002DIT Helpdesk Live Chat Widget \u002D\u002D\u003E\u000A\u003Ciframe src\u003D\u0022http://localhost:8000/chat/widget/\u0022 \u000A        width\u003D\u0022400\u0022 \u000A        height\u003D\u0022600\u0022 \u000A        frameborder\u003D\u00220\u0022 \u000A        style\u003D\u0022position: fixed\u003B bottom: 20px\u003B right: 20px\u003B z\u002Dindex: 9999\u003B border\u002Dradius: 10px\u003B box\u002Dshadow: 0 4px 20px rgba(0,0,0,0.15)\u003B\u0022\u003E\u000A\u003C/iframe\u003E`;
+    } else if (type === 'js-code') {
+        text = `\u003C!\u002D\u002D Aboro\u002DIT Helpdesk Live Chat Widget (JavaScript) \u002D\u002D\u003E\u000A\u003Cscript\u003E\u000A(function() {\u000A    var iframe \u003D document.createElement(\u0027iframe\u0027)\u003B\u000A    iframe.src \u003D \u0027http://localhost:8000/chat/widget/\u0027\u003B\u000A    iframe.width \u003D \u0027400\u0027\u003B\u000A    iframe.height \u003D \u0027600\u0027\u003B\u000A    iframe.frameBorder \u003D \u00270\u0027\u003B\u000A    iframe.style.cssText \u003D \u0027position: fixed\u003B bottom: 20px\u003B right: 20px\u003B z\u002Dindex: 9999\u003B border\u002Dradius: 10px\u003B box\u002Dshadow: 0 4px 20px rgba(0,0,0,0.15)\u003B\u0027\u003B\u000A    document.body.appendChild(iframe)\u003B\u000A})()\u003B\u000A\u003C/script\u003E`;
+    }
+    
+    // Erstelle ein temporäres textarea Element
+    const tempTextarea = document.createElement('textarea');
+    tempTextarea.value = text;
+    document.body.appendChild(tempTextarea);
+    
+    // Wähle und kopiere den Text
+    tempTextarea.select();
+    tempTextarea.setSelectionRange(0, 99999); // Für mobile Geräte
+    
+    try {
+        document.execCommand('copy');
+        // Feedback für den Nutzer
+        if (type === 'iframe-code') {
+            event.target.innerHTML = '✅ Kopiert!';
+            event.target.style.background = '#28a745';
+        } else {
+            event.target.innerHTML = '✅ Kopiert!';
+            event.target.style.background = '#17a2b8';
+        }
+        
+        // Zurück zum ursprünglichen Text nach 2 Sekunden
+        setTimeout(() => {
+            event.target.innerHTML = '📋 Code kopieren';
+            if (type === 'iframe-code') {
+                event.target.style.background = '#28a745';
+            } else {
+                event.target.style.background = '#17a2b8';
+            }
+        }, 2000);
+    } catch (err) {
+        console.error('Kopieren fehlgeschlagen: ', err);
+        alert('Kopieren fehlgeschlagen. Bitte manuell markieren und kopieren.');
+    }
+    
+    // Entferne das temporäre Element
+    document.body.removeChild(tempTextarea);
+}
+
+// Alternative moderne Clipboard API (falls verfügbar)
+if (navigator.clipboard && window.isSecureContext) {
+    function copyToClipboard(type) {
+        let text = '';
+        
+        if (type === 'iframe-code') {
+            text = `\u003C!\u002D\u002D Aboro\u002DIT Helpdesk Live Chat Widget \u002D\u002D\u003E\u000A\u003Ciframe src\u003D\u0022http://localhost:8000/chat/widget/\u0022 \u000A        width\u003D\u0022400\u0022 \u000A        height\u003D\u0022600\u0022 \u000A        frameborder\u003D\u00220\u0022 \u000A        style\u003D\u0022position: fixed\u003B bottom: 20px\u003B right: 20px\u003B z\u002Dindex: 9999\u003B border\u002Dradius: 10px\u003B box\u002Dshadow: 0 4px 20px rgba(0,0,0,0.15)\u003B\u0022\u003E\u000A\u003C/iframe\u003E`;
+        } else if (type === 'js-code') {
+            text = `\u003C!\u002D\u002D Aboro\u002DIT Helpdesk Live Chat Widget (JavaScript) \u002D\u002D\u003E\u000A\u003Cscript\u003E\u000A(function() {\u000A    var iframe \u003D document.createElement(\u0027iframe\u0027)\u003B\u000A    iframe.src \u003D \u0027http://localhost:8000/chat/widget/\u0027\u003B\u000A    iframe.width \u003D \u0027400\u0027\u003B\u000A    iframe.height \u003D \u0027600\u0027\u003B\u000A    iframe.frameBorder \u003D \u00270\u0027\u003B\u000A    iframe.style.cssText \u003D \u0027position: fixed\u003B bottom: 20px\u003B right: 20px\u003B z\u002Dindex: 9999\u003B border\u002Dradius: 10px\u003B box\u002Dshadow: 0 4px 20px rgba(0,0,0,0.15)\u003B\u0027\u003B\u000A    document.body.appendChild(iframe)\u003B\u000A})()\u003B\u000A\u003C/script\u003E`;
+        }
+        
+        navigator.clipboard.writeText(text).then(() => {
+            // Feedback für den Nutzer
+            if (type === 'iframe-code') {
+                event.target.innerHTML = '✅ Kopiert!';
+                event.target.style.background = '#28a745';
+            } else {
+                event.target.innerHTML = '✅ Kopiert!';
+                event.target.style.background = '#17a2b8';
+            }
+            
+            // Zurück zum ursprünglichen Text nach 2 Sekunden
+            setTimeout(() => {
+                event.target.innerHTML = '📋 Code kopieren';
+                if (type === 'iframe-code') {
+                    event.target.style.background = '#28a745';
+                } else {
+                    event.target.style.background = '#17a2b8';
+                }
+            }, 2000);
+        }).catch(err => {
+            console.error('Kopieren fehlgeschlagen: ', err);
+            alert('Kopieren fehlgeschlagen. Bitte manuell markieren und kopieren.');
+        });
+    }
+}
+</script>
+
+    </div>
+
+    
+
+    <!-- Footer -->
+    <footer style="margin-top: 50px; padding: 20px 0; border-top: 1px solid #dee2e6; background: #f8f9fa; text-align: center; color: #868e96; font-size: 14px;">
+        <div class="container">
+            <p style="margin: 0;">
+                ©  <a href="https://aboro-it.net" target="_blank" style="color: #667eea; text-decoration: none;">Aboro-IT</a> 
+                - Professionelle IT-Lösungen für Ihr Unternehmen
+            </p>
+        </div>
+    </footer>
+
+    <!-- Live Chat Widget for Helpdesk -->
+    
+</body>
+</html>

@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.tickets',
     'apps.knowledge',
+    'apps.chat',
+    'apps.admin_panel',
     # 'apps.api',  # Uncomment when REST framework is installed
     'apps.main',
 ]
@@ -59,6 +61,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.accounts.activity_middleware.ActivityTrackingMiddleware',  # Track user activity for online status
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'apps.accounts.middleware.ForcePasswordChangeMiddleware',  # Check for forced password changes

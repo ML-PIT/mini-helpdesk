@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if action == 'create' %}Benutzer erstellen{% else %}Benutzer bearbeiten{% endif %} - {{ app_title }}
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="font-size: 28px; font-weight: 600; margin: 0;">
+        {% if action == 'create' %}
+        👤 Neuen Benutzer erstellen
+        {% else %}
+        ✏️ Benutzer bearbeiten: {{ target_user.full_name }}
+        {% endif %}
+    </h1>
+    <a href="{% url 'accounts:user_list' %}" class="btn btn-secondary">
+        ← Zurück zur Übersicht
+    </a>
+</div>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+        <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+            <strong>Fehler beim Speichern:</strong>
+            <ul style="margin: 10px 0 0 20px;">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                    <li>{% if field != '__all__' %}{{ field }}: {% endif %}{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <!-- Basic Information -->
+        <div style="margin-bottom: 30px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                📋 Grundinformationen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div class="form-group">
+                    <label for="{{ form.first_name.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.first_name.label }} *
+                    </label>
+                    {{ form.first_name }}
+                    {% if form.first_name.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.first_name.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.last_name.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.last_name.label }} *
+                    </label>
+                    {{ form.last_name }}
+                    {% if form.last_name.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.last_name.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.username.label }} *
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.username.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.email.label }} *
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.email.help_text }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Role and Permissions -->
+        <div style="margin-bottom: 30px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                🔐 Rolle und Berechtigungen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div class="form-group">
+                    <label for="{{ form.role.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.role.label }} *
+                    </label>
+                    {{ form.role }}
+                    {% if form.role.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.role.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                {% if form.support_level %}
+                <div class="form-group" id="support-level-group">
+                    <label for="{{ form.support_level.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.support_level.label }}
+                    </label>
+                    {{ form.support_level }}
+                    {% if form.support_level.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.support_level.help_text }}</small>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div style="margin-bottom: 30px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                📞 Kontaktinformationen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div class="form-group">
+                    <label for="{{ form.phone.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.phone.label }}
+                    </label>
+                    {{ form.phone }}
+                    {% if form.phone.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.phone.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.department.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.department.label }}
+                    </label>
+                    {{ form.department }}
+                    {% if form.department.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.department.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label for="{{ form.location.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.location.label }}
+                    </label>
+                    {{ form.location }}
+                    {% if form.location.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.location.help_text }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Address Information -->
+        <div style="margin-bottom: 30px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                🏠 Adressinformationen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label for="{{ form.street.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.street.label }}
+                    </label>
+                    {{ form.street }}
+                    {% if form.street.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.street.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.postal_code.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.postal_code.label }}
+                    </label>
+                    {{ form.postal_code }}
+                    {% if form.postal_code.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.postal_code.help_text }}</small>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div class="form-group">
+                    <label for="{{ form.city.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.city.label }}
+                    </label>
+                    {{ form.city }}
+                    {% if form.city.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.city.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.country.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.country.label }}
+                    </label>
+                    {{ form.country }}
+                    {% if form.country.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.country.help_text }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {% if action == 'create' %}
+        <!-- Password -->
+        <div style="margin-bottom: 30px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                🔒 Passwort
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div class="form-group">
+                    <label for="{{ form.password1.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.password1.label }} *
+                    </label>
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                    <div style="color: #dc3545; font-size: 12px; margin-top: 5px;">
+                        {% for error in form.password1.errors %}
+                        <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if form.password1.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.password1.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.password2.id_for_label }}" style="font-weight: 600; color: #495057; margin-bottom: 5px; display: block;">
+                        {{ form.password2.label }} *
+                    </label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                    <div style="color: #dc3545; font-size: 12px; margin-top: 5px;">
+                        {% for error in form.password2.errors %}
+                        <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if form.password2.help_text %}
+                    <small style="color: #6c757d; font-size: 12px;">{{ form.password2.help_text }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if action == 'edit' %}
+        <!-- Status Options -->
+        <div style="margin-bottom: 30px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                ⚙️ Status und Optionen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div class="form-group">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        {{ form.is_active }}
+                        <label for="{{ form.is_active.id_for_label }}" style="margin: 0; cursor: pointer; font-weight: 600; color: #495057;">
+                            {{ form.is_active.label }}
+                        </label>
+                    </div>
+                    {% if form.is_active.help_text %}
+                    <small style="color: #6c757d; font-size: 12px; display: block; margin-top: 5px;">{{ form.is_active.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        {{ form.force_password_change }}
+                        <label for="{{ form.force_password_change.id_for_label }}" style="margin: 0; cursor: pointer; font-weight: 600; color: #495057;">
+                            {{ form.force_password_change.label }}
+                        </label>
+                    </div>
+                    {% if form.force_password_change.help_text %}
+                    <small style="color: #6c757d; font-size: 12px; display: block; margin-top: 5px;">{{ form.force_password_change.help_text }}</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Action Buttons -->
+        <div style="border-top: 1px solid #dee2e6; padding-top: 20px; display: flex; gap: 15px; justify-content: flex-end;">
+            <a href="{% url 'accounts:user_list' %}" class="btn btn-secondary">
+                Abbrechen
+            </a>
+            <button type="submit" class="btn btn-primary">
+                {% if action == 'create' %}
+                👤 Benutzer erstellen
+                {% else %}
+                💾 Änderungen speichern
+                {% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    outline: none;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    color: white;
+    text-decoration: none;
+}
+</style>
+
+<script>
+// Show/hide support level based on role selection
+document.addEventListener('DOMContentLoaded', function() {
+    const roleField = document.getElementById('{{ form.role.id_for_label }}');
+    const supportLevelGroup = document.getElementById('support-level-group');
+    
+    if (roleField && supportLevelGroup) {
+        function toggleSupportLevel() {
+            if (roleField.value === 'support_agent') {
+                supportLevelGroup.style.display = 'block';
+            } else {
+                supportLevelGroup.style.display = 'none';
+            }
+        }
+        
+        // Initial state
+        toggleSupportLevel();
+        
+        // On change
+        roleField.addEventListener('change', toggleSupportLevel);
+    }
+});
+</script>
+
+{% endblock %}

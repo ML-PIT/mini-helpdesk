@@ -7,7 +7,7 @@ class TicketCreateForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        fields = ['title', 'description', 'category', 'priority', 'mobile_classroom']
+        fields = ['title', 'description', 'category', 'priority']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -20,14 +20,14 @@ class TicketCreateForm(forms.ModelForm):
             }),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'priority': forms.Select(attrs={'class': 'form-control'}),
-            'mobile_classroom': forms.Select(attrs={'class': 'form-control'}),
+            # mobile_classroom field removed
         }
         labels = {
             'title': 'Titel',
             'description': 'Beschreibung',
             'category': 'Kategorie',
             'priority': 'Priorität',
-            'mobile_classroom': 'Mobiler Klassenraum (optional)',
+            # mobile_classroom label removed
         }
 
 
@@ -97,7 +97,7 @@ class AgentTicketCreateForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        fields = ['title', 'description', 'category', 'priority', 'mobile_classroom']
+        fields = ['title', 'description', 'category', 'priority']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -110,14 +110,14 @@ class AgentTicketCreateForm(forms.ModelForm):
             }),
             'category': forms.Select(attrs={'class': 'form-control'}),
             'priority': forms.Select(attrs={'class': 'form-control'}),
-            'mobile_classroom': forms.Select(attrs={'class': 'form-control'}),
+            # mobile_classroom field removed
         }
         labels = {
             'title': 'Titel',
             'description': 'Beschreibung',
             'category': 'Kategorie',
             'priority': 'Priorität',
-            'mobile_classroom': 'Mobiler Klassenraum (optional)',
+            # mobile_classroom label removed
         }
 
 

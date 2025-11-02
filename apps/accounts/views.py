@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm as DjangoPasswordChangeForm
 from django.views.decorators.http import require_http_methods
 from .models import User
 from .forms import ProfileForm, PasswordChangeForm as ProfilePasswordChangeForm
@@ -127,22 +127,28 @@ def change_password(request):
     force_change = request.user.force_password_change
 
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
+        form = ProfilePasswordChangeForm(request.user, request.POST)
         if form.is_valid():
+            # Save the new password
             user = form.save()
-
+            
             # If this was a forced password change, clear the flag
             if force_change:
                 user.force_password_change = False
                 user.save()
 
             # Keep the user logged in after password change
-            update_session_auth_hash(request, user)
+            update_session_auth_hash(request, request.user)
 
             messages.success(request, 'Ihr Passwort wurde erfolgreich geändert!')
             return redirect('main:dashboard')
+        else:
+            # Show form errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
     else:
-        form = PasswordChangeForm(request.user)
+        form = ProfilePasswordChangeForm(request.user)
 
     context = {
         'form': form,

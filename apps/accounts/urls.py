@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from . import user_management_views
 
 app_name = 'accounts'
 
@@ -16,4 +17,12 @@ urlpatterns = [
     # Microsoft OAuth2 URLs (to be implemented)
     # path('microsoft/', views.microsoft_login, name='microsoft_login'),
     # path('microsoft/callback/', views.microsoft_callback, name='microsoft_callback'),
+    
+    # User Management URLs
+    path('users/', user_management_views.user_list, name='user_list'),
+    path('users/create/', user_management_views.user_create, name='user_create'),
+    path('users/<int:user_id>/', user_management_views.user_detail, name='user_detail'),
+    path('users/<int:user_id>/edit/', user_management_views.user_edit, name='user_edit'),
+    path('users/<int:user_id>/toggle-status/', user_management_views.user_toggle_status, name='user_toggle_status'),
+    path('users/<int:user_id>/reset-password/', user_management_views.user_reset_password, name='user_reset_password'),
 ]

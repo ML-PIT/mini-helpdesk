@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ target_user.full_name }} - Benutzerdetails - {{ app_title }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="font-size: 28px; font-weight: 600; margin: 0;">
+        👤 {{ target_user.full_name }}
+    </h1>
+    <div style="display: flex; gap: 10px;">
+        {% if can_edit %}
+        <a href="{% url 'accounts:user_edit' target_user.id %}" class="btn btn-primary">
+            ✏️ Bearbeiten
+        </a>
+        {% endif %}
+        <a href="{% url 'accounts:user_list' %}" class="btn btn-secondary">
+            ← Zurück zur Übersicht
+        </a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    <!-- Main Information -->
+    <div>
+        <!-- Basic Information -->
+        <div class="card" style="margin-bottom: 20px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                📋 Grundinformationen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Vorname</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">{{ target_user.first_name|default:"Nicht angegeben" }}</div>
+                </div>
+                
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Nachname</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">{{ target_user.last_name|default:"Nicht angegeben" }}</div>
+                </div>
+                
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Benutzername</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">{{ target_user.username }}</div>
+                </div>
+                
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">E-Mail</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">
+                        <a href="mailto:{{ target_user.email }}" style="color: #667eea; text-decoration: none;">{{ target_user.email }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="card" style="margin-bottom: 20px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                📞 Kontaktinformationen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Telefon</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">
+                        {% if target_user.phone %}
+                        <a href="tel:{{ target_user.phone }}" style="color: #667eea; text-decoration: none;">{{ target_user.phone }}</a>
+                        {% else %}
+                        Nicht angegeben
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Abteilung</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">{{ target_user.department|default:"Nicht angegeben" }}</div>
+                </div>
+                
+                <div style="grid-column: 1 / -1;">
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Standort</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">{{ target_user.location|default:"Nicht angegeben" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Address Information -->
+        {% if target_user.street or target_user.city or target_user.postal_code or target_user.country %}
+        <div class="card" style="margin-bottom: 20px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                🏠 Adressinformationen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Straße</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">{{ target_user.street|default:"Nicht angegeben" }}</div>
+                </div>
+                
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">PLZ</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">{{ target_user.postal_code|default:"Nicht angegeben" }}</div>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Stadt</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">{{ target_user.city|default:"Nicht angegeben" }}</div>
+                </div>
+                
+                <div>
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Land</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px;">{{ target_user.country|default:"Nicht angegeben" }}</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar -->
+    <div>
+        <!-- Role and Status -->
+        <div class="card" style="margin-bottom: 20px;">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                🔐 Rolle und Status
+            </h3>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Rolle</label>
+                <div style="margin-top: 8px;">
+                    <span style="background: {% if target_user.role == 'admin' %}#dc3545{% elif target_user.role == 'support_agent' %}#28a745{% else %}#6c757d{% endif %}; color: white; padding: 6px 12px; border-radius: 12px; font-size: 14px; font-weight: 600;">
+                        {{ target_user.get_role_display }}
+                    </span>
+                </div>
+                {% if target_user.role == 'support_agent' and target_user.support_level %}
+                <div style="margin-top: 10px;">
+                    <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Support Level</label>
+                    <div style="font-size: 16px; color: #333; margin-top: 5px; font-weight: 600;">
+                        Level {{ target_user.support_level }} - {{ target_user.get_support_level_display }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Status</label>
+                <div style="margin-top: 8px;">
+                    <span style="background: {% if target_user.is_active %}#d4edda; color: #155724{% else %}#f8d7da; color: #721c24{% endif %}; padding: 6px 12px; border-radius: 12px; font-size: 14px; font-weight: 600;">
+                        {% if target_user.is_active %}✅ Aktiv{% else %}❌ Inaktiv{% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            {% if target_user.force_password_change %}
+            <div style="margin-bottom: 20px;">
+                <span style="background: #fff3cd; color: #856404; padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                    🔑 Passwort-Änderung erforderlich
+                </span>
+            </div>
+            {% endif %}
+            
+            <!-- Quick Actions -->
+            {% if can_edit and target_user != request.user %}
+            <div style="border-top: 1px solid #dee2e6; padding-top: 20px;">
+                <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; display: block;">Schnellaktionen</label>
+                
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button onclick="toggleUserStatus({{ target_user.id }})" 
+                            style="width: 100%; padding: 10px 15px; background: {% if target_user.is_active %}#dc3545{% else %}#28a745{% endif %}; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 600;"
+                            title="{% if target_user.is_active %}Benutzer deaktivieren{% else %}Benutzer aktivieren{% endif %}">
+                        {% if target_user.is_active %}🔒 Deaktivieren{% else %}🔓 Aktivieren{% endif %}
+                    </button>
+                    
+                    <button onclick="resetUserPassword({{ target_user.id }})" 
+                            style="width: 100%; padding: 10px 15px; background: #6f42c1; color: white; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; font-weight: 600;"
+                            title="Neues temporäres Passwort generieren">
+                        🔑 Passwort zurücksetzen
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Account Information -->
+        <div class="card">
+            <h3 style="color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px;">
+                📊 Kontoinformationen
+            </h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Erstellt am</label>
+                <div style="font-size: 14px; color: #333; margin-top: 5px;">
+                    {{ target_user.created_at|date:"d.m.Y" }} um {{ target_user.created_at|date:"H:i" }} Uhr
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Letzte Aktualisierung</label>
+                <div style="font-size: 14px; color: #333; margin-top: 5px;">
+                    {{ target_user.updated_at|date:"d.m.Y" }} um {{ target_user.updated_at|date:"H:i" }} Uhr
+                </div>
+            </div>
+            
+            {% if target_user.last_login %}
+            <div>
+                <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Letzter Login</label>
+                <div style="font-size: 14px; color: #333; margin-top: 5px;">
+                    {{ target_user.last_login|date:"d.m.Y" }} um {{ target_user.last_login|date:"H:i" }} Uhr
+                </div>
+            </div>
+            {% else %}
+            <div>
+                <label style="font-weight: 600; color: #6c757d; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Letzter Login</label>
+                <div style="font-size: 14px; color: #6c757d; margin-top: 5px; font-style: italic;">
+                    Noch nie angemeldet
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+{% csrf_token %}
+function toggleUserStatus(userId) {
+    if (!confirm('Möchten Sie den Status dieses Benutzers wirklich ändern?')) {
+        return;
+    }
+    
+    fetch(`/auth/users/${userId}/toggle-status/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Fehler: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ein Fehler ist aufgetreten.');
+    });
+}
+
+function resetUserPassword(userId) {
+    if (!confirm('Möchten Sie das Passwort dieses Benutzers wirklich zurücksetzen? Der Benutzer muss beim nächsten Login ein neues Passwort vergeben.')) {
+        return;
+    }
+    
+    fetch(`/auth/users/${userId}/reset-password/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Neues temporäres Passwort: ${data.temp_password}\n\nBitte notieren Sie sich das Passwort und geben Sie es sicher an den Benutzer weiter. Der Benutzer muss das Passwort beim nächsten Login ändern.`);
+        } else {
+            alert('Fehler: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ein Fehler ist aufgetreten.');
+    });
+}
+</script>
+
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SystemSettings, AuditLog
+from .models import SystemSettings, AuditLog, CustomField, CustomFieldValue
 
 
 @admin.register(SystemSettings)
@@ -29,6 +29,9 @@ class SystemSettingsAdmin(admin.ModelAdmin):
         }),
         ('System', {
             'fields': ('timezone', 'language')
+        }),
+        ('License Configuration', {
+            'fields': ('license_code', 'license_product', 'license_expiry_date', 'license_max_agents', 'license_features', 'license_valid', 'license_last_validated')
         }),
         ('Statistics Permissions', {
             'fields': ('stats_permissions',)
@@ -65,3 +68,45 @@ class AuditLogAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         """Disable editing audit logs"""
         return False
+
+
+@admin.register(CustomField)
+class CustomFieldAdmin(admin.ModelAdmin):
+    """Custom fields management"""
+    
+    list_display = ['label', 'field_type', 'target_model', 'is_required', 'is_active', 'display_order']
+    list_filter = ['field_type', 'target_model', 'is_required', 'is_active']
+    search_fields = ['name', 'label']
+    ordering = ['target_model', 'display_order', 'name']
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('name', 'label', 'field_type', 'target_model')
+        }),
+        ('Configuration', {
+            'fields': ('is_required', 'default_value', 'help_text', 'choices')
+        }),
+        ('Display Options', {
+            'fields': ('display_order', 'is_visible_in_list', 'is_searchable')
+        }),
+        ('Permissions', {
+            'fields': ('visible_to_customers', 'editable_by_customers')
+        }),
+        ('Status', {
+            'fields': ('is_active',)
+        })
+    )
+
+
+@admin.register(CustomFieldValue)
+class CustomFieldValueAdmin(admin.ModelAdmin):
+    """Custom field values management"""
+    
+    list_display = ['field', 'object_id', 'value', 'updated_at']
+    list_filter = ['field__target_model', 'field']
+    search_fields = ['field__label', 'value']
+    readonly_fields = ['created_at', 'updated_at']
+    
+    def has_add_permission(self, request):
+        # Values are usually created automatically
+        return request.user.is_superuser

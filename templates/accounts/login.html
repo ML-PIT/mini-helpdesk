@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - ML Gruppe Helpdesk</title>
+    <title>Login - {{ app_title }}</title>
     <style>
         * {
             margin: 0;
@@ -101,7 +101,7 @@
 </head>
 <body>
     <div class="login-container">
-        <h1>ML Gruppe Helpdesk</h1>
+        <h1>{{ company_name }} Helpdesk</h1>
         <p class="subtitle">Anmelden um fortzufahren</p>
 
         {% if form.errors %}
