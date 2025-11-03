@@ -21,7 +21,8 @@
       "Bash(mkdir:*)",
       "Bash(taskkill:*)",
       "Bash(wmic:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "additionalDirectories": [
